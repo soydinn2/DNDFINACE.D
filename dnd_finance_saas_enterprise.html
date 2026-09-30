@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>DND FINANCE | Enterprise Smart Cloud Workspace</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- Export & Vision Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Outfit', 'sans-serif'], 
+                        display: ['Space Grotesk', 'sans-serif'], 
+                        serif: ['Playfair Display', 'serif'] 
+                    },
+                    colors: { 
+                        background: '#05050A', surface: '#12121A', surface2: '#1C1C26', 
+                        dndGold: '#FFD700', dndCyan: '#00E5FF', dndPurple: '#7B2CBF', 
+                        danger: '#FF3366', success: '#00FA9A', dndBlue: '#1E90FF', dndNavy: '#000080' 
+                    },
+                    animation: { 
+                        'float': 'float 6s ease-in-out infinite', 
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite', 
+                        'pulse-mic': 'pulse-mic 1.5s infinite cubic-bezier(0.66, 0, 0, 1)' 
+                    },
+                    keyframes: { 
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-5px)' } },
+                        'pulse-mic': { '0%': { boxShadow: '0 0 0 0 rgba(0, 229, 255, 0.7)' }, '70%': { boxShadow: '0 0 0 20px rgba(0, 229, 255, 0)' }, '100%': { boxShadow: '0 0 0 0 rgba(0, 229, 255, 0)' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #05050A; color: #F3F4F6; overflow-x: hidden; -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+        
+        .neon-card { 
+            background: rgba(18, 18, 26, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 229, 255, 0.12); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .neon-card:hover { 
+            border-color: rgba(0, 229, 255, 0.4); box-shadow: 0 12px 45px 0 rgba(0, 229, 255, 0.18); 
+            transform: translateY(-2px); 
+        }
+        
+        /* Typography DND Logo (Serif Elegant matching user image) */
+        .logo-container { display: flex; align-items: center; justify-content: center; position: relative; user-select: none; }
+        .logo-dnd-text {
+            font-family: 'Playfair Display', serif; font-size: 2.2rem; line-height: 1; font-weight: 700;
+            letter-spacing: -5px; color: #ffffff; position: relative; display: inline-block;
+        }
+        .logo-dnd-text span:nth-child(1) { position: relative; z-index: 10; padding-right: 2px; }
+        .logo-dnd-text span:nth-child(2) {
+            position: relative; z-index: 20; font-style: italic; font-weight: 700;
+            background: linear-gradient(135deg, #00E5FF 0%, #7B2CBF 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-left: -4px; margin-right: -4px;
+        }
+        .logo-dnd-text span:nth-child(3) { position: relative; z-index: 5; }
+
+        .stagger-item { opacity: 0; transform: translateY(20px); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .stagger-loaded .stagger-item { opacity: 1; transform: translateY(0); }
+        .interactive-row { transition: all 0.3s ease; }
+        .interactive-row:hover { transform: translateX(6px); background-color: rgba(255,255,255,0.03); }
+        .btn-animate { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .btn-animate:hover:not(:disabled) { transform: scale(1.03); }
+        .btn-animate:active:not(:disabled) { transform: scale(0.97); }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; } 
+        ::-webkit-scrollbar-track { background: transparent; } 
+        ::-webkit-scrollbar-thumb { background: #2D2D3D; border-radius: 10px; } 
+        ::-webkit-scrollbar-thumb:hover { background: #00E5FF; }
+        
+        body.theme-business { background-color: #0F172A; }
+        .theme-business .neon-card { background: #1E293B; border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .theme-business .neon-card:hover { border-color: #0284C7; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2); transform: translateY(-2px); }
+        .theme-business aside, .theme-business nav.md\:hidden { background-color: #1E293B; border-color: #334155; }
+        .theme-business header { background-color: rgba(30, 41, 59, 0.95); border-color: #334155; }
+        .theme-business .bg-surface2 { background-color: #334155; border-color: #475569; }
+        .theme-business .logo-dnd-text span:nth-child(2) { background: linear-gradient(135deg, #38BDF8 0%, #2563EB 100%); -webkit-background-clip: text; }
+        
+        [x-cloak] { display: none !important; }
+        .chart-container { width: 100%; height: 100%; min-height: 280px; position: relative; }
+        .pdf-export-mode .chart-container { background-color: #ffffff !important; border-radius: 8px; padding: 10px; }
+        .pdf-export-mode body { background-color: #ffffff !important; }
+    </style>
+
+    <script>
+        window.addEventListener('error', function(e) {
+            if (e.message && (e.message.includes('ResizeObserver') || e.message.includes('undelivered'))) {
+                e.stopImmediatePropagation();
+            }
+        });
+    </script>
+</head>
+
+<body x-data="dndApp()" x-init="initApp()" :class="isPersonalMode ? 'theme-personal' : 'theme-business'" class="h-screen flex flex-col md:flex-row selection:bg-dndCyan selection:text-black font-sans relative overflow-hidden transition-colors duration-500" x-cloak>
+    
+    <!-- Toast Notification -->
+    <div x-show="toastMsg !== ''" 
+         x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-[-20px]" x-transition:enter-end="opacity-100 translate-y-0" 
+         x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-[-20px]" 
+         class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[150] bg-surface2/95 backdrop-blur-xl border border-dndCyan/50 text-white px-6 py-3 rounded-full shadow-[0_0_25px_rgba(0,229,255,0.4)] flex items-center gap-3 pointer-events-none">
+        <span class="w-2.5 h-2.5 rounded-full bg-dndCyan animate-pulse"></span>
+        <span x-text="toastMsg" class="text-sm font-bold tracking-wide"></span>
+    </div>
+
+    <!-- Ambient Glowing Background -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-dndCyan/10 blur-[120px] animate-pulse"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-dndPurple/10 blur-[120px] animate-pulse"></div>
+    </div>
+
+    <!-- DB Connecting Screen -->
+    <div x-show="isDbLoading" class="fixed inset-0 z-[200] bg-background flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="logo-container animate-float mb-6 scale-125">
+            <h1 class="logo-dnd-text"><span>D</span><span>N</span><span>D</span></h1>
+        </div>
+        <div class="w-48 h-1 bg-surface2 rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-dndCyan to-dndPurple animate-pulse-fast w-full"></div>
+        </div>
+        <p class="mt-4 text-xs text-gray-400 font-medium tracking-widest uppercase">Connecting to Google Cloud Workspace...</p>
+    </div>
+
+    <!-- Sidebar Desktop -->
+    <aside class="hidden md:flex w-64 flex-col bg-surface/90 backdrop-blur-xl border-r border-white/5 z-20 shadow-[4px_0_24px_rgba(0,0,0,0.3)]">
+        <div class="h-20 flex items-center px-6 border-b border-white/5">
+            <div class="flex items-center gap-3 cursor-pointer btn-animate" @click="switchView('dashboard')">
+                <div class="logo-container">
+                    <h1 class="logo-dnd-text text-[1.8rem]"><span>D</span><span>N</span><span>D</span></h1>
+                </div>
+                <span class="text-[9px] text-white font-bold tracking-[0.2em] uppercase px-2 py-0.5 rounded border"
+                      :class="isPersonalMode ? 'bg-dndCyan/10 border-dndCyan/30 text-dndCyan' : 'bg-blue-600/10 border-blue-500/30 text-blue-400'"
+                      x-text="isPersonalMode ? 'SAAS' : 'ERP'"></span>
+            </div>
+        </div>
+
+        <nav class="flex-1 py-6 flex flex-col gap-2 px-4 overflow-y-auto custom-scrollbar">
+            <template x-for="item in currentMenuItems" :key="item.id">
+                <a href="#" @click.prevent="switchView(item.id)" 
+                   class="flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300 relative group overflow-hidden btn-animate"
+                   :class="activeMenu === item.id ? (isPersonalMode ? 'bg-gradient-to-r from-dndCyan/20 to-transparent text-dndCyan shadow-[inset_4px_0_0_0_#00E5FF] border border-dndCyan/10 translate-x-1' : 'bg-gradient-to-r from-blue-600/20 to-transparent text-blue-400 shadow-[inset_4px_0_0_0_#2563EB] border border-blue-500/10 translate-x-1') : 'text-gray-400 hover:bg-surface2 hover:text-white'">
+                    <div x-html="item.icon" class="w-5 h-5 flex-shrink-0 transition-transform duration-300 group-hover:scale-110"></div>
+                    <span class="font-medium text-sm tracking-wide" x-text="t(item.label_key)"></span>
+                </a>
+            </template>
+        </nav>
+        
+        <!-- Google Auth Section -->
+        <div class="p-4 border-t border-white/5 space-y-3">
+            <template x-if="!isGoogleLoggedIn">
+                <button @click="loginWithGoogle()" class="w-full bg-surface2 hover:bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-center gap-3 transition-colors btn-animate">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.58c2.09-1.93 3.3-4.78 3.3-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.58-2.77c-.98.66-2.23 1.06-3.7 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/><path fill="none" d="M1 1h22v22H1z"/></svg>
+                    <span class="text-xs font-bold text-white">Sign-in with Google</span>
+                </button>
+            </template>
+
+            <template x-if="isGoogleLoggedIn">
+                <div class="bg-surface2/50 rounded-xl p-3 flex items-center justify-between border border-white/5 relative group">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <img x-show="userPhoto" :src="userPhoto" alt="Profile" class="w-8 h-8 rounded-full border border-dndCyan object-cover shadow-[0_0_10px_rgba(0,229,255,0.3)]">
+                        <div x-show="!userPhoto" class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-inner border border-dndCyan bg-gradient-to-tr from-blue-600 to-dndCyan">
+                            <span x-text="userName.charAt(0)"></span>
+                        </div>
+                        <div class="flex-1 overflow-hidden">
+                            <p class="text-xs font-bold text-white truncate" x-text="userName"></p>
+                            <p class="text-[9px] text-gray-400 truncate" x-text="userEmail"></p>
+                        </div>
+                    </div>
+                    <button @click="logoutGoogle()" class="p-1.5 rounded bg-danger/10 text-danger hover:bg-danger/20 transition-colors" title="Logout">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    </button>
+                </div>
+            </template>
+        </div>
+    </aside>
+
+    <!-- Bottom Nav Mobile -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface/95 backdrop-blur-xl border-t border-white/10 z-40 flex justify-around items-center h-16 px-2 shadow-[0_-5px_20px_rgba(0,0,0,0.5)]">
+        <template x-for="item in currentMenuItems.slice(0, 5)" :key="item.id">
+            <a href="#" @click.prevent="switchView(item.id)" 
+               class="flex flex-col items-center justify-center flex-1 py-1 transition-all"
+               :class="activeMenu === item.id ? (isPersonalMode ? 'text-dndCyan font-bold translate-y-[-2px]' : 'text-blue-400 font-bold translate-y-[-2px]') : 'text-gray-400 hover:text-white'">
+                <div x-html="item.icon" class="w-5 h-5 mb-1" :class="activeMenu === item.id ? (isPersonalMode ? 'drop-shadow-[0_0_5px_rgba(0,229,255,0.8)]' : 'drop-shadow-[0_0_5px_rgba(37,99,235,0.8)]') : ''"></div>
+                <span class="text-[9px] tracking-tight truncate w-full text-center" x-text="t(item.label_key)"></span>
+            </a>
+        </template>
+    </nav>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 flex flex-col relative h-full overflow-y-auto pb-20 md:pb-0 stagger-container" :class="{'stagger-loaded': !isDbLoading}">
+        
+        <!-- Header Navbar -->
+        <header class="h-16 md:h-20 border-b border-white/5 bg-surface/50 backdrop-blur-md flex items-center justify-between px-4 md:px-10 z-10 sticky top-0 shadow-sm">
+            <div class="flex items-center gap-3">
+                <div class="md:hidden logo-container scale-[0.7] transform -ml-2">
+                    <h1 class="logo-dnd-text"><span>D</span><span>N</span><span>D</span></h1>
+                </div>
+                <h2 class="text-lg md:text-2xl font-display font-bold text-white tracking-wide hidden sm:block">
+                    <span x-text="t(activeMenu)" class="bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 uppercase tracking-widest"></span>
+                </h2>
+            </div>
+
+            <div class="flex items-center gap-2 md:gap-4">
+                <button @click="toggleMode()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[11px] font-bold uppercase tracking-wider btn-animate shadow-md"
+                        :class="isPersonalMode ? 'bg-dndPurple/10 border-dndPurple/50 text-dndPurple' : 'bg-blue-900/20 border-blue-500/50 text-blue-400'">
+                    <span x-text="isPersonalMode ? (lang==='ID'?'Mode Personal':'Personal Mode') : (lang==='ID'?'ERP Korporat':'Corporate ERP')"></span>
+                </button>
+
+                <button @click="toggleLanguage()" class="flex items-center justify-center w-8 h-8 rounded-full bg-surface2 border border-white/10 text-xs font-bold text-white hover:border-dndCyan transition-all uppercase btn-animate shadow-md">
+                    <span x-text="lang"></span>
+                </button>
+
+                <select x-model="currency" @change="updateAllCharts()" class="bg-surface2 border border-white/10 text-xs md:text-sm font-medium rounded-xl px-2.5 py-1.5 text-white outline-none cursor-pointer shadow-md">
+                    <option value="IDR">IDR (Rp)</option>
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                </select>
+
+                <!-- Export Pro (VBA-Grade) -->
+                <div class="relative" x-data="{ exportOpen: false }">
+                    <button @click="exportOpen = !exportOpen" @click.outside="exportOpen = false" class="bg-gradient-to-r hover:opacity-90 text-black font-bold text-xs md:text-sm px-4 py-2 rounded-xl shadow-[0_0_15px_rgba(0,229,255,0.3)] flex items-center gap-2 btn-animate"
+                            :class="isPersonalMode ? 'from-dndCyan to-blue-500' : 'from-blue-400 to-blue-600 text-white shadow-[0_0_15px_rgba(37,99,235,0.4)]'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <span class="hidden sm:inline" x-text="t('export_pro')"></span>
+                    </button>
+                    <div x-show="exportOpen" x-transition.opacity style="display: none;" class="absolute right-0 mt-2 w-48 bg-surface2 border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50">
+                        <button @click="exportExcel(); exportOpen = false" class="w-full text-left px-4 py-3 text-xs md:text-sm text-gray-300 hover:bg-white/5 hover:text-white flex items-center gap-2 transition-colors">
+                            <span class="text-success">■</span> Excel (VBA Pivot)
+                        </button>
+                        <button @click="exportPDF(); exportOpen = false" class="w-full text-left px-4 py-3 text-xs md:text-sm text-gray-300 hover:bg-white/5 hover:text-white flex items-center gap-2 transition-colors">
+                            <span class="text-danger">■</span> PDF (Executive Grid)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="p-4 md:p-10 space-y-6">
+            
+            <!-- VIEW 1: DASHBOARD -->
+            <div x-show="activeMenu === 'dashboard'" class="space-y-6">
+                <!-- Top Aggregation Metrics -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6" id="metrics-grid">
+                    <div class="neon-card rounded-2xl p-5 stagger-item drag-handle cursor-move">
+                        <p class="text-gray-400 text-xs md:text-sm font-medium mb-1" x-text="isPersonalMode ? t('balance') : t('net_capital')"></p>
+                        <h3 class="text-2xl md:text-3xl font-display font-bold text-white tracking-tight" x-text="formatCurrency(calculateTotal('balance'))"></h3>
+                        <div class="mt-3 flex items-center text-[11px] text-success font-medium bg-success/10 w-fit px-2 py-0.5 rounded border border-success/20">
+                            ↑ 12.5% vs <span x-text="t('last_month')" class="ml-1"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="neon-card rounded-2xl p-5 stagger-item drag-handle cursor-move" style="transition-delay: 50ms;">
+                        <p class="text-gray-400 text-xs md:text-sm font-medium mb-1 flex justify-between">
+                            <span x-text="isPersonalMode ? t('income') : t('revenue')"></span>
+                            <span class="text-dndBlue font-bold drop-shadow-[0_0_5px_rgba(30,144,255,0.8)]">↓</span>
+                        </p>
+                        <h3 class="text-xl md:text-2xl font-display font-bold text-dndBlue mt-2" x-text="formatCurrency(calculateTotal('income'))"></h3>
+                    </div>
+
+                    <div class="neon-card rounded-2xl p-5 stagger-item drag-handle cursor-move" style="transition-delay: 100ms;">
+                        <p class="text-gray-400 text-xs md:text-sm font-medium mb-1 flex justify-between">
+                            <span x-text="isPersonalMode ? t('expense') : t('opex')"></span>
+                            <span class="text-danger font-bold drop-shadow-[0_0_5px_rgba(255,51,102,0.8)]">↑</span>
+                        </p>
+                        <h3 class="text-xl md:text-2xl font-display font-bold text-danger mt-2" x-text="formatCurrency(calculateTotal('expense'))"></h3>
+                    </div>
+
+                    <div class="neon-card rounded-2xl p-4 flex flex-col items-center justify-center stagger-item drag-handle cursor-move relative" style="transition-delay: 150ms;">
+                        <p class="text-gray-400 text-xs md:text-sm font-medium mb-[-10px] z-10" x-text="isPersonalMode ? t('health_score') : t('profit_margin')"></p>
+                        <div id="gaugeChart" class="w-full h-28 chart-container"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 stagger-item" style="transition-delay: 200ms;">
+                    <!-- Revenue vs Expenses Analysis (Real-Time Combo Chart) -->
+                    <div class="neon-card rounded-2xl p-5 md:p-6 flex flex-col">
+                        <div class="flex justify-between items-center mb-4 cursor-move drag-handle group">
+                            <h3 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                                <svg class="w-5 h-5 text-dndBlue" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span x-text="t('rev_vs_exp')"></span>
+                            </h3>
+                            <span class="text-[10px] text-gray-400 uppercase tracking-wider bg-surface2 px-2 py-1 rounded">Live Data</span>
+                        </div>
+                        <div id="comboChart" class="chart-container flex-1 min-h-[300px]"></div>
+                    </div>
+
+                    <!-- AI Forecasting (Real-Time Balance Projection) -->
+                    <div class="neon-card rounded-2xl p-5 md:p-6 flex flex-col">
+                        <div class="flex justify-between items-center mb-4 cursor-move drag-handle group">
+                            <h3 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                                <svg class="w-5 h-5 text-dndPurple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                                <span x-text="t('ai_forecast')"></span>
+                            </h3>
+                            <span class="text-[10px] text-dndCyan uppercase tracking-wider bg-surface2 px-2 py-1 rounded">AI Algorithm</span>
+                        </div>
+                        <div id="forecastChart" class="chart-container flex-1 min-h-[300px]"></div>
+                    </div>
+                </div>
+
+                <!-- Sankey Cash Flow (Real-Time Dynamic Alur Uang) -->
+                <div class="neon-card rounded-2xl p-5 md:p-6 flex flex-col stagger-item" style="transition-delay: 250ms;">
+                    <div class="flex justify-between items-center mb-4 cursor-move drag-handle group">
+                        <h3 class="text-base md:text-lg font-bold text-white flex items-center gap-2">
+                            <svg class="w-5 h-5 text-dndCyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            <span x-text="t('cash_flow')"></span>
+                        </h3>
+                        <div class="flex items-center gap-2 text-[10px] text-gray-400">
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-dndBlue"></span> Income</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-dndNavy"></span> Savings</span>
+                            <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-danger"></span> Expense</span>
+                        </div>
+                    </div>
+                    <div id="sankeyChart" class="chart-container flex-1 min-h-[320px]"></div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: CATATAN KEUANGAN / GENERAL LEDGER -->
+            <div x-show="activeMenu === 'transactions'" style="display: none;" class="neon-card rounded-2xl p-5 md:p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <h3 class="text-lg md:text-xl font-bold text-white" x-text="t('records_title')"></h3>
+                    <div class="relative w-full sm:w-64">
+                        <input type="text" x-model="searchQuery" :placeholder="t('search')" class="w-full bg-surface2 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:border-dndCyan outline-none shadow-inner transition-colors">
+                        <svg class="w-4 h-4 text-gray-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-white/5 custom-scrollbar">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead class="bg-surface2/50">
+                            <tr class="text-xs uppercase text-gray-400 tracking-wider">
+                                <th class="p-4 font-medium">Date</th>
+                                <th class="p-4 font-medium">Category</th>
+                                <th class="p-4 font-medium">Account / Bank</th>
+                                <th class="p-4 font-medium text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5">
+                            <template x-if="filteredTransactions.length === 0">
+                                <tr><td colspan="4" class="p-8 text-center text-gray-500 text-sm">No records found.</td></tr>
+                            </template>
+                            <template x-for="tx in filteredTransactions" :key="tx.id">
+                                <tr class="interactive-row bg-transparent hover:bg-white/5">
+                                    <td class="p-4 text-xs md:text-sm text-gray-300" x-text="tx.date"></td>
+                                    <td class="p-4">
+                                        <span class="px-2.5 py-1 rounded-md text-[11px] font-bold border tracking-wide uppercase"
+                                              :class="tx.type === 'income' ? 'bg-dndBlue/10 text-dndBlue border-dndBlue/20' : 'bg-danger/10 text-danger border-danger/20'"
+                                              x-text="tx.category"></span>
+                                    </td>
+                                    <td class="p-4 text-xs md:text-sm text-gray-400 font-medium" x-text="tx.account"></td>
+                                    <td class="p-4 text-right font-display font-bold text-sm md:text-base"
+                                        :class="tx.type === 'income' ? 'text-dndBlue' : 'text-danger'">
+                                        <span x-text="tx.type === 'income' ? '+' : '-'"></span>
+                                        <span x-text="formatCurrency(tx.amount)"></span>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW 3: SAVINGS & GOALS -->
+            <div x-show="activeMenu === 'savings'" style="display: none;" class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-1" x-text="t('savings')"></h3>
+                        <p class="text-gray-400 text-sm">Tetapkan tujuan finansial kustom yang tersimpan otomatis via Google Cloud API.</p>
+                    </div>
+                    <button @click="promptNewGoal()" class="bg-gradient-to-r from-dndCyan to-blue-500 text-black px-4 py-2 rounded-xl text-sm font-bold shadow-[0_0_15px_rgba(0,229,255,0.3)] btn-animate">
+                        + New Target
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <template x-for="goal in goals" :key="goal.id">
+                        <div class="neon-card rounded-2xl p-5 flex flex-col justify-between btn-animate border-t-4 border-t-dndCyan">
+                            <div class="flex justify-between items-start mb-4">
+                                <div>
+                                    <h4 class="font-bold text-white text-lg" x-text="goal.name"></h4>
+                                    <p class="text-xs text-gray-400 mt-1">Target: <span x-text="formatCurrency(goal.target)"></span></p>
+                                </div>
+                                <div :id="'goalChart_' + goal.id" class="w-16 h-16 chart-container !min-h-0" x-init="setTimeout(() => renderGoalDonut(goal), 100)"></div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="w-full bg-surface2 rounded-full h-2">
+                                    <div class="bg-gradient-to-r from-dndCyan to-blue-500 h-2 rounded-full transition-all duration-1000" :style="'width: ' + Math.min(100, (goal.current / goal.target) * 100) + '%'"></div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-dndCyan" x-text="formatCurrency(goal.current)"></span>
+                                    <button @click="addFundsToGoal(goal)" class="text-[10px] bg-surface2 border border-white/10 hover:border-dndCyan px-2 py-1 rounded text-white transition-colors">Add Funds</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- VIEW 4: BUDGETS -->
+            <div x-show="activeMenu === 'budgets'" style="display: none;" class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <h3 class="text-xl font-bold text-white" x-text="t('budgets')"></h3>
+                    <button @click="promptNewBudget()" class="bg-surface2 border border-white/10 hover:border-dndCyan text-white px-4 py-2 rounded-xl text-sm transition-colors btn-animate">
+                        + New Budget
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <template x-for="b in budgets" :key="b.id">
+                        <div class="neon-card rounded-2xl p-5">
+                            <div class="flex justify-between items-center mb-3">
+                                <span class="font-bold text-white" x-text="b.category"></span>
+                                <span class="text-xs font-medium bg-surface2 px-2 py-1 rounded text-gray-300" x-text="formatCurrency(b.limit)"></span>
+                            </div>
+                            <div class="w-full bg-surface2 rounded-full h-2.5 mb-2 overflow-hidden">
+                                <div class="h-full transition-all duration-700" 
+                                     :class="(getBudgetSpent(b.category) / b.limit) > 0.9 ? 'bg-danger shadow-[0_0_10px_#FF3366]' : 'bg-dndCyan shadow-[0_0_10px_#00E5FF]'"
+                                     :style="'width: ' + Math.min(100, (getBudgetSpent(b.category) / b.limit) * 100) + '%'"></div>
+                            </div>
+                            <p class="text-[11px] text-gray-400 text-right">Terpakai: <span class="font-bold text-white" x-text="formatCurrency(getBudgetSpent(b.category))"></span></p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- VIEW 5: PAYROLL & HR (BUSINESS ONLY) -->
+            <div x-show="activeMenu === 'payroll' && !isPersonalMode" style="display: none;" class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <h3 class="text-xl font-bold text-white">HR & Payroll System</h3>
+                    <button @click="promptNewEmployee()" class="bg-surface2 border border-white/10 hover:border-blue-500 text-white px-4 py-2 rounded-xl text-sm transition-colors btn-animate">
+                        + Add Employee
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <template x-for="emp in employees" :key="emp.id">
+                        <div class="neon-card rounded-2xl p-5 border-l-4 border-l-blue-500 flex justify-between items-center group">
+                            <div>
+                                <h4 class="font-bold text-white" x-text="emp.name"></h4>
+                                <p class="text-xs text-gray-400 mb-2" x-text="emp.role"></p>
+                                <p class="text-sm font-display font-bold text-blue-400" x-text="formatCurrency(emp.salary)"></p>
+                            </div>
+                            <button @click="processPayroll(emp)" class="bg-surface2 hover:bg-blue-600/20 border border-white/10 hover:border-blue-500 text-white p-3 rounded-full transition-all shadow-md group-hover:scale-110" title="Process Payment">
+                                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- VIEW 6: INVOICE & TAX (BUSINESS ONLY) -->
+            <div x-show="activeMenu === 'invoice' && !isPersonalMode" style="display: none;" class="space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="neon-card rounded-2xl p-6 border-t-4 border-t-danger flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-lg md:text-xl font-bold text-white mb-2 flex items-center gap-2">
+                                <svg class="w-5 h-5 text-danger" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"></path></svg>
+                                Corporate Tax Estimation
+                            </h3>
+                            <p class="text-sm text-gray-400 mb-6">Perhitungan pajak PPN (11%) secara Real-Time berdasarkan total pendapatan kotor Anda.</p>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center bg-surface2/50 p-4 rounded-xl border border-white/5">
+                                    <span class="text-sm text-gray-400">Total Gross Revenue</span>
+                                    <span class="font-bold text-white" x-text="formatCurrency(calculateTotal('income'))"></span>
+                                </div>
+                                <div class="flex justify-between items-center bg-danger/10 p-4 rounded-xl border border-danger/30 shadow-[inset_0_0_15px_rgba(255,51,102,0.1)]">
+                                    <span class="text-sm font-bold text-danger">Estimasi PPN (11%)</span>
+                                    <span class="font-bold text-danger text-lg drop-shadow-[0_0_8px_rgba(255,51,102,0.6)]" x-text="formatCurrency(calculateTotal('income') * 0.11)"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="neon-card rounded-2xl p-6 flex flex-col items-center justify-center text-center border-dashed border-2 border-white/10 min-h-[280px]">
+                        <div class="w-16 h-16 rounded-full bg-blue-600/10 flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <h3 class="text-xl font-display font-bold text-white mb-2">Invoicing Engine</h3>
+                        <p class="text-gray-400 text-sm max-w-sm mb-6">Buat Invoice PDF bermerek yang langsung dipetakan ke piutang klien.</p>
+                        <button class="bg-gradient-to-r from-blue-500 to-blue-700 hover:scale-105 transition-transform text-white font-bold py-2.5 px-6 rounded-xl shadow-[0_0_20px_rgba(37,99,235,0.4)] text-sm">
+                            + Generate Invoice PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 7: AI AUTOMATION MACROS -->
+            <div x-show="activeMenu === 'macros'" style="display: none;" class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+                    <div>
+                        <h3 class="text-xl font-bold text-white mb-1">AI Automation Macros</h3>
+                        <p class="text-gray-400 text-sm">Atur otomasi cerdas untuk transaksi keuangan Anda secara otomatis via Cloud API.</p>
+                    </div>
+                    <button @click="promptNewMacro()" class="bg-surface2 border border-white/10 text-white px-4 py-2 rounded-xl text-sm hover:border-dndCyan transition-colors btn-animate">
+                        + New Rule
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <template x-for="macro in macros" :key="macro.id">
+                        <div class="neon-card rounded-2xl p-6 border-l-4 border-l-dndPurple btn-animate hover:border-l-dndCyan flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-start mb-3">
+                                    <h4 class="font-bold text-white text-base md:text-lg" x-text="macro.name"></h4>
+                                    <span class="w-2 h-2 rounded-full bg-success animate-pulse mt-1.5 shadow-[0_0_8px_#00FA9A]"></span>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="bg-surface2/50 rounded-lg p-2.5 border border-white/5">
+                                        <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">If (Trigger)</p>
+                                        <p class="text-xs text-gray-300" x-text="macro.triggerDesc"></p>
+                                    </div>
+                                    <div class="flex justify-center text-gray-500 text-lg">↓</div>
+                                    <div class="bg-dndCyan/5 rounded-lg p-2.5 border border-dndCyan/20">
+                                        <p class="text-[10px] text-dndCyan uppercase font-bold tracking-wider mb-0.5">Then (Action)</p>
+                                        <p class="text-xs text-white font-medium" x-text="macro.actionDesc"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Floating Quick Add Button (+) -->
+        <button @click="openModal()" class="fixed md:absolute bottom-20 md:bottom-8 right-6 md:right-8 w-14 h-14 bg-gradient-to-tr rounded-full flex items-center justify-center text-black hover:scale-110 z-40 btn-animate focus:outline-none"
+                :class="isPersonalMode ? 'from-dndCyan to-blue-500 shadow-[0_10px_30px_rgba(0,229,255,0.4)]' : 'from-blue-400 to-blue-600 text-white shadow-[0_10px_30px_rgba(37,99,235,0.4)]'">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        </button>
+
+        <!-- Quick Add Modal (Slide-Up) -->
+        <div x-show="isModalOpen" style="display: none;" class="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4">
+            <div x-show="isModalOpen" x-transition.opacity class="absolute inset-0 bg-background/80 backdrop-blur-sm" @click="closeModal()"></div>
+            
+            <div x-show="isModalOpen" 
+                 x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-full md:translate-y-8" x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 translate-y-full md:translate-y-8"
+                 class="relative bg-surface border border-white/10 rounded-t-3xl md:rounded-3xl w-full max-w-lg p-6 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] z-10 flex flex-col max-h-[90vh]">
+                
+                <button @click="closeModal()" class="absolute top-5 right-5 text-gray-400 hover:text-white bg-surface2 rounded-full p-1 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                
+                <h3 class="text-xl font-display font-bold text-white mb-5" x-text="t('quick_add')"></h3>
+
+                <!-- Input Strategy Tabs -->
+                <div class="flex gap-1.5 p-1.5 bg-surface2 rounded-xl mb-6 shadow-inner">
+                    <button @click="switchTab('manual')" class="flex-1 py-2 text-[11px] md:text-sm font-bold rounded-lg transition-all" :class="formTab === 'manual' ? 'bg-surface text-white shadow-md' : 'text-gray-400 hover:text-white'">Manual</button>
+                    <button @click="switchTab('voice')" class="flex-1 py-2 text-[11px] md:text-sm font-bold rounded-lg transition-all" :class="formTab === 'voice' ? 'bg-surface text-dndCyan shadow-md' : 'text-gray-400 hover:text-dndCyan'">Voice AI</button>
+                    <button @click="switchTab('ocr')" class="flex-1 py-2 text-[11px] md:text-sm font-bold rounded-lg transition-all" :class="formTab === 'ocr' ? 'bg-surface text-dndPurple shadow-md' : 'text-gray-400 hover:text-dndPurple'">Camera OCR</button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto space-y-4 pr-1 pb-4 custom-scrollbar">
+                    
+                    <!-- Tab: Manual Input -->
+                    <div x-show="formTab === 'manual'" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <button @click="txForm.type = 'expense'" class="py-3 rounded-xl border text-xs font-bold btn-animate transition-colors" :class="txForm.type === 'expense' ? 'bg-danger/10 border-danger text-danger shadow-[0_0_10px_rgba(255,51,102,0.2)]' : 'border-white/10 text-gray-500 bg-surface2'">Pengeluaran (-)</button>
+                            <button @click="txForm.type = 'income'" class="py-3 rounded-xl border text-xs font-bold btn-animate transition-colors" :class="txForm.type === 'income' ? 'bg-dndBlue/10 border-dndBlue text-dndBlue shadow-[0_0_10px_rgba(30,144,255,0.2)]' : 'border-white/10 text-gray-500 bg-surface2'">Pemasukan (+)</button>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wide">Nominal</label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-gray-500 font-bold" x-text="currency"></span>
+                                <input type="number" x-model="txForm.amount" class="w-full bg-surface2 border border-white/10 rounded-xl py-3 pl-14 pr-4 text-white font-display font-bold text-lg outline-none focus:border-dndCyan transition-colors shadow-inner" placeholder="0">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wide">Tanggal Transaksi (Otomatis/Kustom)</label>
+                            <input type="date" x-model="txForm.date" class="w-full bg-surface2 border border-white/10 rounded-xl py-3 px-4 text-white text-sm outline-none focus:border-dndCyan transition-colors shadow-inner">
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wide">Kategori</label>
+                                <select x-show="isPersonalMode" x-model="txForm.category" class="w-full bg-surface2 border border-white/10 rounded-xl py-3 px-3 text-sm text-white outline-none cursor-pointer focus:border-dndCyan">
+                                    <option value="Food">Food & Dining</option>
+                                    <option value="Transport">Transport</option>
+                                    <option value="Utilities">Utilities</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Salary">Salary</option>
+                                </select>
+                                <select x-show="!isPersonalMode" x-model="txForm.category" style="display: none;" class="w-full bg-surface2 border border-white/10 rounded-xl py-3 px-3 text-sm text-white outline-none cursor-pointer focus:border-dndCyan">
+                                    <option value="Client Payment">Client Payment</option>
+                                    <option value="Payroll">Payroll</option>
+                                    <option value="Office Rent">Office Rent</option>
+                                    <option value="SaaS/Software">SaaS / Software</option>
+                                    <option value="Marketing">Marketing / Ads</option>
+                                    <option value="Tax">Corporate Tax</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-400 mb-1.5 uppercase tracking-wide">Akun / Bank Custom</label>
+                                <select x-model="txForm.account" class="w-full bg-surface2 border border-white/10 rounded-xl py-3 px-3 text-sm text-white outline-none cursor-pointer focus:border-dndCyan">
+                                    <option value="Bank BCA">Bank BCA</option>
+                                    <option value="Bank Mandiri">Bank Mandiri</option>
+                                    <option value="Bank BNI">Bank BNI</option>
+                                    <option value="Bank BRI">Bank BRI</option>
+                                    <option value="Bank Jago">Bank Jago</option>
+                                    <option value="Corporate Bank">Corporate Bank</option>
+                                    <option value="Gopay">Gopay / E-Wallet</option>
+                                    <option value="OVO">OVO</option>
+                                    <option value="DANA">DANA</option>
+                                    <option value="Cash">Cash / Tunai</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Voice AI -->
+                    <div x-show="formTab === 'voice'" class="flex flex-col items-center justify-center py-8 text-center space-y-6">
+                        <div class="relative">
+                            <div class="absolute inset-0 rounded-full bg-dndCyan/20 blur-xl" x-show="isListening"></div>
+                            <button @click="startVoiceInput()" class="relative w-24 h-24 bg-surface2 border-2 border-dndCyan rounded-full flex items-center justify-center text-4xl shadow-[0_0_20px_rgba(0,229,255,0.3)] btn-animate" :class="isListening ? 'animate-pulse-mic text-white bg-dndCyan' : 'text-dndCyan'">
+                                🎙️
+                            </button>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-300 mb-2" x-text="isListening ? 'Mendengarkan suara Anda...' : 'Ketuk mic dan ucapkan transaksi'"></p>
+                            <p class="text-[11px] text-gray-500">Contoh: "Beli kopi lima puluh ribu" atau "Gaji masuk sepuluh juta"</p>
+                        </div>
+                        <div class="min-h-[40px] w-full bg-surface2/50 rounded-lg p-3 border border-white/5 flex items-center justify-center">
+                            <p class="text-dndCyan text-sm font-bold" x-text="voiceText"></p>
+                        </div>
+                    </div>
+
+                    <!-- Tab: Camera OCR Scan -->
+                    <div x-show="formTab === 'ocr'" class="flex flex-col space-y-4 py-2">
+                        <div x-show="!isCameraActive" class="w-full space-y-4">
+                            <div class="bg-dndPurple/5 border border-dndPurple/20 rounded-xl p-6 flex flex-col items-center text-center">
+                                <svg class="w-10 h-10 text-dndPurple mb-3 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path></svg>
+                                <p class="text-sm text-gray-300 mb-4">Arahkan kamera ke struk belanja Anda untuk mengekstrak nominal otomatis via AI Vision.</p>
+                                <button @click="startCamera()" class="w-full bg-dndPurple/20 border border-dndPurple hover:bg-dndPurple hover:text-white text-dndPurple py-3 rounded-xl font-bold text-sm transition-all btn-animate shadow-[0_0_15px_rgba(123,44,191,0.3)]">Buka Kamera Perangkat</button>
+                            </div>
+                            <div class="relative flex items-center py-2">
+                                <div class="flex-grow border-t border-white/10"></div>
+                                <span class="flex-shrink-0 mx-4 text-gray-500 text-xs font-medium uppercase">Atau Upload Gambar</span>
+                                <div class="flex-grow border-t border-white/10"></div>
+                            </div>
+                            <input type="file" accept="image/*" @change="handleFileUpload($event)" class="w-full text-sm text-gray-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-surface2 file:text-white file:font-medium hover:file:bg-white/10 transition-all cursor-pointer">
+                        </div>
+                        
+                        <div x-show="isCameraActive" class="w-full space-y-4 flex flex-col items-center">
+                            <div class="relative w-full rounded-xl overflow-hidden border-2 border-dndPurple shadow-[0_0_20px_rgba(123,44,191,0.4)] bg-black">
+                                <video x-ref="videoElement" autoplay playsinline class="w-full max-h-[300px] object-cover"></video>
+                                <div class="absolute top-0 left-0 w-full h-1 bg-dndPurple shadow-[0_0_15px_#7B2CBF] animate-[bounce_2s_infinite]"></div>
+                            </div>
+                            <div class="flex gap-3 w-full">
+                                <button @click="stopCamera()" class="flex-1 bg-surface2 border border-white/10 text-white py-3 rounded-xl font-bold text-sm btn-animate">Batal</button>
+                                <button @click="captureAndScan()" class="flex-[2] bg-gradient-to-r from-dndPurple to-blue-600 text-white py-3 rounded-xl font-bold text-sm shadow-[0_0_15px_rgba(123,44,191,0.5)] btn-animate flex items-center justify-center gap-2">
+                                    Snap & Scan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Action -->
+                <div class="mt-4 pt-4 border-t border-white/10">
+                    <button type="button" @click="saveTransactionAPI()" class="w-full bg-gradient-to-r hover:opacity-90 text-black font-bold py-3.5 rounded-xl text-sm uppercase tracking-wide btn-animate"
+                            :class="isPersonalMode ? 'from-dndCyan to-blue-500 shadow-[0_0_20px_rgba(0,229,255,0.4)]' : 'from-blue-400 to-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.4)]'">
+                        Simpan Transaksi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Input & Confirmation Modal -->
+        <div x-show="modalConfig.isOpen" style="display: none;" class="fixed inset-0 z-[250] flex items-center justify-center p-4">
+            <div x-show="modalConfig.isOpen" x-transition.opacity class="absolute inset-0 bg-background/80 backdrop-blur-sm" @click="modalConfig.isOpen = false"></div>
+            
+            <div x-show="modalConfig.isOpen"
+                 x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                 class="relative bg-surface border border-white/10 rounded-2xl w-full max-w-md p-6 shadow-2xl z-10 flex flex-col">
+                
+                <h3 class="text-xl font-bold text-white mb-2" x-text="modalConfig.title"></h3>
+                <p x-show="modalConfig.type === 'confirm'" class="text-gray-400 text-sm mb-6" x-text="modalConfig.message"></p>
+
+                <div x-show="modalConfig.type === 'input'" class="space-y-4 mb-6">
+                    <template x-for="field in modalConfig.fields" :key="field.id">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1" x-text="field.label"></label>
+                            <input :type="field.type" x-model="field.value" class="w-full bg-surface2 border border-white/10 rounded-xl py-2 px-3 text-white text-sm outline-none focus:border-dndCyan">
+                        </div>
+                    </template>
+                </div>
+
+                <div class="flex gap-3 justify-end mt-2">
+                    <button @click="modalConfig.isOpen = false" class="px-4 py-2 rounded-xl border border-white/10 text-white text-sm font-bold hover:bg-white/5 transition-colors">Batal</button>
+                    <button @click="submitModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r text-black text-sm font-bold shadow-md hover:scale-105 transition-transform"
+                            :class="isPersonalMode ? 'from-dndCyan to-blue-500' : 'from-blue-400 to-blue-600 text-white'"
+                            x-text="modalConfig.type === 'confirm' ? 'Ya, Lanjutkan' : 'Simpan'"></button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('dndApp', () => ({
+                appId: typeof __app_id !== 'undefined' ? __app_id : 'dnd-finance-enterprise',
+                isDbLoading: true,
+                isDbConnected: false,
+                isGoogleLoggedIn: false,
+                isPersonalMode: true,
+                lang: 'ID',
+                currency: 'IDR',
+                activeMenu: 'dashboard',
+                isModalOpen: false,
+                formTab: 'manual',
+                toastMsg: '',
+                searchQuery: '',
+                
+                txForm: { amount: '', type: 'expense', category: 'Food', account: 'Bank BCA', date: new Date().toISOString().split('T')[0] },
+                transactions: [],
+                goals: [],
+                budgets: [],
+                employees: [],
+                macros: [],
+                
+                modalConfig: {
+                    isOpen: false,
+                    type: 'input',
+                    title: '',
+                    message: '',
+                    fields: [],
+                    onConfirm: null
+                },
+                
+                auth: null,
+                db: null,
+                userId: null,
+                userName: 'Guest',
+                userEmail: '',
+                userPhoto: '',
+                unsubDB: null, unsubGoals: null, unsubBudgets: null, unsubEmployees: null, unsubMacros: null,
+                
+                isListening: false,
+                voiceText: '',
+                isCameraActive: false,
+                videoStream: null,
+
+                get currentMenuItems() {
+                    const baseMenus = [
+                        { id: 'dashboard', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>', label_key: 'dashboard' },
+                        { id: 'transactions', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line></svg>', label_key: 'general_ledger' },
+                        { id: 'savings', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>', label_key: 'savings' },
+                        { id: 'budgets', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>', label_key: 'budgets' }
+                    ];
+
+                    if (!this.isPersonalMode) {
+                        baseMenus.push({ id: 'invoice', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>', label_key: 'invoice_tax' });
+                        baseMenus.push({ id: 'payroll', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>', label_key: 'payroll' });
+                    }
+                    
+                    baseMenus.push({ id: 'macros', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>', label_key: 'macros' });
+                    return baseMenus;
+                },
+
+                translations: {
+                    'ID': { dashboard: 'Dashboard', general_ledger: 'Catatan Keuangan', savings: 'Tabungan & Target', invoice_tax: 'Penagihan & Pajak', budgets: 'Anggaran & Limit', payroll: 'HR & Gaji', macros: 'AI Rules Engine', balance: 'Total Saldo', net_capital: 'Modal Kerja Bersih', income: 'Pemasukan', revenue: 'Pendapatan Kotor', expense: 'Pengeluaran', opex: 'Biaya Operasional', health_score: 'Health Score', profit_margin: 'Margin Laba', cash_flow: 'Alur Kas (Sankey)', ai_forecast: 'Proyeksi Saldo (AI)', rev_vs_exp: 'Analisis Pendapatan vs Pengeluaran', records_title: 'Catatan Keuangan & Jurnal', search: 'Cari transaksi...', quick_add: 'Tambah Transaksi', last_month: 'bulan lalu', export_pro: 'Export Pro' },
+                    'EN': { dashboard: 'Dashboard', general_ledger: 'Financial Records', savings: 'Savings & Goals', invoice_tax: 'Invoicing & Tax', budgets: 'Budgets & Limits', payroll: 'HR & Payroll', macros: 'AI Rules Engine', balance: 'Total Balance', net_capital: 'Net Working Capital', income: 'Total Income', revenue: 'Gross Revenue', expense: 'Total Expense', opex: 'Operating Expenses', health_score: 'Health Score', profit_margin: 'Net Profit Margin', cash_flow: 'Cash Flow (Sankey)', ai_forecast: 'Balance Forecast (AI)', rev_vs_exp: 'Revenue vs Expenses Analysis', records_title: 'Transaction Records', search: 'Search records...', quick_add: 'Add Transaction', last_month: 'last month', export_pro: 'Export Pro' }
+                },
+
+                t(k) { return this.translations[this.lang][k] || k; },
+                
+                get filteredTransactions() {
+                    if (!this.transactions || this.transactions.length === 0) return [];
+                    let sorted = this.transactions.slice().sort((a,b) => new Date(b.date) - new Date(a.date));
+                    if (!this.searchQuery) return sorted;
+                    const q = this.searchQuery.toLowerCase();
+                    return sorted.filter(t => (t.category && t.category.toLowerCase().includes(q)) || (t.account && t.account.toLowerCase().includes(q)));
+                },
+
+                getBudgetSpent(category) {
+                    return this.transactions.filter(t => t.type === 'expense' && t.category === category).reduce((sum, t) => sum + Number(t.amount), 0);
+                },
+
+                showToast(msg) { this.toastMsg = msg; setTimeout(() => { this.toastMsg = ''; }, 3500); },
+                toggleLanguage() { this.lang = this.lang === 'ID' ? 'EN' : 'ID'; this.updateAllCharts(); },
+                toggleMode() { 
+                    this.isPersonalMode = !this.isPersonalMode; 
+                    if (this.isPersonalMode && ['invoice','payroll'].includes(this.activeMenu)) this.switchView('dashboard');
+                    this.txForm.category = this.isPersonalMode ? 'Food' : 'Client Payment';
+                    this.showToast(this.isPersonalMode ? "Mode Personal Aktif" : "Mode Corporate ERP Aktif"); 
+                    this.updateAllCharts();
+                },
+                switchView(view) {
+                    this.activeMenu = view;
+                    if(['dashboard', 'savings'].includes(view)) {
+                        requestAnimationFrame(() => { this.updateAllCharts(); });
+                    }
+                },
+                switchTab(tab) {
+                    if (this.formTab === 'ocr' && tab !== 'ocr') this.stopCamera();
+                    this.formTab = tab;
+                    this.isListening = false;
+                    this.voiceText = '';
+                },
+                openModal() { 
+                    this.txForm.date = new Date().toISOString().split('T')[0];
+                    this.isModalOpen = true; 
+                    this.switchTab('manual'); 
+                },
+                closeModal() { this.isModalOpen = false; this.stopCamera(); },
+                
+                openInputModal(title, fields, callback) {
+                    this.modalConfig = { isOpen: true, type: 'input', title, message: '', fields: fields.map(f => ({...f, value: ''})), onConfirm: callback };
+                },
+                openConfirmModal(title, message, callback) {
+                    this.modalConfig = { isOpen: true, type: 'confirm', title, message, fields: [], onConfirm: callback };
+                },
+                submitModal() {
+                    if (this.modalConfig.type === 'input') {
+                        const result = {};
+                        this.modalConfig.fields.forEach(f => result[f.id] = f.value);
+                        if (this.modalConfig.onConfirm) this.modalConfig.onConfirm(result);
+                    } else {
+                        if (this.modalConfig.onConfirm) this.modalConfig.onConfirm();
+                    }
+                    this.modalConfig.isOpen = false;
+                },
+
+                calculateTotal(type) {
+                    let total = 0;
+                    this.transactions.forEach(tx => {
+                        let amt = Number(tx.amount) || 0;
+                        if (type === 'balance') total += tx.type === 'income' ? amt : -amt;
+                        else if (tx.type === type) total += amt;
+                    });
+                    let multiplier = 1;
+                    if (this.currency === 'USD') multiplier = 0.000065;
+                    if (this.currency === 'EUR') multiplier = 0.000059;
+                    return total * multiplier;
+                },
+                
+                formatCurrency(val) { 
+                    return new Intl.NumberFormat(this.lang === 'ID' ? 'id-ID' : 'en-US', { 
+                        style: 'currency', currency: this.currency, maximumFractionDigits: this.currency === 'IDR' ? 0 : 2 
+                    }).format(val); 
+                },
+
+                async initApp() {
+                    try {
+                        const configRaw = typeof __firebase_config !== 'undefined' ? __firebase_config : null;
+                        if (!configRaw) throw new Error("No config");
+                        const config = typeof configRaw === 'string' ? JSON.parse(configRaw) : configRaw;
+
+                        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+                        const { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+                        const { getFirestore, collection, onSnapshot, addDoc, updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+                        
+                        const app = initializeApp(config);
+                        this.auth = getAuth(app);
+                        this.db = getFirestore(app);
+                        this.firestoreAddDoc = addDoc;
+                        this.firestoreUpdateDoc = updateDoc;
+                        this.firestoreDoc = doc;
+                        this.dbCollection = collection;
+                        this.dbOnSnapshot = onSnapshot;
+                        this.googleAuthProvider = GoogleAuthProvider;
+                        this.firebaseSignInPopup = signInWithPopup;
+                        this.firebaseSignOut = signOut;
+
+                        const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                        if (token) {
+                            await signInWithCustomToken(this.auth, token);
+                        } else {
+                            await signInAnonymously(this.auth);
+                        }
+
+                        onAuthStateChanged(this.auth, (user) => {
+                            if (user) {
+                                this.userId = user.uid;
+                                this.isDbConnected = true;
+                                const isGoogle = user.providerData && user.providerData.some(p => p.providerId === 'google.com');
+                                this.isGoogleLoggedIn = isGoogle;
+                                
+                                if(isGoogle) {
+                                    this.userName = user.displayName || 'Google User';
+                                    this.userEmail = user.email || '';
+                                    this.userPhoto = user.photoURL || '';
+                                } else {
+                                    this.userName = 'Guest Workspace';
+                                    this.userEmail = 'Cloud Connected';
+                                    this.userPhoto = '';
+                                }
+                                this.loadCloudData();
+                            }
+                        });
+
+                    } catch (error) {
+                        console.warn("Offline Mode Active:", error);
+                        this.isDbConnected = false;
+                        this.loadDummyData();
+                    }
+                    
+                    if(typeof Sortable !== 'undefined') {
+                        setTimeout(() => {
+                            const grid = document.getElementById('metrics-grid');
+                            if(grid) new Sortable(grid, { handle: '.drag-handle', animation: 200, ghostClass: 'opacity-50' });
+                        }, 500);
+                    }
+                },
+
+                async loginWithGoogle() {
+                    try {
+                        this.showToast("Membuka autentikasi Google...");
+                        const provider = new this.googleAuthProvider();
+                        provider.setCustomParameters({ prompt: 'select_account' });
+                        await this.firebaseSignInPopup(this.auth, provider);
+                        this.showToast("Google Auth Berhasil Terhubung!");
+                    } catch (error) {
+                        console.error(error);
+                        this.showToast("Login Google dibatalkan / popup diblokir.");
+                    }
+                },
+
+                async logoutGoogle() {
+                    try {
+                        await this.firebaseSignOut(this.auth);
+                        this.isGoogleLoggedIn = false;
+                        this.showToast("Berhasil Logout Akun.");
+                        const { signInAnonymously } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+                        await signInAnonymously(this.auth);
+                    } catch (e) {
+                        this.showToast("Gagal Logout.");
+                    }
+                },
+
+                loadCloudData() {
+                    if (!this.userId || !this.isDbConnected) return;
+                    
+                    const txRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'transactions');
+                    if(this.unsubDB) this.unsubDB();
+                    this.unsubDB = this.dbOnSnapshot(txRef, (snapshot) => {
+                        let temp = [];
+                        snapshot.forEach(doc => temp.push({ id: doc.id, ...doc.data() }));
+                        this.transactions = temp;
+                        this.isDbLoading = false;
+                        requestAnimationFrame(() => this.updateAllCharts());
+                    }, (e) => { this.loadDummyData(); });
+
+                    const goalsRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'goals');
+                    if(this.unsubGoals) this.unsubGoals();
+                    this.unsubGoals = this.dbOnSnapshot(goalsRef, (snapshot) => {
+                        let temp = [];
+                        snapshot.forEach(doc => temp.push({ id: doc.id, ...doc.data() }));
+                        this.goals = temp;
+                        setTimeout(() => this.goals.forEach(g => this.renderGoalDonut(g)), 100);
+                    }, (e) => {});
+
+                    const budRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'budgets');
+                    if(this.unsubBudgets) this.unsubBudgets();
+                    this.unsubBudgets = this.dbOnSnapshot(budRef, (snapshot) => {
+                        let temp = [];
+                        snapshot.forEach(doc => temp.push({ id: doc.id, ...doc.data() }));
+                        this.budgets = temp;
+                    }, (e) => {});
+
+                    const empRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'employees');
+                    if(this.unsubEmployees) this.unsubEmployees();
+                    this.unsubEmployees = this.dbOnSnapshot(empRef, (snapshot) => {
+                        let temp = [];
+                        snapshot.forEach(doc => temp.push({ id: doc.id, ...doc.data() }));
+                        this.employees = temp;
+                    }, (e) => {});
+
+                    const macRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'macros');
+                    if(this.unsubMacros) this.unsubMacros();
+                    this.unsubMacros = this.dbOnSnapshot(macRef, (snapshot) => {
+                        let temp = [];
+                        snapshot.forEach(doc => temp.push({ id: doc.id, ...doc.data() }));
+                        this.macros = temp;
+                    }, (e) => {});
+                },
+
+                loadDummyData() {
+                    const todayStr = new Date().toISOString().split('T')[0];
+                    const yesterdayStr = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+                    const twoDaysAgoStr = new Date(Date.now() - 172800000).toISOString().split('T')[0];
+
+                    this.transactions = [
+                        { id: '1', date: todayStr, type: 'income', category: 'Salary', account: 'Bank BCA', amount: 15000000, currency: 'IDR' },
+                        { id: '2', date: yesterdayStr, type: 'expense', category: 'Food', account: 'Gopay', amount: 1200000, currency: 'IDR' },
+                        { id: '3', date: twoDaysAgoStr, type: 'expense', category: 'Transport', account: 'Bank Mandiri', amount: 500000, currency: 'IDR' }
+                    ];
+                    if(this.goals.length === 0) this.goals = [ { id: 'g1', name: 'Emergency Fund', target: 50000000, current: 15000000 } ];
+                    if(this.budgets.length === 0) this.budgets = [ { id: 'b1', category: 'Food', limit: 3000000 }, { id: 'b2', category: 'Marketing', limit: 15000000 } ];
+                    if(this.employees.length === 0) this.employees = [ { id: 'e1', name: 'Alexander', role: 'Developer', salary: 15000000 } ];
+                    if(this.macros.length === 0) this.macros = [ { id: 'm1', name: 'Smart Tax Deduction', triggerDesc: 'Income > 5jt', actionDesc: 'Potong 10% ke Tax' } ];
+                    
+                    this.isDbLoading = false;
+                    requestAnimationFrame(() => this.updateAllCharts());
+                },
+
+                async saveTransactionAPI() {
+                    let amt = parseFloat(this.txForm.amount);
+                    if (!amt || amt <= 0) return this.showToast("Masukkan nominal yang valid.");
+                    
+                    let newTx = { 
+                        amount: amt, type: this.txForm.type, category: this.txForm.category, 
+                        account: this.txForm.account, currency: 'IDR', date: this.txForm.date || new Date().toISOString().split('T')[0] 
+                    };
+
+                    if (this.isDbConnected && this.userId) {
+                        try {
+                            const dbRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'transactions');
+                            await this.firestoreAddDoc(dbRef, newTx);
+                            this.showToast("Tersimpan ke Cloud API.");
+                        } catch(e) { this.showToast("Gagal sync Cloud."); }
+                    } else {
+                        newTx.id = Date.now().toString();
+                        this.transactions.push(newTx);
+                        requestAnimationFrame(() => this.updateAllCharts());
+                        this.showToast("Tersimpan secara Lokal.");
+                    }
+                    
+                    this.runMacros(newTx);
+                    this.closeModal();
+                    
+                    if (typeof confetti !== 'undefined' && newTx.type === 'income') {
+                        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 }, colors: ['#00E5FF', '#FFD700', '#7B2CBF'] });
+                    }
+                    this.txForm.amount = '';
+                },
+
+                promptNewGoal() {
+                    this.openInputModal('Target Baru', [
+                        { id: 'name', label: 'Nama Target (Misal: Ekspansi Bisnis)', type: 'text' },
+                        { id: 'target', label: 'Nominal Target (Angka)', type: 'number' }
+                    ], async (res) => {
+                        if (!res.name || !res.target) return this.showToast("Data tidak lengkap.");
+                        let newGoal = { name: res.name, target: Number(res.target), current: 0 };
+                        
+                        if (this.isDbConnected && this.userId) {
+                            const dbRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'goals');
+                            await this.firestoreAddDoc(dbRef, newGoal);
+                        } else {
+                            newGoal.id = Date.now().toString();
+                            this.goals.push(newGoal);
+                        }
+                        this.showToast("Target Baru Disimpan!");
+                    });
+                },
+
+                addFundsToGoal(goal) {
+                    this.openInputModal(`Tambah Dana ke ${goal.name}`, [
+                        { id: 'amount', label: 'Nominal Tambahan (Angka)', type: 'number' }
+                    ], async (res) => {
+                        if (!res.amount) return;
+                        let numAmt = Number(res.amount);
+                        
+                        if (this.isDbConnected && this.userId) {
+                            const gRef = this.firestoreDoc(this.db, 'artifacts', this.appId, 'users', this.userId, 'goals', goal.id);
+                            await this.firestoreUpdateDoc(gRef, { current: goal.current + numAmt });
+                        } else {
+                            let g = this.goals.find(x => x.id === goal.id);
+                            if(g) { g.current += numAmt; this.renderGoalDonut(g); }
+                        }
+                        this.showToast(`Berhasil menambah dana!`);
+                        
+                        let tx = { amount: numAmt, type: 'expense', category: 'Savings Transfer', account: 'Bank', currency: 'IDR', date: new Date().toISOString().split('T')[0] };
+                        if (this.isDbConnected && this.userId) {
+                            const dbRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'transactions');
+                            await this.firestoreAddDoc(dbRef, tx);
+                        } else {
+                            tx.id = Date.now().toString()+"_save";
+                            this.transactions.push(tx);
+                            requestAnimationFrame(() => this.updateAllCharts());
+                        }
+                    });
+                },
+
+                promptNewBudget() {
+                    this.openInputModal('Anggaran Baru', [
+                        { id: 'category', label: 'Nama Kategori (Misal: Food)', type: 'text' },
+                        { id: 'limit', label: 'Batas Maksimal (Angka)', type: 'number' }
+                    ], async (res) => {
+                        if (!res.category || !res.limit) return;
+                        let newB = { category: res.category, limit: Number(res.limit) };
+                        if (this.isDbConnected && this.userId) {
+                            const dbRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'budgets');
+                            await this.firestoreAddDoc(dbRef, newB);
+                        } else {
+                            newB.id = Date.now().toString();
+                            this.budgets.push(newB);
+                        }
+                        this.showToast("Budget Tersimpan.");
+                    });
+                },
+
+                promptNewEmployee() {
+                    this.openInputModal('Karyawan Baru', [
+                        { id: 'name', label: 'Nama Lengkap', type: 'text' },
+                        { id: 'role', label: 'Jabatan / Posisi', type: 'text' },
+                        { id: 'salary', label: 'Gaji Pokok', type: 'number' }
+                    ], async (res) => {
+                        if (!res.name || !res.salary) return;
+                        let newEmp = { name: res.name, role: res.role || 'Staff', salary: Number(res.salary) };
+                        if (this.isDbConnected && this.userId) {
+                            const dbRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'employees');
+                            await this.firestoreAddDoc(dbRef, newEmp);
+                        } else {
+                            newEmp.id = Date.now().toString();
+                            this.employees.push(newEmp);
+                        }
+                        this.showToast("Karyawan Tersimpan.");
+                    });
+                },
+
+                processPayroll(emp) {
+                    this.openConfirmModal('Proses Gaji', `Apakah Anda yakin ingin memproses pembayaran gaji sebesar ${this.formatCurrency(emp.salary)} untuk ${emp.name}?`, async () => {
+                        let tx = { amount: emp.salary, type: 'expense', category: 'Payroll', account: 'Corporate Bank', currency: 'IDR', date: new Date().toISOString().split('T')[0] };
+                        if (this.isDbConnected && this.userId) {
+                            const dbRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'transactions');
+                            await this.firestoreAddDoc(dbRef, tx);
+                        } else {
+                            tx.id = Date.now().toString();
+                            this.transactions.push(tx);
+                            requestAnimationFrame(() => this.updateAllCharts());
+                        }
+                        this.showToast(`Gaji ${emp.name} berhasil dibayarkan.`);
+                    });
+                },
+
+                promptNewMacro() {
+                    this.openInputModal('Otomasi Macro Baru', [
+                        { id: 'name', label: 'Nama Otomasi', type: 'text' },
+                        { id: 'trigger', label: 'Pemicu (Contoh: Income > 5jt)', type: 'text' },
+                        { id: 'action', label: 'Aksi (Contoh: Potong 10% Pajak)', type: 'text' }
+                    ], async (res) => {
+                        if (!res.name) return;
+                        let newM = { name: res.name, triggerDesc: res.trigger, actionDesc: res.action };
+                        if (this.isDbConnected && this.userId) {
+                            const dbRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'macros');
+                            await this.firestoreAddDoc(dbRef, newM);
+                        } else {
+                            newM.id = Date.now().toString();
+                            this.macros.push(newM);
+                        }
+                        this.showToast("Macro Tersimpan.");
+                    });
+                },
+
+                runMacros(tx) {
+                    if (tx.type === 'income' && tx.amount > 5000000) {
+                        let taxAmt = tx.amount * 0.10;
+                        setTimeout(async () => {
+                            let taxTx = { amount: taxAmt, type: 'expense', category: 'Tax', account: tx.account, currency: 'IDR', date: tx.date };
+                            if (this.isDbConnected && this.userId) {
+                                const dbRef = this.dbCollection(this.db, 'artifacts', this.appId, 'users', this.userId, 'transactions');
+                                await this.firestoreAddDoc(dbRef, taxTx);
+                            } else {
+                                taxTx.id = Date.now().toString() + "_tax";
+                                this.transactions.push(taxTx);
+                                requestAnimationFrame(() => this.updateAllCharts());
+                            }
+                            this.showToast(`AI Automation: Potongan pajak ${this.formatCurrency(taxAmt)} diterapkan.`);
+                        }, 1000);
+                    }
+                },
+
+                startVoiceInput() {
+                    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SpeechRec) return this.showToast("Browser tidak mendukung Web Speech API.");
+                    
+                    const recognition = new SpeechRec();
+                    recognition.lang = this.lang === 'ID' ? 'id-ID' : 'en-US';
+                    this.isListening = true;
+                    this.voiceText = "Mendengarkan...";
+
+                    recognition.onresult = (e) => {
+                        const transcript = e.results[0][0].transcript;
+                        this.voiceText = `"${transcript}"`;
+                        this.isListening = false;
+                        
+                        const textLower = transcript.toLowerCase();
+                        const numbers = transcript.match(/\d+/g);
+                        
+                        if(numbers) {
+                            let amount = parseInt(numbers.join(''));
+                            if (amount < 1000 && textLower.includes('ribu')) amount *= 1000;
+                            if (amount < 1000 && textLower.includes('juta')) amount *= 1000000;
+                            
+                            this.txForm.amount = amount;
+                            this.txForm.type = (textLower.includes('gaji') || textLower.includes('masuk')) ? 'income' : 'expense';
+                            if(textLower.includes('makan') || textLower.includes('food')) this.txForm.category = 'Food';
+                            if(textLower.includes('transport')) this.txForm.category = 'Transport';
+                            
+                            setTimeout(() => { this.switchTab('manual'); }, 1500);
+                        }
+                    };
+                    recognition.onerror = () => { this.isListening = false; this.voiceText = "Gagal mendeteksi."; };
+                    recognition.start();
+                },
+
+                async startCamera() {
+                    this.isCameraActive = true;
+                    try {
+                        this.videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                        setTimeout(() => { if(this.$refs.videoElement) this.$refs.videoElement.srcObject = this.videoStream; }, 100);
+                    } catch (e) {
+                        this.showToast("Kamera diblokir.");
+                        this.isCameraActive = false;
+                    }
+                },
+                stopCamera() {
+                    if (this.videoStream) { this.videoStream.getTracks().forEach(t => t.stop()); this.videoStream = null; }
+                    this.isCameraActive = false;
+                },
+                async captureAndScan() {
+                    const video = this.$refs.videoElement;
+                    if(!video) return;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth || 640; canvas.height = video.videoHeight || 480;
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+                    this.stopCamera();
+                    this.showToast("AI Vision mengekstrak struk...");
+                    this.processOCRImage(canvas.toDataURL('image/png'));
+                },
+                handleFileUpload(e) {
+                    if(e.target.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => { this.showToast("Memproses gambar..."); this.processOCRImage(ev.target.result); };
+                        reader.readAsDataURL(e.target.files[0]);
+                    }
+                },
+                async processOCRImage(imgData) {
+                    try {
+                        if (typeof Tesseract === 'undefined') throw new Error("Tesseract offline");
+                        const result = await Tesseract.recognize(imgData, 'eng+ind');
+                        const numbers = result.data.text.match(/\b\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?\b/g);
+                        if(numbers && numbers.length > 0) {
+                            let cleanNums = numbers.map(n => parseFloat(n.replace(/[,.]/g, '')));
+                            let maxNum = Math.max(...cleanNums.filter(n => n > 1000));
+                            if (maxNum > 0 && maxNum !== Infinity) {
+                                this.txForm.amount = maxNum;
+                                this.showToast("Nominal berhasil diekstrak!");
+                            } else throw new Error("No large digits");
+                        } else throw new Error("No digits");
+                    } catch(err) {
+                        this.txForm.amount = 75000; 
+                        this.showToast("Gagal ekstraksi, nilai tebakan diterapkan.");
+                    }
+                    this.txForm.type = 'expense';
+                    this.switchTab('manual');
+                },
+
+                updateAllCharts() {
+                    if (typeof echarts === 'undefined') return;
+                    
+                    const sankeyEl = document.getElementById('sankeyChart');
+                    const forecastEl = document.getElementById('forecastChart');
+                    const gaugeEl = document.getElementById('gaugeChart');
+                    const comboEl = document.getElementById('comboChart');
+
+                    if (sankeyEl && sankeyEl.clientWidth > 0) {
+                        requestAnimationFrame(() => this.renderSankey(sankeyEl));
+                    }
+                    if (forecastEl && forecastEl.clientWidth > 0) {
+                        requestAnimationFrame(() => this.renderForecast(forecastEl));
+                    }
+                    if (gaugeEl && gaugeEl.clientWidth > 0) {
+                        requestAnimationFrame(() => this.renderGauge(gaugeEl));
+                    }
+                    if (comboEl && comboEl.clientWidth > 0) {
+                        requestAnimationFrame(() => this.renderCombo(comboEl));
+                    }
+                },
+
+                renderSankey(el) {
+                    let chart = echarts.getInstanceByDom(el);
+                    if (!chart) { chart = echarts.init(el); }
+
+                    let totalInc = 0; let totalExp = 0; let expMap = {};
+
+                    this.transactions.forEach(t => {
+                        let a = Number(t.amount) || 0;
+                        if (t.type === 'income') totalInc += a;
+                        else {
+                            totalExp += a;
+                            let cName = t.category || 'Other';
+                            expMap[cName] = (expMap[cName] || 0) + a;
+                        }
+                    });
+
+                    let savings = Math.max(0, totalInc - totalExp);
+                    if (totalInc === 0) { totalInc = 1; savings = 1; }
+
+                    const NODE_INCOME = 'Total Income';
+                    const NODE_SAVINGS = 'Savings';
+                    
+                    const colorIncome = '#1E90FF'; // Bright Blue
+                    const colorSaving = '#000080'; // Deep Navy
+                    const colorExpense = '#FF3366'; // Neon Red
+
+                    let nodes = [
+                        { name: NODE_INCOME, itemStyle: { color: colorIncome } },
+                        { name: NODE_SAVINGS, itemStyle: { color: colorSaving } }
+                    ];
+                    let links = [
+                        { source: NODE_INCOME, target: NODE_SAVINGS, value: savings > 0 ? savings : 0.1 }
+                    ];
+
+                    let usedNames = new Set([NODE_INCOME, NODE_SAVINGS]);
+
+                    Object.keys(expMap).forEach(cat => {
+                        let baseName = String(cat).trim() || 'Uncategorized';
+                        let nodeName = baseName;
+                        let counter = 1;
+                        while (usedNames.has(nodeName)) {
+                            nodeName = `${baseName} (Exp ${counter})`;
+                            counter++;
+                        }
+                        usedNames.add(nodeName);
+                        
+                        nodes.push({ name: nodeName, itemStyle: { color: colorExpense } });
+                        links.push({ source: NODE_INCOME, target: nodeName, value: expMap[cat] > 0 ? expMap[cat] : 0.1 });
+                    });
+
+                    const option = {
+                        backgroundColor: 'transparent',
+                        tooltip: { trigger: 'item' },
+                        series: [{
+                            type: 'sankey',
+                            data: nodes,
+                            links: links,
+                            emphasis: { focus: 'adjacency' },
+                            lineStyle: { color: 'source', curveness: 0.5, opacity: 0.6 },
+                            label: { color: this.isPersonalMode ? '#FFF' : '#94A3B8', fontSize: 11, fontFamily: 'Outfit' }
+                        }]
+                    };
+                    chart.setOption(option, true);
+                },
+
+                renderForecast(el) {
+                    let chart = echarts.getInstanceByDom(el);
+                    if (!chart) { chart = echarts.init(el); }
+                    
+                    let baseBal = this.calculateTotal('balance');
+                    if (baseBal <= 0) baseBal = 5000000;
+                    
+                    let w1 = baseBal * 0.7; let w2 = baseBal * 0.85; let w3 = baseBal; let w4_pred = baseBal * 1.15;
+                    const colorPred = '#94A3B8';
+
+                    const option = {
+                        backgroundColor: 'transparent',
+                        tooltip: { trigger: 'axis' },
+                        grid: { left: '3%', right: '4%', bottom: '3%', top: '15%', containLabel: true },
+                        xAxis: { type: 'category', data: ['W1', 'W2', 'Current', 'AI Forecast'], axisLabel: { color: '#9CA3AF' } },
+                        yAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(150,150,150,0.1)' } }, axisLabel: { show: false } },
+                        series: [
+                            { 
+                                name: 'Actual',
+                                data: [w1, w2, w3, '-'], 
+                                type: 'line', smooth: true, symbol: 'circle', symbolSize: 8,
+                                lineStyle: { color: '#1E90FF', width: 3 }, itemStyle: { color: '#1E90FF' },
+                                areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(30,144,255,0.3)' }, { offset: 1, color: 'rgba(0, 0, 0, 0)' }] } }
+                            },
+                            { 
+                                name: 'Prediction',
+                                data: ['-', '-', w3, w4_pred], 
+                                type: 'line', smooth: true, symbol: 'circle', symbolSize: 8,
+                                lineStyle: { color: colorPred, width: 3, type: 'dashed' }, itemStyle: { color: colorPred }
+                            }
+                        ]
+                    };
+                    chart.setOption(option, true);
+                },
+
+                renderCombo(el) {
+                    let chart = echarts.getInstanceByDom(el);
+                    if (!chart) { chart = echarts.init(el); }
+                    
+                    let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+                    let revData = [0, 0, 0, 0, 0, 0];
+                    let expData = [0, 0, 0, 0, 0, 0];
+
+                    this.transactions.forEach(t => {
+                        if(t.date) {
+                            let mIndex = new Date(t.date).getMonth() % 6;
+                            let amt = Number(t.amount) || 0;
+                            if(t.type === 'income') revData[mIndex] += amt;
+                            else expData[mIndex] += amt;
+                        }
+                    });
+
+                    const option = {
+                        backgroundColor: 'transparent',
+                        tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                        grid: { left: '3%', right: '4%', bottom: '3%', top: '15%', containLabel: true },
+                        xAxis: [ { type: 'category', data: months, axisLabel: { color: '#9CA3AF' } } ],
+                        yAxis: [ { type: 'value', splitLine: { lineStyle: { color: 'rgba(150,150,150,0.1)' } }, axisLabel: { show: false } } ],
+                        series: [
+                            { name: 'Revenue', type: 'bar', data: revData, itemStyle: { color: '#1E90FF' } },
+                            { name: 'Expenses', type: 'line', data: expData, lineStyle: { color: '#FF3366', width: 3, type: 'dashed' }, symbolSize: 8, itemStyle: { color: '#FF3366' } }
+                        ]
+                    };
+                    chart.setOption(option, true);
+                },
+
+                renderGauge(el) {
+                    let chart = echarts.getInstanceByDom(el);
+                    if (!chart) { chart = echarts.init(el); }
+                    
+                    let inc = this.calculateTotal('income'); let exp = this.calculateTotal('expense');
+                    let score = inc > 0 ? Math.round(((inc - exp) / inc) * 100) : 0;
+                    score = Math.max(0, Math.min(100, score));
+
+                    let gaugeColor = score >= 70 ? '#00FA9A' : (score >= 40 ? '#FFD700' : '#FF3366');
+
+                    const option = {
+                        series: [{
+                            type: 'gauge', startAngle: 180, endAngle: 0, min: 0, max: 100, pointer: { show: false },
+                            progress: { show: true, roundCap: true, itemStyle: { color: gaugeColor } },
+                            axisLine: { lineStyle: { width: 14, color: [[1, 'rgba(150,150,150,0.1)']] } },
+                            axisTick: { show: false }, splitLine: { show: false }, axisLabel: { show: false },
+                            detail: { fontSize: 24, fontWeight: 'bold', color: 'auto', formatter: '{value}%', offsetCenter: [0, '-10%'], fontFamily: 'Space Grotesk' },
+                            data: [{ value: score }]
+                        }]
+                    };
+                    chart.setOption(option, true);
+                },
+
+                renderGoalDonut(goal) {
+                    const el = document.getElementById('goalChart_' + goal.id);
+                    if(!el || typeof echarts === 'undefined') return;
+                    let chart = echarts.getInstanceByDom(el);
+                    if (!chart) { chart = echarts.init(el); }
+                    
+                    const pct = Math.min(100, Math.round((goal.current / goal.target) * 100));
+                    const option = {
+                        series: [{
+                            type: 'pie', radius: ['60%', '90%'], center: ['50%', '50%'], hoverAnimation: false,
+                            label: { show: true, position: 'center', formatter: pct + '%', fontSize: 10, fontWeight: 'bold', color: '#fff' },
+                            data: [
+                                { value: goal.current, itemStyle: { color: '#00E5FF' } },
+                                { value: goal.target - goal.current, itemStyle: { color: 'rgba(255,255,255,0.1)' } }
+                            ]
+                        }]
+                    };
+                    chart.setOption(option, true);
+                },
+
+                exportExcel() {
+                    if(typeof ExcelJS === 'undefined') return this.showToast("Library Excel offline.");
+                    const wb = new ExcelJS.Workbook();
+                    wb.creator = 'DND Finance Enterprise';
+                    
+                    const wsPivot = wb.addWorksheet('Dashboard & Pivot');
+                    wsPivot.columns = [{ width: 25 }, { width: 30 }, { width: 25 }, { width: 25 }];
+                    wsPivot.mergeCells('A1:D2');
+                    const titleCell = wsPivot.getCell('A1');
+                    titleCell.value = `FINANCIAL ANALYSIS & PIVOT REPORT (${this.isPersonalMode ? 'Personal' : 'Corporate ERP'} Mode)`;
+                    titleCell.font = { size: 16, bold: true, color: { argb: 'FFFFFFFF' } };
+                    titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: this.isPersonalMode ? 'FF0F172A' : 'FF1E3A8A' } };
+                    titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
+
+                    wsPivot.getCell('A4').value = 'Total Income / Revenue'; wsPivot.getCell('B4').value = this.calculateTotal('income');
+                    wsPivot.getCell('A5').value = 'Total Expense / OPEX'; wsPivot.getCell('B5').value = this.calculateTotal('expense');
+                    wsPivot.getCell('A6').value = 'Net Balance / Working Capital'; wsPivot.getCell('B6').value = this.calculateTotal('balance');
+                    ['A4','A5','A6'].forEach(cell => { wsPivot.getCell(cell).font = { bold: true }; });
+                    ['B4','B5','B6'].forEach(cell => { wsPivot.getCell(cell).numFmt = '"Rp"#,##0.00;[Red]\-"Rp"#,##0.00'; });
+
+                    let pivotData = {};
+                    this.transactions.forEach(t => {
+                        let key = t.type + "|" + (t.category || "Uncategorized");
+                        pivotData[key] = (pivotData[key] || 0) + Number(t.amount);
+                    });
+
+                    wsPivot.getCell('A9').value = 'PIVOT ANALYSIS (Category Summary)';
+                    wsPivot.getCell('A9').font = { bold: true, size: 12, color: { argb: 'FFFFFFFF' } };
+                    wsPivot.getCell('A9').fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0284C7' } };
+                    wsPivot.mergeCells('A9:C9');
+                    wsPivot.getRow(10).values = ['Type', 'Category', 'Total Amount'];
+                    wsPivot.getRow(10).font = { bold: true };
+                    wsPivot.getRow(10).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFCBD5E1' } };
+
+                    let startRow = 11;
+                    Object.keys(pivotData).forEach(k => {
+                        let parts = k.split("|");
+                        wsPivot.getRow(startRow).values = [parts[0].toUpperCase(), parts[1], pivotData[k]];
+                        wsPivot.getCell(`C${startRow}`).numFmt = '"Rp"#,##0.00;[Red]\-"Rp"#,##0.00';
+                        startRow++;
+                    });
+
+                    const wsRaw = wb.addWorksheet('Catatan Keuangan');
+                    wsRaw.columns = [
+                        { header: 'Date', key: 'date', width: 15 },
+                        { header: 'Type', key: 'type', width: 15 },
+                        { header: 'Category', key: 'category', width: 25 },
+                        { header: 'Account / Bank', key: 'account', width: 25 },
+                        { header: 'Amount', key: 'amount', width: 20 }
+                    ];
+                    wsRaw.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+                    wsRaw.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: this.isPersonalMode ? 'FF0F172A' : 'FF1E3A8A' } };
+                    this.transactions.forEach(t => {
+                        let row = wsRaw.addRow(t);
+                        row.getCell('amount').numFmt = '"Rp"#,##0.00;[Red]\-"Rp"#,##0.00';
+                    });
+                    
+                    wb.xlsx.writeBuffer().then(buf => { saveAs(new Blob([buf]), `DND_Financial_Report_${Date.now()}.xlsx`); this.showToast("Excel VBA Pivot berhasil diunduh."); });
+                },
+
+                exportPDF() {
+                    if(typeof window.jspdf === 'undefined') return this.showToast("Library PDF offline.");
+                    this.showToast("Memproses Visual PDF Profesional...");
+                    
+                    document.body.classList.add('pdf-export-mode');
+                    setTimeout(() => {
+                        try {
+                            const { jsPDF } = window.jspdf;
+                            const doc = new jsPDF('l', 'mm', 'a4'); 
+                            
+                            doc.setFillColor(this.isPersonalMode ? 15 : 30, this.isPersonalMode ? 23 : 58, this.isPersonalMode ? 42 : 138);
+                            doc.rect(0, 0, 297, 30, 'F');
+                            doc.setTextColor(255, 255, 255);
+                            doc.setFontSize(26);
+                            doc.setFont('helvetica', 'bold');
+                            doc.text("DND FINANCIAL ANALYSIS", 14, 20);
+                            doc.setFontSize(10);
+                            doc.setFont('helvetica', 'normal');
+                            doc.text(`Official Executive Report | Generated: ${new Date().toLocaleString()}`, 170, 20);
+
+                            const captureChart = (id, title, x, y, w, h) => {
+                                const el = document.getElementById(id);
+                                if (el) {
+                                    const chart = echarts.getInstanceByDom(el);
+                                    if (chart) {
+                                        const imgData = chart.getDataURL({ type: 'png', backgroundColor: '#FFFFFF', pixelRatio: 2 });
+                                        doc.setTextColor(50, 50, 50); doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+                                        doc.text(title, x, y-4);
+                                        doc.addImage(imgData, 'PNG', x, y, w, h);
+                                    }
+                                }
+                            };
+
+                            captureChart('gaugeChart', 'Financial Strength (Margin)', 14, 45, 60, 50);
+                            captureChart('comboChart', 'Revenue vs Expenses Analysis', 85, 45, 100, 50);
+                            captureChart('forecastChart', 'AI Balance Forecast', 195, 45, 90, 50);
+                            captureChart('sankeyChart', 'Cashflow Diagram (Sankey)', 14, 110, 270, 60);
+
+                            doc.save(`DND_Financial_Dashboard_${Date.now()}.pdf`);
+                            this.showToast("Laporan PDF Dashboard berhasil diunduh.");
+                        } catch (error) { 
+                            this.showToast("Gagal membuat PDF."); console.error(error); 
+                        } finally {
+                            document.body.classList.remove('pdf-export-mode');
+                        }
+                    }, 500); 
+                }
+            }));
+        });
+    </script>
+</body>
+</html>
