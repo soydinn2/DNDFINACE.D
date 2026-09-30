@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DND Finance | Executive Dashboard</title>
+    
+    <!-- Professional Typography: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- AOS Animation CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Core Engine: Alpine.js & ECharts -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    
+    <!-- Separated CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body x-data="dndApp()" x-init="initApp()" :class="{ 'business-mode': currentMode === 'business' }">
+
+    <!-- Security: Executive PIN Modal -->
+    <div class="modal-overlay" x-show="showPinModal" x-transition.opacity x-cloak>
+        <div class="modal-content" @click.away="showPinModal = false">
+            <h3>Akses Korporat Terkunci</h3>
+            <p>Masukkan PIN eksekutif untuk mengakses fitur Enterprise.</p>
+            <input type="password" x-model="pinInput" placeholder="•••" @keyup.enter="verifyPin()" autofocus>
+            <div class="modal-actions">
+                <button class="btn-secondary" @click="showPinModal = false">Batal</button>
+                <button class="btn-primary" @click="verifyPin()">Buka Akses</button>
+            </div>
+            <p class="error-text" x-show="pinError">Kredensial tidak valid.</p>
+        </div>
+    </div>
+
+    <!-- Main Layout Wrapper -->
+    <div class="layout-wrapper">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" data-aos="fade-right" data-aos-duration="800">
+            <div class="brand">
+                <h1 class="logo">DND</h1>
+                <span class="badge" x-show="currentMode === 'business'" x-transition>ENTERPRISE</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <template x-for="item in menuItems" :key="item.id">
+                    <a href="#" class="nav-link" 
+                       :class="{ 'active': activeView === item.id }"
+                       @click.prevent="activeView = item.id; setTimeout(() => initCharts(), 100)"
+                       x-show="item.mode === 'all' || item.mode === currentMode" x-transition>
+                        <span class="nav-icon"></span>
+                        <span x-text="item.label"></span>
+                    </a>
+                </template>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="btn-google-login" @click="loginGoogle()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    <span>Sign In Securely</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Topbar -->
+            <header class="topbar" data-aos="fade-down" data-aos-duration="500">
+                <h2 class="page-title" x-text="menuItems.find(i => i.id === activeView)?.label || 'Dashboard'"></h2>
+                <div class="topbar-actions">
+                    <button class="mode-toggle" @click="toggleMode()" :class="currentMode">
+                        <span class="toggle-indicator"></span>
+                        <span x-text="currentMode === 'personal' ? 'Personal Mode' : 'Corporate Mode'"></span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- VIEW 1: DASHBOARD -->
+            <div class="view-content" x-show="activeView === 'dashboard'" x-transition.opacity>
+                
+                <!-- Entry Form (Real-time DB Bind) -->
+                <div class="quick-add-card card" data-aos="fade-up">
+                    <form @submit.prevent="addTransaction()" class="entry-form">
+                        <input type="date" x-model="formTx.date" required>
+                        <select x-model="formTx.type" required>
+                            <option value="pemasukan">Pemasukan (Income)</option>
+                            <option value="pengeluaran">Pengeluaran (Expense)</option>
+                            <option value="penarikan">Penarikan (Withdrawal)</option>
+                        </select>
+                        <input type="text" x-model="formTx.desc" placeholder="Deskripsi Transaksi" required>
+                        <input type="number" x-model.number="formTx.amount" placeholder="Nominal (Rp)" required min="1">
+                        <button type="submit" class="btn-primary">Catat Entri</button>
+                    </form>
+                </div>
+
+                <!-- KPI Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card card" data-aos="zoom-in" data-aos-delay="100">
+                        <div class="metric-title">Saldo Tersedia (Balance)</div>
+                        <div class="metric-value text-primary" x-text="formatCurrency(metrics.balance)"></div>
+                    </div>
+                    <div class="metric-card card" data-aos="zoom-in" data-aos-delay="200">
+                        <div class="metric-title">Total Pendapatan (Revenue)</div>
+                        <div class="metric-value text-blue" x-text="formatCurrency(metrics.income)"></div>
+                    </div>
+                    <div class="metric-card card" data-aos="zoom-in" data-aos-delay="300">
+                        <div class="metric-title">Biaya Operasional (OPEX)</div>
+                        <div class="metric-value text-red" x-text="formatCurrency(metrics.expense)"></div>
+                    </div>
+                </div>
+
+                <!-- Visualization Layer -->
+                <div class="charts-grid">
+                    <div class="chart-card card" data-aos="fade-up" data-aos-delay="400">
+                        <h3 class="card-title">Revenue vs Expenses Analysis</h3>
+                        <div id="comboChart" class="echart-container"></div>
+                    </div>
+                    <div class="chart-card card" data-aos="fade-up" data-aos-delay="500">
+                        <h3 class="card-title">Cash Flow & Withdrawal (Sankey)</h3>
+                        <div id="sankeyChart" class="echart-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: GENERAL LEDGER -->
+            <div class="view-content" x-show="activeView === 'records'" x-cloak x-transition.opacity>
+                <div class="records-card card" data-aos="fade-up">
+                    <h3 class="card-title" style="margin-bottom: 24px;">Catatan Keuangan (General Ledger)</h3>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Deskripsi</th>
+                                    <th>Kategori</th>
+                                    <th class="text-right">Nominal</th>
+                                    <th class="text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template x-for="tx in transactions" :key="tx.id">
+                                    <tr class="table-row">
+                                        <td x-text="formatDate(tx.date)"></td>
+                                        <td class="font-medium" x-text="tx.desc"></td>
+                                        <td>
+                                            <span class="tag" :class="{
+                                                'tag-revenue': tx.type === 'pemasukan',
+                                                'tag-expense': tx.type === 'pengeluaran',
+                                                'tag-withdrawal': tx.type === 'penarikan'
+                                            }" x-text="tx.type.toUpperCase()"></span>
+                                        </td>
+                                        <td class="text-right font-semibold" :class="{
+                                            'text-blue': tx.type === 'pemasukan',
+                                            'text-red': tx.type === 'pengeluaran',
+                                            'text-amber': tx.type === 'penarikan'
+                                        }" x-text="formatCurrency(tx.amount)"></td>
+                                        <td class="text-center">
+                                            <button class="btn-delete" @click="deleteTransaction(tx.id)">Hapus</button>
+                                        </td>
+                                    </tr>
+                                </template>
+                                <!-- Empty State -->
+                                <tr x-show="transactions.length === 0">
+                                    <td colspan="5" class="text-center text-muted" style="padding: 32px;">Belum ada entri catatan keuangan.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Separated JS Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
