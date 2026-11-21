@@ -1,7 +1,0 @@
-fastapi
-uvicorn[standard]
-pandas
-xlsxwriter
-python-multipart
-pillow
-pytesseract
