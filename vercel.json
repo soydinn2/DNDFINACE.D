@@ -1,4 +1,9 @@
 {
+"functions": {
+"api/index.py": {
+"includeFiles": "{main.py,index.html,dnd_engine.cpp}"
+}
+},
 "rewrites": [
 {
 "source": "/api/(.)",
