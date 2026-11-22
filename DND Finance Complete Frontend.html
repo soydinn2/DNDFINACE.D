@@ -1,0 +1,3225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#FFFFFF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="DND Finance">
+    <title>DND Finance — Personal Ledger & Quantitative Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'Inter', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        dndBlue: '#1D4ED8',
+                        dndBlueHover: '#1E40AF',
+                        dndNavy: '#0B132B',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(15, 23, 42, 0.04)',
+                        'card': '0 10px 30px -5px rgba(15, 23, 42, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+        body {
+            font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            transition: background-color 0.25s ease, color 0.25s ease;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .pb-safe {
+            padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+        }
+        .main-pb-safe {
+            padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+        }
+        @media (min-width: 768px) {
+            .main-pb-safe {
+                padding-bottom: 3rem;
+            }
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .ai-markdown h1, .ai-markdown h2, .ai-markdown h3 {
+            font-weight: 700;
+            margin-top: 0.75rem;
+            margin-bottom: 0.35rem;
+        }
+        .ai-markdown p {
+            margin-bottom: 0.5rem;
+            line-height: 1.55;
+        }
+        .ai-markdown ul, .ai-markdown ol {
+            padding-left: 1.25rem;
+            margin-bottom: 0.5rem;
+            list-style-type: disc;
+        }
+        .ai-markdown li {
+            margin-bottom: 0.25rem;
+        }
+        .ai-markdown strong {
+            font-weight: 700;
+        }
+        .ai-markdown code {
+            padding: 0.1rem 0.35rem;
+            border-radius: 0.375rem;
+            font-size: 0.82em;
+            background: rgba(59, 130, 246, 0.12);
+        }
+        .chart-wrap {
+            position: relative;
+            width: 100%;
+            min-height: 230px;
+        }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-900">
+    <div id="app" v-cloak class="min-h-screen flex flex-col transition-colors duration-200"
+         :class="isDarkMode ? 'dark bg-[#090D16] text-slate-100' : 'bg-[#F8FAFC] text-slate-900'">
+
+        <!-- Toast Notification -->
+        <div v-if="toastMessage"
+             class="fixed top-5 right-5 z-[100] px-4 py-3 rounded-2xl shadow-xl border text-xs sm:text-sm font-semibold flex items-center gap-2.5 transition-all"
+             :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-slate-200 text-slate-900'">
+            <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+            <span>{{ toastMessage }}</span>
+        </div>
+
+        <!-- Top Header Bar (Unified across Handphone, iPad/Tablet, Laptop & Mac) -->
+        <header class="sticky top-0 z-40 border-b backdrop-blur-md transition-colors"
+                :class="isDarkMode ? 'bg-[#090D16]/90 border-slate-800/80' : 'bg-white/90 border-slate-200/70'">
+            <div class="max-w-7xl mx-auto px-3.5 sm:px-6 h-16 flex items-center justify-between gap-2">
+                <!-- Brand Logo + Active Page -->
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <button @click="setTab('dashboard')" class="flex items-center gap-2.5 focus:outline-none shrink-0" :title="t('brand_home')">
+                        <svg class="h-8 w-auto" viewBox="0 0 220 90" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="DND Logo">
+                            <path d="M18 16C28 16 33 23 33 45C33 67 28 74 18 74H38C56 74 68 62 68 45C68 28 56 16 38 16H18Z"
+                                  :fill="isDarkMode ? '#F8FAFC' : '#0F172A'"/>
+                            <path d="M44 46C44 58 51 66 63 66C74 66 80 58 80 46V24L136 74H152V16H138V53L88 16H72V46C72 54 68 58 63 58C58 58 55 54 55 46L44 46Z"
+                                  :fill="isDarkMode ? '#F8FAFC' : '#0F172A'"/>
+                            <path d="M158 16H178C196 16 208 28 208 45C208 62 196 74 178 74H158V66C168 66 173 59 173 45C173 31 168 24 158 24V16ZM178 65C189 65 196 57 196 45C196 33 189 25 178 25H174C178 30 180 37 180 45C180 53 178 60 174 65H178Z"
+                                  :fill="isDarkMode ? '#F8FAFC' : '#0F172A'"/>
+                        </svg>
+                    </button>
+                    <span class="h-4 w-[1px] hidden sm:inline-block" :class="isDarkMode ? 'bg-slate-800' : 'bg-slate-200'"></span>
+                    <span class="text-sm font-bold tracking-tight truncate" :class="isDarkMode ? 'text-slate-100' : 'text-slate-800'">
+                        {{ activeTabLabel }}
+                    </span>
+                </div>
+
+                <!-- iPad / Tablet, Laptop & Mac Top Navigation Tabs -->
+                <nav class="hidden md:flex items-center gap-1 p-1 rounded-2xl border"
+                     :class="isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-slate-100/80 border-slate-200/70'">
+                    <button v-for="tab in allNavTabs" :key="tab.id"
+                            @click="setTab(tab.id)"
+                            class="px-3 lg:px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5"
+                            :class="activeTab === tab.id
+                                ? (isDarkMode ? 'bg-blue-600 text-white shadow-sm' : 'bg-white text-blue-700 shadow-sm')
+                                : (isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-600 hover:text-slate-900')">
+                        <i :data-lucide="tab.icon" class="w-3.5 h-3.5"></i>
+                        <span>{{ tab.label }}</span>
+                    </button>
+                </nav>
+
+                <!-- Right Actions: Cloud Sync + Google Account + Theme + Export -->
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <!-- Cross-Device Cloud Sync Pill -->
+                    <button v-if="googleUser"
+                            @click="triggerManualCloudSync"
+                            class="h-9 px-2.5 sm:px-3 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all"
+                            :class="!hasActiveDriveSync && syncStatus !== 'syncing'
+                                ? 'bg-amber-500/10 border-amber-500/40 text-amber-600 dark:text-amber-400'
+                                : (isDarkMode
+                                    ? 'bg-slate-900 border-slate-700 text-emerald-400 hover:bg-slate-800'
+                                    : 'bg-emerald-50/80 border-emerald-200 text-emerald-700 hover:bg-emerald-100/70')"
+                            :title="lang === 'ID' ? 'Sinkronisasi otomatis di HP, Laptop, iPad & Mac' : 'Auto-synced across Phone, Laptop, iPad & Mac'">
+                        <i :data-lucide="syncStatus === 'syncing' ? 'refresh-cw' : (!hasActiveDriveSync ? 'cloud-off' : 'cloud-check')"
+                           class="w-3.5 h-3.5"
+                           :class="syncStatus === 'syncing' ? 'animate-spin' : ''"></i>
+                        <span class="hidden sm:inline">
+                            {{ syncStatus === 'syncing'
+                                ? (lang === 'ID' ? 'Sinkronisasi...' : 'Syncing...')
+                                : (!hasActiveDriveSync
+                                    ? (lang === 'ID' ? 'Aktifkan Sync' : 'Enable Sync')
+                                    : (lang === 'ID' ? 'Tersinkron' : 'Synced')) }}
+                        </span>
+                    </button>
+
+                    <!-- Google Account Pill -->
+                    <button @click="handleGoogleHeaderClick"
+                            class="h-9 px-2.5 sm:px-3 rounded-xl border text-xs font-semibold flex items-center gap-2 transition-all"
+                            :class="isDarkMode
+                                ? 'bg-slate-900 border-slate-700 text-slate-100 hover:bg-slate-800'
+                                : 'bg-white border-slate-200 text-slate-800 hover:bg-slate-50'">
+                        <img v-if="googleUser && googleUser.picture" :src="googleUser.picture" alt="Avatar" class="w-5 h-5 rounded-full object-cover">
+                        <svg v-else class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.54-1.14 2.85-2.4 3.72v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.21z"/>
+                            <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24z"/>
+                            <path fill="#FBBC05" d="M5.28 14.24c-.24-.72-.38-1.49-.38-2.24s.14-1.52.38-2.24V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.99-3.14z"/>
+                            <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.99 3.14c.95-2.85 3.6-4.96 6.72-4.96z"/>
+                        </svg>
+                        <span class="max-w-[84px] sm:max-w-[125px] truncate">
+                            {{ googleUser ? displayUserName : t('sign_in_google') }}
+                        </span>
+                    </button>
+
+                    <!-- Theme Toggle -->
+                    <button @click="toggleTheme"
+                            class="w-9 h-9 rounded-xl border flex items-center justify-center transition-all"
+                            :class="isDarkMode
+                                ? 'bg-slate-900 border-slate-700 text-amber-400 hover:bg-slate-800'
+                                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'"
+                            :title="isDarkMode ? t('light_mode') : t('dark_mode')">
+                        <i :data-lucide="isDarkMode ? 'sun' : 'moon'" class="w-4 h-4"></i>
+                    </button>
+
+                    <!-- Export Menu Button -->
+                    <button @click="openExportModal"
+                            class="w-9 h-9 rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center shadow-sm transition-all"
+                            :title="t('export_report')">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Cross-Device Sync Banner when signed in without Drive token yet -->
+        <div v-if="googleUser && !hasActiveDriveSync"
+             class="border-b px-4 py-2.5 text-xs"
+             :class="isDarkMode ? 'bg-amber-950/40 border-amber-800/60 text-amber-200' : 'bg-amber-50 border-amber-200 text-amber-900'">
+            <div class="max-w-7xl mx-auto w-full flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="smartphone" class="w-4 h-4 shrink-0"></i>
+                    <span>
+                        {{ lang === 'ID'
+                            ? `Hubungkan Google Cloud Sync untuk ${googleUser.email} agar seluruh catatan sama di HP, Laptop, iPad & Mac.`
+                            : `Connect Google Cloud Sync for ${googleUser.email} so all records stay identical on Phone, Laptop, iPad & Mac.` }}
+                    </span>
+                </div>
+                <button @click="triggerManualCloudSync"
+                        class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shrink-0">
+                    {{ lang === 'ID' ? 'Hubungkan Sekarang' : 'Connect Now' }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Container -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 pt-5 main-pb-safe space-y-6">
+
+            <!-- ========================================================= -->
+            <!-- TAB 1: DASHBOARD                                          -->
+            <!-- ========================================================= -->
+            <section v-if="activeTab === 'dashboard'" class="space-y-6">
+                <!-- Greeting & Quick Controls -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                            {{ t('personal_ledger') }}
+                        </p>
+                        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight mt-0.5">
+                            {{ t('greeting') }}, {{ displayUserName }}
+                        </h1>
+                        <div v-if="googleUser" class="flex flex-wrap items-center gap-2 mt-1">
+                            <span class="text-[11px] font-medium flex items-center gap-1.5"
+                                  :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                <span class="w-1.5 h-1.5 rounded-full"
+                                      :class="hasActiveDriveSync ? 'bg-emerald-500' : 'bg-amber-500'"></span>
+                                {{ hasActiveDriveSync
+                                    ? (lang === 'ID'
+                                        ? `Sinkronisasi Multi-Device Aktif • HP, Laptop, iPad & Mac (${googleUser.email})`
+                                        : `Multi-Device Sync Active • Phone, Laptop, iPad & Mac (${googleUser.email})`)
+                                    : (lang === 'ID'
+                                        ? `Akun: ${googleUser.email} (Aktifkan sync untuk menyamakan semua perangkat)`
+                                        : `Account: ${googleUser.email} (Enable sync to mirror all devices)`) }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button @click="toggleHideBalances"
+                                class="px-3 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all"
+                                :class="isDarkMode ? 'bg-slate-900 border-slate-800 text-slate-300 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'">
+                            <i :data-lucide="hideBalances ? 'eye' : 'eye-off'" class="w-3.5 h-3.5"></i>
+                            <span>{{ hideBalances ? t('show_balances') : t('hide_balances') }}</span>
+                        </button>
+                        <button @click="openQuickTxModal('income')"
+                                class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all">
+                            <i data-lucide="arrow-down-left" class="w-3.5 h-3.5"></i>
+                            <span>{{ t('income') }}</span>
+                        </button>
+                        <button @click="openQuickTxModal('expense')"
+                                class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            <span>{{ t('record_tx') }}</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hero Net Balance + 3 Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    <!-- Net Balance Card -->
+                    <div class="md:col-span-5 rounded-3xl p-6 text-white relative overflow-hidden shadow-card flex flex-col justify-between"
+                         style="background: linear-gradient(135deg, #0B132B 0%, #1D4ED8 100%);">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-blue-200">
+                                    {{ t('net_balance') }}
+                                </span>
+                                <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/15 backdrop-blur-sm">
+                                    {{ t('health_score') }}: {{ healthScore }}%
+                                </span>
+                            </div>
+                            <div class="text-2xl sm:text-3xl font-extrabold tracking-tight mt-3">
+                                {{ formatMoney(netBalance) }}
+                            </div>
+                            <p class="text-xs text-blue-100/80 mt-1.5">
+                                {{ transactions.length }} {{ t('tx_recorded_count') }}
+                            </p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 mt-6 pt-4 border-t border-white/15">
+                            <div>
+                                <div class="text-[11px] text-blue-200">{{ t('income') }}</div>
+                                <div class="text-sm sm:text-base font-bold text-emerald-300 mt-0.5">
+                                    +{{ formatMoney(totalIncome) }}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-[11px] text-blue-200">{{ t('expense') }}</div>
+                                <div class="text-sm sm:text-base font-bold text-rose-200 mt-0.5">
+                                    -{{ formatMoney(totalOutflow) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right 3 Metrics -->
+                    <div class="md:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="rounded-3xl p-5 border flex flex-col justify-between transition-colors"
+                             :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                            <div class="w-9 h-9 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                                <i data-lucide="trending-up" class="w-4 h-4"></i>
+                            </div>
+                            <div class="mt-4">
+                                <div class="text-xs font-medium" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                    {{ t('total_income') }}
+                                </div>
+                                <div class="text-lg font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">
+                                    {{ formatMoney(totalIncome) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl p-5 border flex flex-col justify-between transition-colors"
+                             :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                            <div class="w-9 h-9 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center">
+                                <i data-lucide="trending-down" class="w-4 h-4"></i>
+                            </div>
+                            <div class="mt-4">
+                                <div class="text-xs font-medium" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                    {{ t('total_expense') }}
+                                </div>
+                                <div class="text-lg font-extrabold text-rose-600 dark:text-rose-400 mt-1">
+                                    {{ formatMoney(totalOutflow) }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rounded-3xl p-5 border flex flex-col justify-between transition-colors"
+                             :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                            <div class="w-9 h-9 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                                <i data-lucide="wallet" class="w-4 h-4"></i>
+                            </div>
+                            <div class="mt-4">
+                                <div class="text-xs font-medium" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                    {{ t('active_wallets') }}
+                                </div>
+                                <div class="text-lg font-extrabold mt-1">
+                                    {{ banks.length }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Wallets / Accounts Strip -->
+                <div class="rounded-3xl p-5 border transition-colors"
+                     :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-sm font-bold flex items-center gap-2">
+                            <i data-lucide="landmark" class="w-4 h-4 text-blue-600"></i>
+                            <span>{{ t('wallets_accounts') }}</span>
+                        </h2>
+                        <button @click="openQuickTxModal('transfer')" class="text-xs font-semibold text-blue-600 hover:underline">
+                            {{ t('transfer_between_wallets') }}
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                        <div v-for="bank in banks" :key="bank"
+                             class="p-3.5 rounded-2xl border transition-all"
+                             :class="isDarkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50/80 border-slate-200/70'">
+                            <div class="text-xs font-semibold truncate" :class="isDarkMode ? 'text-slate-300' : 'text-slate-700'">
+                                {{ bank }}
+                            </div>
+                            <div class="text-sm font-extrabold mt-1" :class="getWalletBalance(bank) < 0 ? 'text-rose-500' : ''">
+                                {{ formatMoney(getWalletBalance(bank)) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Split Bill on Dashboard + Recent Transactions (Responsive for Handphone, iPad/Tablet, Laptop & Mac) -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+                    <!-- Split Bill Calculator & Camera Receipt Scanner -->
+                    <div class="md:col-span-6 rounded-3xl p-5 sm:p-6 border transition-colors space-y-4"
+                         :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                        <div class="flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-9 h-9 rounded-2xl bg-blue-600/10 text-blue-600 flex items-center justify-center shrink-0">
+                                    <i data-lucide="users" class="w-4 h-4"></i>
+                                </div>
+                                <h2 class="text-base font-bold">
+                                    {{ lang === 'ID' ? 'Split Bill' : 'Split Bill Calculator' }}
+                                </h2>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <button @click="toggleLiveCamera"
+                                        class="px-2.5 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1.5 transition-all"
+                                        :class="isCameraOpen
+                                            ? 'bg-rose-600 border-rose-600 text-white'
+                                            : (isDarkMode ? 'bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100')">
+                                    <i :data-lucide="isCameraOpen ? 'x' : 'camera'" class="w-3.5 h-3.5"></i>
+                                    <span>{{ isCameraOpen ? (lang === 'ID' ? 'Tutup' : 'Close') : (lang === 'ID' ? 'Scan Kamera' : 'Scan Camera') }}</span>
+                                </button>
+                                <label class="px-2.5 py-1.5 rounded-xl text-xs font-semibold border flex items-center gap-1.5 cursor-pointer transition-all"
+                                       :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-slate-200 hover:bg-slate-800' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'">
+                                    <i data-lucide="image-plus" class="w-3.5 h-3.5"></i>
+                                    <span>{{ lang === 'ID' ? 'Foto' : 'Photo' }}</span>
+                                    <input type="file" accept="image/*" capture="environment" class="hidden" @change="handleReceiptFileUpload">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Live Camera Viewfinder -->
+                        <div v-if="isCameraOpen" class="rounded-2xl overflow-hidden border border-slate-700 bg-black space-y-2 p-2.5">
+                            <video ref="cameraVideo" autoplay playsinline class="w-full max-h-56 object-cover rounded-xl bg-black"></video>
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-[11px] text-slate-300">
+                                    {{ isScanningReceipt ? (lang === 'ID' ? 'Memindai struk via API...' : 'Scanning receipt via API...') : (lang === 'ID' ? 'Arahkan kamera ke struk lalu jepret' : 'Point camera at receipt & capture') }}
+                                </span>
+                                <button @click="captureReceiptFromCamera"
+                                        :disabled="isScanningReceipt"
+                                        class="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5">
+                                    <i data-lucide="scan-line" class="w-3.5 h-3.5"></i>
+                                    <span>{{ lang === 'ID' ? 'Jepret & Scan' : 'Capture & Scan' }}</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Scan Status Banner -->
+                        <div v-if="isScanningReceipt || scanStatusText"
+                             class="px-3.5 py-2.5 rounded-2xl text-xs font-medium flex items-center justify-between gap-2 border"
+                             :class="isDarkMode ? 'bg-blue-950/40 border-blue-800/60 text-blue-200' : 'bg-blue-50 border-blue-200 text-blue-800'">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="sparkles" class="w-4 h-4 shrink-0"></i>
+                                <span>{{ isScanningReceipt ? (lang === 'ID' ? 'Mengekstrak nominal struk otomatis...' : 'Extracting receipt totals automatically...') : scanStatusText }}</span>
+                            </div>
+                            <button v-if="scanStatusText && !isScanningReceipt" @click="scanStatusText = ''" class="text-[11px] underline">
+                                {{ lang === 'ID' ? 'Tutup' : 'Dismiss' }}
+                            </button>
+                        </div>
+
+                        <!-- Split Inputs (Start at 0) -->
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-semibold mb-1.5" :class="isDarkMode ? 'text-slate-300' : 'text-slate-600'">
+                                    {{ lang === 'ID' ? 'Subtotal Tagihan' : 'Bill Subtotal' }}
+                                </label>
+                                <input type="number" min="0" step="any" v-model.number="splitBill.subtotal"
+                                       @input="recalculateSplitBill"
+                                       placeholder="0"
+                                       class="w-full px-4 py-2.5 rounded-2xl border text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                       :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-semibold mb-1.5" :class="isDarkMode ? 'text-slate-300' : 'text-slate-600'">
+                                        {{ lang === 'ID' ? 'Pajak & Layanan (%)' : 'Tax & Service (%)' }}
+                                    </label>
+                                    <input type="number" min="0" max="100" step="0.1" v-model.number="splitBill.taxPercent"
+                                           @input="recalculateSplitBill"
+                                           placeholder="0"
+                                           class="w-full px-4 py-2.5 rounded-2xl border text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                           :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold mb-1.5" :class="isDarkMode ? 'text-slate-300' : 'text-slate-600'">
+                                        {{ lang === 'ID' ? 'Jumlah Orang' : 'Number of People' }}
+                                    </label>
+                                    <div class="flex items-center gap-1.5">
+                                        <button @click="stepSplitPeople(-1)"
+                                                class="w-10 h-10 rounded-xl border font-bold flex items-center justify-center shrink-0"
+                                                :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-800'">-</button>
+                                        <input type="number" min="1" step="1" v-model.number="splitBill.people"
+                                               @input="recalculateSplitBill"
+                                               class="w-full px-2 py-2 rounded-2xl border text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                               :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'">
+                                        <button @click="stepSplitPeople(1)"
+                                                class="w-10 h-10 rounded-xl border font-bold flex items-center justify-center shrink-0"
+                                                :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-800'">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Extracted Items Preview if any -->
+                        <div v-if="splitBill.items && splitBill.items.length > 0"
+                             class="p-3 rounded-2xl border text-xs space-y-1.5 max-h-32 overflow-y-auto"
+                             :class="isDarkMode ? 'bg-slate-900/70 border-slate-800' : 'bg-slate-50 border-slate-200'">
+                            <div class="font-semibold text-[11px] uppercase tracking-wider opacity-75">
+                                {{ lang === 'ID' ? 'Item Terdeteksi' : 'Detected Items' }}
+                            </div>
+                            <div v-for="(item, idx) in splitBill.items" :key="idx" class="flex items-center justify-between gap-2">
+                                <span class="truncate">{{ item.name }}</span>
+                                <span class="font-semibold shrink-0">{{ formatMoney(item.price || 0) }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Split Result Summary -->
+                        <div class="p-4 rounded-2xl border space-y-2"
+                             :class="isDarkMode ? 'bg-blue-950/30 border-blue-800/50' : 'bg-blue-50/80 border-blue-200/80'">
+                            <div class="flex items-center justify-between text-xs">
+                                <span :class="isDarkMode ? 'text-slate-300' : 'text-slate-600'">
+                                    {{ lang === 'ID' ? 'Total Akhir' : 'Grand Total' }}
+                                </span>
+                                <span class="font-bold">
+                                    {{ formatMoney(splitBill.grandTotal) }}
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between pt-1 border-t"
+                                 :class="isDarkMode ? 'border-blue-800/40' : 'border-blue-200/70'">
+                                <span class="text-xs font-bold text-blue-600 dark:text-blue-400">
+                                    {{ lang === 'ID' ? 'Per Orang' : 'Per Person' }}
+                                </span>
+                                <span class="text-lg sm:text-xl font-extrabold text-blue-600 dark:text-blue-400">
+                                    {{ formatMoney(splitBill.perPerson) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-2 pt-1">
+                            <button @click="resetSplitBill"
+                                    class="px-3.5 py-2.5 rounded-2xl border text-xs font-semibold transition-all"
+                                    :class="isDarkMode ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'border-slate-200 text-slate-600 hover:bg-slate-50'">
+                                {{ lang === 'ID' ? 'Reset 0' : 'Reset 0' }}
+                            </button>
+                            <button @click="recordSplitShareAsExpense"
+                                    :disabled="splitBill.perPerson <= 0"
+                                    class="flex-1 py-2.5 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white text-xs font-bold flex items-center justify-center gap-2 transition-all">
+                                <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                                <span>{{ lang === 'ID' ? 'Catat Bagian Saya' : 'Record My Share' }}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions -->
+                    <div class="md:col-span-6 rounded-3xl p-5 sm:p-6 border transition-colors flex flex-col justify-between"
+                         :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-base font-bold">{{ t('recent_transactions') }}</h2>
+                                <button @click="setTab('transactions')" class="text-xs font-semibold text-blue-600 hover:underline">
+                                    {{ t('view_all') }}
+                                </button>
+                            </div>
+
+                            <div v-if="transactions.length === 0" class="py-12 text-center space-y-2">
+                                <div class="w-11 h-11 rounded-2xl bg-slate-100 dark:bg-slate-800 mx-auto flex items-center justify-center text-slate-400">
+                                    <i data-lucide="receipt" class="w-5 h-5"></i>
+                                </div>
+                                <p class="text-xs font-medium" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                    {{ t('no_transactions') }}
+                                </p>
+                            </div>
+
+                            <div v-else class="space-y-2.5">
+                                <div v-for="tx in transactions.slice(0, 6)" :key="tx.id"
+                                     class="p-3 rounded-2xl border flex items-center justify-between gap-3 transition-colors"
+                                     :class="isDarkMode ? 'bg-slate-900/70 border-slate-800' : 'bg-slate-50/70 border-slate-200/70'">
+                                    <div class="min-w-0">
+                                        <div class="text-xs sm:text-sm font-bold truncate">
+                                            {{ tx.note || tx.category }}
+                                        </div>
+                                        <div class="text-[11px] truncate mt-0.5" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                            {{ tx.category }} • {{ tx.account }}{{ tx.type === 'transfer' && tx.toAccount ? ' → ' + tx.toAccount : '' }} • {{ tx.date }}
+                                        </div>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <div class="text-xs sm:text-sm font-extrabold"
+                                             :class="tx.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : (tx.type === 'transfer' ? 'text-blue-600 dark:text-blue-400' : 'text-rose-600 dark:text-rose-400')">
+                                            {{ tx.type === 'income' ? '+' : (tx.type === 'transfer' ? '⇄ ' : '-') }}{{ formatMoney(tx.amount) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================= -->
+            <!-- TAB 2: ANALISIS & AI ASSISTANT                            -->
+            <!-- ========================================================= -->
+            <section v-if="activeTab === 'analytics'" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="rounded-3xl p-5 sm:p-6 border"
+                         :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                        <h2 class="text-sm font-bold mb-3">{{ t('cashflow_trend') }}</h2>
+                        <div class="chart-wrap">
+                            <canvas id="cashflowChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="rounded-3xl p-5 sm:p-6 border"
+                         :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                        <h2 class="text-sm font-bold mb-3">{{ t('expense_by_category') }}</h2>
+                        <div class="chart-wrap">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Financial Advisor -->
+                <div class="rounded-3xl p-5 sm:p-6 border space-y-4"
+                     :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                        <div>
+                            <h2 class="text-base font-bold">{{ t('ai_assistant_title') }}</h2>
+                            <p class="text-xs" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                {{ t('ai_assistant_desc') }}
+                            </p>
+                        </div>
+                        <button @click="runAiPrompt(t('full_audit_prompt'))"
+                                :disabled="isAiLoading"
+                                class="px-4 py-2 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-xs font-bold transition-all">
+                            {{ isAiLoading ? t('analyzing') : t('full_audit') }}
+                        </button>
+                    </div>
+
+                    <!-- Quick Prompt Chips -->
+                    <div class="flex flex-wrap gap-2">
+                        <button v-for="qp in quickAiPrompts" :key="qp"
+                                @click="runAiPrompt(qp)"
+                                class="px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all"
+                                :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'">
+                            {{ qp }}
+                        </button>
+                    </div>
+
+                    <!-- Chat History -->
+                    <div class="space-y-3 max-h-[420px] overflow-y-auto pr-1">
+                        <div v-for="(msg, idx) in aiMessages" :key="idx"
+                             class="p-4 rounded-2xl border text-xs sm:text-sm"
+                             :class="msg.role === 'user'
+                                ? (isDarkMode ? 'bg-blue-950/40 border-blue-800/60 text-blue-100 ml-6' : 'bg-blue-50 border-blue-200 text-blue-950 ml-6')
+                                : (isDarkMode ? 'bg-slate-900/80 border-slate-800 text-slate-200 mr-2' : 'bg-slate-50 border-slate-200/80 text-slate-800 mr-2')">
+                            <div class="text-[10px] font-bold uppercase tracking-wider opacity-60 mb-1">
+                                {{ msg.role === 'user' ? (lang === 'ID' ? 'Anda' : 'You') : (lang === 'ID' ? 'Asisten Keuangan' : 'Financial Advisor') }}
+                            </div>
+                            <div class="ai-markdown" v-html="renderMarkdown(msg.text)"></div>
+                        </div>
+                    </div>
+
+                    <!-- Prompt Input Box -->
+                    <form @submit.prevent="submitAiForm" class="flex items-center gap-2 pt-1">
+                        <input type="text"
+                               v-model="aiInput"
+                               :placeholder="lang === 'ID' ? 'Tanya asisten keuangan Anda...' : 'Ask your financial assistant...'"
+                               class="flex-1 px-4 py-2.5 rounded-2xl border text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
+                               :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400'">
+                        <button type="submit"
+                                :disabled="isAiLoading || !aiInput.trim()"
+                                class="px-4 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white text-xs sm:text-sm font-bold shrink-0 transition-all">
+                            {{ lang === 'ID' ? 'Kirim' : 'Send' }}
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- ========================================================= -->
+            <!-- TAB 3: CATATAN / TRANSACTIONS LEDGER                      -->
+            <!-- ========================================================= -->
+            <section v-if="activeTab === 'transactions'" class="space-y-5">
+                <div class="rounded-3xl p-5 sm:p-6 border space-y-4"
+                     :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <h2 class="text-base font-bold">{{ t('all_transactions') }}</h2>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <input type="text" v-model="txSearch" :placeholder="t('search_note_category')"
+                                   class="px-3.5 py-2 rounded-xl border text-xs focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                   :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'">
+                            <select v-model="txFilterType"
+                                    class="px-3 py-2 rounded-xl border text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-600"
+                                    :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'">
+                                <option value="all">{{ t('all_types') }}</option>
+                                <option value="income">{{ t('income') }}</option>
+                                <option value="expense">{{ t('expense') }}</option>
+                                <option value="transfer">{{ t('transfer') }}</option>
+                            </select>
+                            <button @click="openQuickTxModal('expense')"
+                                    class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                                + {{ t('record_tx') }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div v-if="filteredTransactions.length === 0" class="py-12 text-center text-xs" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                        {{ t('no_transactions') }}
+                    </div>
+
+                    <div v-else class="space-y-2.5">
+                        <div v-for="tx in filteredTransactions" :key="tx.id"
+                             class="p-3.5 rounded-2xl border flex items-center justify-between gap-3"
+                             :class="isDarkMode ? 'bg-slate-900/70 border-slate-800' : 'bg-slate-50/70 border-slate-200/70'">
+                            <div class="min-w-0">
+                                <div class="text-sm font-bold truncate">{{ tx.note || tx.category }}</div>
+                                <div class="text-xs truncate mt-0.5" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                    {{ tx.category }} • {{ tx.account }}{{ tx.type === 'transfer' && tx.toAccount ? ' → ' + tx.toAccount : '' }} • {{ tx.date }}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <div class="text-sm font-extrabold"
+                                     :class="tx.type === 'income' ? 'text-emerald-600 dark:text-emerald-400' : (tx.type === 'transfer' ? 'text-blue-600 dark:text-blue-400' : 'text-rose-600 dark:text-rose-400')">
+                                    {{ tx.type === 'income' ? '+' : (tx.type === 'transfer' ? '⇄ ' : '-') }}{{ formatMoney(tx.amount) }}
+                                </div>
+                                <button @click="deleteTransaction(tx.id)"
+                                        class="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-colors"
+                                        :title="t('delete')">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================= -->
+            <!-- TAB 4: TARGET & ANGGARAN                                  -->
+            <!-- ========================================================= -->
+            <section v-if="activeTab === 'goals'" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Savings Goals -->
+                    <div class="rounded-3xl p-5 sm:p-6 border space-y-4"
+                         :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                        <h2 class="text-base font-bold">{{ t('savings_goals') }}</h2>
+                        <form @submit.prevent="addGoal" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input type="text" v-model="newGoal.name" :placeholder="t('goal_name')" required
+                                   class="px-3 py-2 rounded-xl border text-xs"
+                                   :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                            <input type="number" min="1" v-model.number="newGoal.target" :placeholder="t('target_amount')" required
+                                   class="px-3 py-2 rounded-xl border text-xs"
+                                   :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                            <button type="submit" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                                + {{ t('add_goal') }}
+                            </button>
+                        </form>
+                        <div class="space-y-3">
+                            <div v-for="g in goals" :key="g.id" class="p-3.5 rounded-2xl border space-y-2"
+                                 :class="isDarkMode ? 'bg-slate-900/70 border-slate-800' : 'bg-slate-50 border-slate-200/70'">
+                                <div class="flex items-center justify-between text-xs font-bold">
+                                    <span>{{ g.name }}</span>
+                                    <div class="flex items-center gap-2">
+                                        <span>{{ formatMoney(g.current) }} / {{ formatMoney(g.target) }}</span>
+                                        <button @click="deleteGoal(g.id)" class="text-rose-500 hover:text-rose-600 font-bold">×</button>
+                                    </div>
+                                </div>
+                                <div class="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                                    <div class="h-full bg-blue-600 transition-all" :style="{ width: Math.min(100, (g.current / (g.target || 1)) * 100) + '%' }"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Budgets -->
+                    <div class="rounded-3xl p-5 sm:p-6 border space-y-4"
+                         :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                        <h2 class="text-base font-bold">{{ t('category_budgets') }}</h2>
+                        <form @submit.prevent="saveBudget" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <select v-model="newBudget.category"
+                                    class="px-3 py-2 rounded-xl border text-xs font-semibold"
+                                    :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                                <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                            </select>
+                            <input type="number" min="1" v-model.number="newBudget.limit" :placeholder="t('monthly_limit')" required
+                                   class="px-3 py-2 rounded-xl border text-xs"
+                                   :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                            <button type="submit" class="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                                {{ t('save_budget') }}
+                            </button>
+                        </form>
+                        <div class="space-y-3">
+                            <div v-for="b in budgets" :key="b.id" class="p-3.5 rounded-2xl border space-y-2"
+                                 :class="isDarkMode ? 'bg-slate-900/70 border-slate-800' : 'bg-slate-50 border-slate-200/70'">
+                                <div class="flex items-center justify-between text-xs font-bold">
+                                    <span>{{ b.category }}</span>
+                                    <div class="flex items-center gap-2">
+                                        <span>{{ formatMoney(getCategoryExpense(b.category)) }} / {{ formatMoney(b.limit) }}</span>
+                                        <button @click="deleteBudget(b.id)" class="text-rose-500 hover:text-rose-600 font-bold">×</button>
+                                    </div>
+                                </div>
+                                <div class="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                                    <div class="h-full transition-all"
+                                         :class="getCategoryExpense(b.category) > b.limit ? 'bg-rose-500' : 'bg-emerald-500'"
+                                         :style="{ width: Math.min(100, (getCategoryExpense(b.category) / (b.limit || 1)) * 100) + '%' }"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================= -->
+            <!-- TAB 5: AUTOPILOT                                          -->
+            <!-- ========================================================= -->
+            <section v-if="activeTab === 'autopilot'" class="space-y-6">
+                <div class="rounded-3xl p-5 sm:p-6 border space-y-5"
+                     :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-lg font-extrabold">Autopilot</h2>
+                            <p class="text-xs mt-0.5" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                {{ lang === 'ID' ? 'Aturan berjalan otomatis setiap kali transaksi dicatat, bisa diedit atau ditambah sesuai kebutuhan.' : 'Rules run automatically whenever transactions are recorded; edit or add custom rules anytime.' }}
+                            </p>
+                        </div>
+                        <button @click="openRuleEditor()"
+                                class="px-4 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 self-start sm:self-auto">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>{{ lang === 'ID' ? '+ Aturan Baru' : '+ New Rule' }}</span>
+                        </button>
+                    </div>
+
+                    <!-- Quick Preset Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div v-for="preset in autopilotPresets" :key="preset.id"
+                             class="p-4 rounded-2xl border flex flex-col justify-between gap-3 transition-all"
+                             :class="isDarkMode ? 'bg-slate-900/70 border-slate-800' : 'bg-slate-50/80 border-slate-200/80'">
+                            <div>
+                                <div class="text-sm font-bold">{{ preset.name }}</div>
+                                <div class="text-xs mt-1" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                    {{ preset.desc }}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button @click="activatePresetRule(preset)"
+                                        class="flex-1 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold">
+                                    {{ lang === 'ID' ? 'Aktifkan' : 'Activate' }}
+                                </button>
+                                <button @click="openRuleEditor(preset)"
+                                        class="py-2 px-3 rounded-xl border text-xs font-semibold"
+                                        :class="isDarkMode ? 'border-slate-700 text-slate-200 hover:bg-slate-800' : 'border-slate-200 text-slate-700 hover:bg-slate-100'">
+                                    {{ lang === 'ID' ? 'Edit' : 'Edit' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Rules List -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider"
+                             :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                            <span>{{ lang === 'ID' ? 'Daftar Aturan Autopilot' : 'Configured Autopilot Rules' }}</span>
+                            <span>{{ activeRulesCount }} {{ lang === 'ID' ? 'aturan aktif' : 'active' }}</span>
+                        </div>
+
+                        <div v-if="automationRules.length === 0"
+                             class="p-8 rounded-2xl border text-center text-xs"
+                             :class="isDarkMode ? 'border-slate-800 text-slate-400' : 'border-slate-200 text-slate-500'">
+                            {{ lang === 'ID' ? 'Belum ada aturan autopilot aktif. Klik "+ Aturan Baru" atau aktifkan salah satu kartu di atas.' : 'No autopilot rules configured yet. Click "+ New Rule" or activate a preset above.' }}
+                        </div>
+
+                        <div v-for="rule in automationRules" :key="rule.id"
+                             class="p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                             :class="isDarkMode ? 'bg-slate-900/70 border-slate-800' : 'bg-white border-slate-200/80'">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-bold">{{ rule.name }}</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                                          :class="rule.enabled ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-slate-500/15 text-slate-500'">
+                                        {{ rule.enabled ? (lang === 'ID' ? 'Aktif' : 'Active') : (lang === 'ID' ? 'Nonaktif' : 'Paused') }}
+                                    </span>
+                                </div>
+                                <div class="text-xs" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                    {{ describeRule(rule) }} • {{ lang === 'ID' ? 'Dijalankan' : 'Runs' }}: {{ rule.runCount || 0 }}x
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 self-end sm:self-center">
+                                <button @click="toggleRuleEnabled(rule)"
+                                        class="px-3 py-1.5 rounded-xl border text-xs font-semibold"
+                                        :class="isDarkMode ? 'border-slate-700 text-slate-200 hover:bg-slate-800' : 'border-slate-200 text-slate-700 hover:bg-slate-50'">
+                                    {{ rule.enabled ? (lang === 'ID' ? 'Jeda' : 'Pause') : (lang === 'ID' ? 'Aktifkan' : 'Enable') }}
+                                </button>
+                                <button @click="openRuleEditor(rule)"
+                                        class="px-3 py-1.5 rounded-xl border text-xs font-semibold text-blue-600"
+                                        :class="isDarkMode ? 'border-slate-700 hover:bg-slate-800' : 'border-slate-200 hover:bg-slate-50'">
+                                    {{ lang === 'ID' ? 'Edit' : 'Edit' }}
+                                </button>
+                                <button @click="deleteRule(rule.id)"
+                                        class="p-1.5 rounded-xl text-rose-500 hover:bg-rose-500/10">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========================================================= -->
+            <!-- TAB 6: MENU / PENGATURAN & SINKRONISASI PERANGKAT         -->
+            <!-- ========================================================= -->
+            <section v-if="activeTab === 'more'" class="space-y-5">
+                <!-- Google Account & Cross-Device Cloud Sync Card -->
+                <div class="rounded-3xl p-5 sm:p-6 border space-y-4"
+                     :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3.5">
+                            <img v-if="googleUser && googleUser.picture" :src="googleUser.picture" alt="Profile" class="w-12 h-12 rounded-full object-cover border border-slate-200">
+                            <div v-else class="w-12 h-12 rounded-full bg-blue-600/10 text-blue-600 flex items-center justify-center font-bold">
+                                <i data-lucide="user" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <div class="text-base font-extrabold">
+                                    {{ googleUser ? displayUserName : (lang === 'ID' ? 'Belum Masuk Akun Google' : 'Not Signed In to Google') }}
+                                </div>
+                                <div class="text-xs" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                                    {{ googleUser ? googleUser.email : (lang === 'ID' ? 'Masuk otomatis dengan Akun Google agar semua data sama di HP, Laptop, iPad & Mac' : 'Sign in with Google Account so all data stays identical on Phone, Laptop, iPad & Mac') }}
+                                </div>
+                                <div v-if="googleUser" class="text-[11px] font-medium mt-1"
+                                     :class="hasActiveDriveSync ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'">
+                                    {{ hasActiveDriveSync
+                                        ? (lang === 'ID'
+                                            ? `Tersinkronisasi otomatis ke Cloud Akun Google${lastSyncedAt ? ' (' + lastSyncedAt + ')' : ''}`
+                                            : `Auto-synced to Google Account Cloud${lastSyncedAt ? ' (' + lastSyncedAt + ')' : ''}`)
+                                        : (lang === 'ID'
+                                            ? 'Klik "Aktifkan Sync Cloud" agar data otomatis sama di seluruh perangkat'
+                                            : 'Click "Enable Cloud Sync" so data stays identical across all devices') }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button v-if="googleUser" @click="triggerManualCloudSync"
+                                    class="px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5">
+                                <i data-lucide="refresh-cw" class="w-3.5 h-3.5" :class="syncStatus === 'syncing' ? 'animate-spin' : ''"></i>
+                                <span>{{ hasActiveDriveSync ? (lang === 'ID' ? 'Sinkronkan Sekarang' : 'Sync Now') : (lang === 'ID' ? 'Aktifkan Sync Cloud' : 'Enable Cloud Sync') }}</span>
+                            </button>
+                            <button v-if="!googleUser" @click="initiateGoogleLogin"
+                                    class="px-4 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                                {{ t('sign_in_google') }}
+                            </button>
+                            <button v-else @click="logoutGoogle"
+                                    class="px-4 py-2.5 rounded-2xl border border-rose-500/40 text-rose-500 hover:bg-rose-500/10 text-xs font-bold">
+                                {{ t('sign_out') }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Custom Nickname Input (Synced across all devices) -->
+                    <form v-if="googleUser" @submit.prevent="saveCustomNickname" class="pt-3 border-t flex flex-col sm:flex-row sm:items-center gap-2"
+                          :class="isDarkMode ? 'border-slate-800' : 'border-slate-100'">
+                        <input type="text" v-model="nicknameDraft"
+                               :placeholder="lang === 'ID' ? 'Nama panggilan profil (tersinkron di semua perangkat)...' : 'Profile display nickname (synced across devices)...'"
+                               class="flex-1 px-3.5 py-2 rounded-xl border text-xs"
+                               :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                        <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold self-start sm:self-auto">
+                            {{ lang === 'ID' ? 'Simpan Nama' : 'Save Name' }}
+                        </button>
+                    </form>
+
+                    <!-- Synced Data Summary & Supported Devices Strip -->
+                    <div class="pt-3 border-t space-y-3"
+                         :class="isDarkMode ? 'border-slate-800' : 'border-slate-100'">
+                        <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                            <span class="font-semibold" :class="isDarkMode ? 'text-slate-300' : 'text-slate-600'">
+                                {{ lang === 'ID' ? 'Data Tersinkronisasi pada Akun:' : 'Account Synced Ledger:' }}
+                            </span>
+                            <span class="font-bold text-blue-600 dark:text-blue-400">
+                                {{ transactions.length }} {{ lang === 'ID' ? 'Transaksi' : 'Transactions' }} •
+                                {{ banks.length }} {{ lang === 'ID' ? 'Dompet' : 'Wallets' }} •
+                                {{ goals.length }} {{ lang === 'ID' ? 'Target' : 'Goals' }} •
+                                {{ automationRules.length }} Autopilot
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs"
+                             :class="isDarkMode ? 'text-slate-300' : 'text-slate-600'">
+                            <div class="p-2.5 rounded-2xl border flex items-center gap-2"
+                                 :class="isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200/70'">
+                                <i data-lucide="smartphone" class="w-4 h-4 text-blue-600 shrink-0"></i>
+                                <span class="font-semibold">Handphone</span>
+                            </div>
+                            <div class="p-2.5 rounded-2xl border flex items-center gap-2"
+                                 :class="isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200/70'">
+                                <i data-lucide="tablet" class="w-4 h-4 text-blue-600 shrink-0"></i>
+                                <span class="font-semibold">iPad / Tablet</span>
+                            </div>
+                            <div class="p-2.5 rounded-2xl border flex items-center gap-2"
+                                 :class="isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200/70'">
+                                <i data-lucide="laptop" class="w-4 h-4 text-blue-600 shrink-0"></i>
+                                <span class="font-semibold">Laptop</span>
+                            </div>
+                            <div class="p-2.5 rounded-2xl border flex items-center gap-2"
+                                 :class="isDarkMode ? 'bg-slate-900/60 border-slate-800' : 'bg-slate-50 border-slate-200/70'">
+                                <i data-lucide="monitor" class="w-4 h-4 text-blue-600 shrink-0"></i>
+                                <span class="font-semibold">Mac</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Language, Currency & Wallets Management -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="rounded-3xl p-5 sm:p-6 border space-y-4"
+                         :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                        <h3 class="text-sm font-bold">{{ t('preferences') }}</h3>
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-xs font-semibold">{{ t('language') }}</span>
+                            <button @click="toggleLanguage"
+                                    class="px-3.5 py-2 rounded-xl border text-xs font-bold"
+                                    :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                                {{ lang === 'ID' ? 'Bahasa Indonesia (ID)' : 'English (EN)' }}
+                            </button>
+                        </div>
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-xs font-semibold">{{ t('currency') }}</span>
+                            <select v-model="currency" @change="onCurrencyChange"
+                                    class="px-3.5 py-2 rounded-xl border text-xs font-bold"
+                                    :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                                <option value="IDR">IDR (Rp)</option>
+                                <option value="USD">USD ($)</option>
+                                <option value="SGD">SGD (S$)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="rounded-3xl p-5 sm:p-6 border space-y-4"
+                         :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200/80 shadow-soft'">
+                        <h3 class="text-sm font-bold">{{ t('wallets_accounts') }}</h3>
+                        <form @submit.prevent="addNewWallet" class="flex items-center gap-2">
+                            <input type="text" v-model="newWalletName" :placeholder="t('new_wallet_placeholder')" required
+                                   class="flex-1 px-3.5 py-2 rounded-xl border text-xs"
+                                   :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                            <button type="submit" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                                + {{ t('add') }}
+                            </button>
+                        </form>
+                        <div class="flex flex-wrap gap-2">
+                            <span v-for="b in banks" :key="b"
+                                  class="px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-2"
+                                  :class="isDarkMode ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-slate-200'">
+                                <span>{{ b }}</span>
+                                <button v-if="banks.length > 1" @click="removeWallet(b)" class="text-rose-500 hover:text-rose-600">×</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Handphone Bottom Navigation (iPad/Tablet, Laptop & Mac use the Top Navigation Bar) -->
+        <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 border-t backdrop-blur-md pb-safe"
+             :class="isDarkMode ? 'bg-[#090D16]/95 border-slate-800' : 'bg-white/95 border-slate-200'">
+            <div class="grid grid-cols-6 h-16 max-w-2xl mx-auto">
+                <button v-for="tab in allNavTabs" :key="tab.id"
+                        @click="setTab(tab.id)"
+                        class="flex flex-col items-center justify-center gap-1 text-[10px] font-semibold transition-colors"
+                        :class="activeTab === tab.id ? 'text-blue-600 dark:text-blue-400 font-bold' : (isDarkMode ? 'text-slate-400' : 'text-slate-500')">
+                    <i :data-lucide="tab.icon" class="w-4 h-4"></i>
+                    <span class="truncate max-w-[58px]">{{ tab.label }}</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- ========================================================= -->
+        <!-- MODAL: QUICK TRANSACTION                                  -->
+        <!-- ========================================================= -->
+        <div v-if="showTxModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="w-full max-w-md rounded-3xl p-6 border space-y-4 shadow-2xl"
+                 :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200'">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-base font-extrabold">{{ t('record_tx') }}</h3>
+                    <button @click="showTxModal = false" class="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <form @submit.prevent="submitQuickTransaction" class="space-y-3">
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" @click="txForm.type = 'expense'"
+                                class="py-2 rounded-xl text-xs font-bold border"
+                                :class="txForm.type === 'expense' ? 'bg-rose-600 border-rose-600 text-white' : (isDarkMode ? 'border-slate-700 text-slate-300' : 'border-slate-200 text-slate-700')">
+                            {{ t('expense') }}
+                        </button>
+                        <button type="button" @click="txForm.type = 'income'"
+                                class="py-2 rounded-xl text-xs font-bold border"
+                                :class="txForm.type === 'income' ? 'bg-emerald-600 border-emerald-600 text-white' : (isDarkMode ? 'border-slate-700 text-slate-300' : 'border-slate-200 text-slate-700')">
+                            {{ t('income') }}
+                        </button>
+                        <button type="button" @click="txForm.type = 'transfer'"
+                                class="py-2 rounded-xl text-xs font-bold border"
+                                :class="txForm.type === 'transfer' ? 'bg-blue-600 border-blue-600 text-white' : (isDarkMode ? 'border-slate-700 text-slate-300' : 'border-slate-200 text-slate-700')">
+                            {{ t('transfer') }}
+                        </button>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">{{ t('amount') }}</label>
+                        <input type="number" min="1" step="any" v-model.number="txForm.amount" required
+                               class="w-full px-3.5 py-2.5 rounded-2xl border text-sm font-bold"
+                               :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">{{ txForm.type === 'transfer' ? t('from_wallet') : t('wallet') }}</label>
+                            <select v-model="txForm.account"
+                                    class="w-full px-3 py-2.5 rounded-2xl border text-xs font-semibold"
+                                    :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                                <option v-for="b in banks" :key="b" :value="b">{{ b }}</option>
+                            </select>
+                        </div>
+                        <div v-if="txForm.type === 'transfer'">
+                            <label class="block text-xs font-semibold mb-1">{{ t('to_wallet') }}</label>
+                            <select v-model="txForm.toAccount"
+                                    class="w-full px-3 py-2.5 rounded-2xl border text-xs font-semibold"
+                                    :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                                <option v-for="b in banks.filter(x => x !== txForm.account)" :key="b" :value="b">{{ b }}</option>
+                            </select>
+                        </div>
+                        <div v-else>
+                            <label class="block text-xs font-semibold mb-1">{{ t('category') }}</label>
+                            <select v-model="txForm.category"
+                                    class="w-full px-3 py-2.5 rounded-2xl border text-xs font-semibold"
+                                    :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                                <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">{{ t('note') }}</label>
+                        <input type="text" v-model="txForm.note" :placeholder="t('note_placeholder')"
+                               class="w-full px-3.5 py-2.5 rounded-2xl border text-xs"
+                               :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                    </div>
+
+                    <button type="submit" class="w-full py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                        {{ t('save_tx') }}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- MODAL: CREATE / EDIT AUTOPILOT RULE                       -->
+        <!-- ========================================================= -->
+        <div v-if="showRuleModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="w-full max-w-md rounded-3xl p-6 border space-y-4 shadow-2xl"
+                 :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200'">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-base font-extrabold">
+                        {{ editingRule.id ? (lang === 'ID' ? 'Edit Aturan Autopilot' : 'Edit Autopilot Rule') : (lang === 'ID' ? 'Aturan Autopilot Baru' : 'New Autopilot Rule') }}
+                    </h3>
+                    <button @click="showRuleModal = false" class="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <form @submit.prevent="saveRuleFromModal" class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">{{ lang === 'ID' ? 'Nama Aturan' : 'Rule Name' }}</label>
+                        <input type="text" v-model="editingRule.name" required
+                               class="w-full px-3.5 py-2.5 rounded-2xl border text-xs font-semibold"
+                               :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold mb-1">{{ lang === 'ID' ? 'Jenis Aksi Otomatis' : 'Automation Action' }}</label>
+                        <select v-model="editingRule.actionType"
+                                class="w-full px-3.5 py-2.5 rounded-2xl border text-xs font-semibold"
+                                :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                            <option value="auto_save_goal">{{ lang === 'ID' ? 'Sisihkan % Pemasukan ke Target Tabungan' : 'Save % of Income to Goal' }}</option>
+                            <option value="fixed_save_goal">{{ lang === 'ID' ? 'Sisihkan Nominal Tetap Pemasukan ke Target' : 'Save Fixed Income Amount to Goal' }}</option>
+                            <option value="auto_transfer_wallet">{{ lang === 'ID' ? 'Auto-Transfer % Pemasukan Antar Wallet' : 'Auto-Transfer % of Income Between Wallets' }}</option>
+                            <option value="expense_save_goal">{{ lang === 'ID' ? 'Sisihkan % Pengeluaran ke Target Tabungan' : 'Save % of Expense to Goal' }}</option>
+                            <option value="spend_alert">{{ lang === 'ID' ? 'Peringatan Pengeluaran Melebihi Batas' : 'Large Expense Alert' }}</option>
+                        </select>
+                    </div>
+
+                    <div v-if="editingRule.actionType === 'auto_save_goal' || editingRule.actionType === 'expense_save_goal'" class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">{{ lang === 'ID' ? 'Persentase (%)' : 'Percentage (%)' }}</label>
+                            <input type="number" min="1" max="100" v-model.number="editingRule.percent"
+                                   class="w-full px-3 py-2 rounded-xl border text-xs font-bold"
+                                   :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">{{ lang === 'ID' ? 'Target Tabungan' : 'Goal Name' }}</label>
+                            <input type="text" v-model="editingRule.targetGoalName"
+                                   class="w-full px-3 py-2 rounded-xl border text-xs font-semibold"
+                                   :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                        </div>
+                    </div>
+
+                    <div v-if="editingRule.actionType === 'fixed_save_goal'" class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">{{ lang === 'ID' ? 'Nominal Tetap' : 'Fixed Amount' }}</label>
+                            <input type="number" min="1" v-model.number="editingRule.fixedAmount"
+                                   class="w-full px-3 py-2 rounded-xl border text-xs font-bold"
+                                   :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">{{ lang === 'ID' ? 'Target Tabungan' : 'Goal Name' }}</label>
+                            <input type="text" v-model="editingRule.targetGoalName"
+                                   class="w-full px-3 py-2 rounded-xl border text-xs font-semibold"
+                                   :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                        </div>
+                    </div>
+
+                    <div v-if="editingRule.actionType === 'auto_transfer_wallet'" class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">{{ lang === 'ID' ? 'Persentase (%)' : 'Percentage (%)' }}</label>
+                            <input type="number" min="1" max="100" v-model.number="editingRule.percent"
+                                   class="w-full px-3 py-2 rounded-xl border text-xs font-bold"
+                                   :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold mb-1">{{ lang === 'ID' ? 'Wallet Tujuan' : 'Destination Wallet' }}</label>
+                            <select v-model="editingRule.destWallet"
+                                    class="w-full px-3 py-2 rounded-xl border text-xs font-semibold"
+                                    :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                                <option v-for="b in banks" :key="b" :value="b">{{ b }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div v-if="editingRule.actionType === 'spend_alert'">
+                        <label class="block text-xs font-semibold mb-1">{{ lang === 'ID' ? 'Batas Pengeluaran' : 'Threshold Amount' }}</label>
+                        <input type="number" min="1" v-model.number="editingRule.thresholdAmount"
+                               class="w-full px-3.5 py-2 rounded-xl border text-xs font-bold"
+                               :class="isDarkMode ? 'bg-slate-900 border-slate-700 text-white' : 'bg-slate-50 border-slate-200'">
+                    </div>
+
+                    <button type="submit" class="w-full py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold">
+                        {{ lang === 'ID' ? 'Simpan Aturan' : 'Save Rule' }}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- MODAL: EXPORT EXCEL & PDF                                 -->
+        <!-- ========================================================= -->
+        <div v-if="showExportModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="w-full max-w-sm rounded-3xl p-6 border space-y-4 shadow-2xl"
+                 :class="isDarkMode ? 'bg-[#111827] border-slate-800' : 'bg-white border-slate-200'">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-base font-extrabold">{{ t('export_report') }}</h3>
+                    <button @click="showExportModal = false" class="p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <p class="text-xs" :class="isDarkMode ? 'text-slate-400' : 'text-slate-500'">
+                    {{ t('export_desc') }}
+                </p>
+                <div class="space-y-2.5">
+                    <button @click="downloadReport('excel')"
+                            class="w-full py-3 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-2">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                        <span>{{ lang === 'ID' ? 'Unduh Laporan Excel (.xlsx)' : 'Download Excel Report (.xlsx)' }}</span>
+                    </button>
+                    <button @click="downloadReport('pdf')"
+                            class="w-full py-3 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center justify-center gap-2">
+                        <i data-lucide="file-text" class="w-4 h-4"></i>
+                        <span>{{ lang === 'ID' ? 'Unduh Laporan PDF (.pdf)' : 'Download PDF Report (.pdf)' }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    appId: 'dnd_finance_v1',
+                    activeTab: 'dashboard',
+                    isDarkMode: false,
+                    lang: 'ID',
+                    currency: 'IDR',
+                    hideBalances: false,
+                    toastMessage: '',
+                    toastTimer: null,
+
+                    googleClientId: '753367715469-972f7qjb3t97qab938sc5lo69mgp78h0.apps.googleusercontent.com',
+                    googleUser: null,
+                    nicknameDraft: '',
+                    googleSessionToken: '',
+                    googleDriveToken: '',
+                    googleDriveTokenExpiry: 0,
+                    googleRefreshToken: '',
+                    syncStatus: 'idle',
+                    lastSyncedAt: '',
+                    syncIntervalId: null,
+                    isSyncingNow: false,
+
+                    banks: ['Bank Mandiri', 'Bank BCA', 'Bank BNI', 'Bank Jago', 'SeaBank', 'Gopay', 'Cash'],
+                    categories: ['Food', 'Transport', 'Trading', 'Online Shopping', 'Investment', 'Salary', 'Utilities'],
+                    transactions: [],
+                    goals: [],
+                    budgets: [],
+                    automationRules: [],
+                    deletedTxIds: [],
+                    deletedRuleIds: [],
+                    deletedGoalIds: [],
+                    deletedBudgetIds: [],
+                    deletedBanks: [],
+                    deletedCategories: [],
+
+                    // Split Bill (starts at 0)
+                    splitBill: {
+                        subtotal: 0,
+                        taxPercent: 0,
+                        people: 1,
+                        grandTotal: 0,
+                        perPerson: 0,
+                        note: '',
+                        items: []
+                    },
+                    isCameraOpen: false,
+                    cameraStream: null,
+                    isScanningReceipt: false,
+                    scanStatusText: '',
+
+                    // Modals & Forms
+                    showTxModal: false,
+                    showRuleModal: false,
+                    showExportModal: false,
+                    newWalletName: '',
+                    txSearch: '',
+                    txFilterType: 'all',
+
+                    txForm: {
+                        type: 'expense',
+                        amount: '',
+                        account: 'Bank BCA',
+                        toAccount: 'Bank Jago',
+                        category: 'Food',
+                        note: ''
+                    },
+
+                    newGoal: { name: '', target: '' },
+                    newBudget: { category: 'Food', limit: '' },
+
+                    editingRule: {
+                        id: '',
+                        name: '',
+                        actionType: 'auto_save_goal',
+                        percent: 20,
+                        fixedAmount: 50000,
+                        targetGoalName: 'Dana Darurat',
+                        destWallet: 'Bank Jago',
+                        thresholdAmount: 500000,
+                        enabled: true,
+                        runCount: 0
+                    },
+
+                    aiInput: '',
+                    isAiLoading: false,
+                    aiMessages: [],
+                    charts: {}
+                };
+            },
+            computed: {
+                displayUserName() {
+                    if (!this.googleUser) return this.lang === 'ID' ? 'Pengguna' : 'Guest';
+                    return this.googleUser.nickname || this.googleUser.name || (this.googleUser.email || '').split('@')[0];
+                },
+                storageScope() {
+                    if (this.googleUser && this.googleUser.email) {
+                        return `user_${this.googleUser.email.toLowerCase()}`;
+                    }
+                    return 'guest';
+                },
+                hasActiveDriveSync() {
+                    return Boolean(
+                        (this.googleDriveToken && Date.now() < this.googleDriveTokenExpiry) ||
+                        this.googleRefreshToken
+                    );
+                },
+                allNavTabs() {
+                    return [
+                        { id: 'dashboard', label: this.t('nav_dashboard'), icon: 'layout-grid' },
+                        { id: 'analytics', label: this.t('nav_analytics'), icon: 'bar-chart-3' },
+                        { id: 'transactions', label: this.t('nav_transactions'), icon: 'clipboard-list' },
+                        { id: 'goals', label: this.t('nav_goals'), icon: 'target' },
+                        { id: 'autopilot', label: 'Autopilot', icon: 'zap' },
+                        { id: 'more', label: this.t('nav_menu'), icon: 'menu' },
+                    ];
+                },
+                activeTabLabel() {
+                    const found = this.allNavTabs.find(t => t.id === this.activeTab);
+                    return found ? found.label : this.t('nav_dashboard');
+                },
+                totalIncome() {
+                    return this.transactions
+                        .filter(t => t.type === 'income')
+                        .reduce((acc, t) => acc + Number(t.amount || 0), 0);
+                },
+                totalOutflow() {
+                    return this.transactions
+                        .filter(t => t.type === 'expense' || t.type === 'withdrawal')
+                        .reduce((acc, t) => acc + Number(t.amount || 0), 0);
+                },
+                netBalance() {
+                    return this.totalIncome - this.totalOutflow;
+                },
+                healthScore() {
+                    if (this.totalIncome <= 0) return 0;
+                    const ratio = Math.round(((this.totalIncome - this.totalOutflow) / this.totalIncome) * 100);
+                    return Math.max(0, Math.min(100, ratio));
+                },
+                filteredTransactions() {
+                    return this.transactions.filter(tx => {
+                        const matchType = this.txFilterType === 'all' || tx.type === this.txFilterType;
+                        const q = (this.txSearch || '').trim().toLowerCase();
+                        const matchText = !q ||
+                            String(tx.note || '').toLowerCase().includes(q) ||
+                            String(tx.category || '').toLowerCase().includes(q) ||
+                            String(tx.account || '').toLowerCase().includes(q);
+                        return matchType && matchText;
+                    });
+                },
+                activeRulesCount() {
+                    return this.automationRules.filter(r => r.enabled).length;
+                },
+                autopilotPresets() {
+                    return this.lang === 'ID'
+                        ? [
+                            {
+                                id: 'preset_save_20',
+                                name: 'Sisihkan 20% Pemasukan',
+                                desc: 'Otomatis alokasikan 20% setiap pemasukan ke Target Tabungan.',
+                                actionType: 'auto_save_goal',
+                                percent: 20,
+                                targetGoalName: 'Dana Darurat',
+                                enabled: true
+                            },
+                            {
+                                id: 'preset_transfer_wallet',
+                                name: 'Auto-Transfer Antar Dompet',
+                                desc: 'Pindahkan 15% pemasukan otomatis ke dompet tabungan pilihan.',
+                                actionType: 'auto_transfer_wallet',
+                                percent: 15,
+                                destWallet: this.banks[1] || 'Bank BCA',
+                                enabled: true
+                            },
+                            {
+                                id: 'preset_spend_alert',
+                                name: 'Peringatan Pengeluaran > Rp 500rb',
+                                desc: 'Notifikasi otomatis saat ada pengeluaran besar di atas batas.',
+                                actionType: 'spend_alert',
+                                thresholdAmount: 500000,
+                                enabled: true
+                            }
+                        ]
+                        : [
+                            {
+                                id: 'preset_save_20',
+                                name: 'Save 20% of Income',
+                                desc: 'Automatically allocate 20% of each income to a savings goal.',
+                                actionType: 'auto_save_goal',
+                                percent: 20,
+                                targetGoalName: 'Emergency Fund',
+                                enabled: true
+                            },
+                            {
+                                id: 'preset_transfer_wallet',
+                                name: 'Auto-Transfer Between Wallets',
+                                desc: 'Automatically route 15% of income into a target wallet.',
+                                actionType: 'auto_transfer_wallet',
+                                percent: 15,
+                                destWallet: this.banks[1] || 'Bank BCA',
+                                enabled: true
+                            },
+                            {
+                                id: 'preset_spend_alert',
+                                name: 'Large Expense Alert',
+                                desc: 'Alert automatically whenever an expense exceeds your threshold.',
+                                actionType: 'spend_alert',
+                                thresholdAmount: 500000,
+                                enabled: true
+                            }
+                        ];
+                },
+                quickAiPrompts() {
+                    return this.lang === 'ID'
+                        ? ['Audit Arus Kas', 'Evaluasi Anggaran', 'Saran Tabungan', 'Ringkasan Pengeluaran']
+                        : ['Cashflow Audit', 'Budget Review', 'Savings Advice', 'Expense Summary'];
+                }
+            },
+            async mounted() {
+                this.loadLocalState();
+                this.recalculateSplitBill();
+                this.initWelcomeAiMessage();
+                this.refreshIcons();
+
+                await this.fetchGoogleConfig();
+                await this.checkGoogleSession();
+                this.initGoogleOneTapAutoPrompt();
+
+                window.addEventListener('focus', this.handleWindowFocusSync);
+                window.addEventListener('pageshow', this.handleWindowFocusSync);
+                document.addEventListener('visibilitychange', this.handleVisibilityChangeSync);
+                this.syncIntervalId = setInterval(() => {
+                    if (this.googleUser && this.googleUser.email && !document.hidden) {
+                        this.fullCloudSync(false);
+                    }
+                }, 12000);
+
+                this.$nextTick(() => {
+                    this.updateAllCharts();
+                    this.refreshIcons();
+                });
+            },
+            beforeUnmount() {
+                window.removeEventListener('focus', this.handleWindowFocusSync);
+                window.removeEventListener('pageshow', this.handleWindowFocusSync);
+                document.removeEventListener('visibilitychange', this.handleVisibilityChangeSync);
+                if (this.syncIntervalId) clearInterval(this.syncIntervalId);
+            },
+            methods: {
+                t(key) {
+                    const dict = {
+                        ID: {
+                            brand_home: 'Beranda DND Finance',
+                            nav_dashboard: 'Ringkasan',
+                            nav_analytics: 'Analisis',
+                            nav_transactions: 'Catatan',
+                            nav_goals: 'Target',
+                            nav_menu: 'Menu',
+                            sign_in_google: 'Masuk Google',
+                            sign_out: 'Keluar',
+                            light_mode: 'Mode Terang',
+                            dark_mode: 'Mode Gelap',
+                            export_report: 'Ekspor Laporan',
+                            export_desc: 'Unduh laporan keuangan dalam format Excel (.xlsx) atau PDF (.pdf).',
+                            personal_ledger: 'Buku Kas Pribadi',
+                            greeting: 'Halo',
+                            show_balances: 'Tampilkan Saldo',
+                            hide_balances: 'Sembunyikan Saldo',
+                            income: 'Pemasukan',
+                            expense: 'Pengeluaran',
+                            transfer: 'Transfer',
+                            record_tx: 'Catat',
+                            net_balance: 'Saldo Bersih',
+                            health_score: 'Kesehatan Kas',
+                            tx_recorded_count: 'transaksi tercatat',
+                            total_income: 'Total Pemasukan',
+                            total_expense: 'Total Pengeluaran',
+                            active_wallets: 'Dompet Aktif',
+                            wallets_accounts: 'Dompet & Rekening',
+                            transfer_between_wallets: 'Transfer Antar Dompet',
+                            recent_transactions: 'Transaksi Terbaru',
+                            view_all: 'Lihat Semua',
+                            no_transactions: 'Belum ada transaksi tercatat.',
+                            cashflow_trend: 'Arus Kas Pemasukan vs Pengeluaran',
+                            expense_by_category: 'Pengeluaran per Kategori',
+                            ai_assistant_title: 'Asisten Analisis Keuangan',
+                            ai_assistant_desc: 'Analisis arus kas, anggaran, dan target tabungan berdasarkan data transaksi Anda.',
+                            full_audit: 'Audit Lengkap',
+                            full_audit_prompt: 'Berikan audit keuangan lengkap berdasarkan data transaksi, dompet, dan target saya saat ini.',
+                            analyzing: 'Menganalisis...',
+                            all_transactions: 'Semua Catatan Transaksi',
+                            search_note_category: 'Cari catatan atau kategori...',
+                            all_types: 'Semua Tipe',
+                            delete: 'Hapus',
+                            savings_goals: 'Target Tabungan',
+                            goal_name: 'Nama Target',
+                            target_amount: 'Nominal Target',
+                            add_goal: 'Tambah',
+                            category_budgets: 'Anggaran Kategori',
+                            monthly_limit: 'Batas Bulanan',
+                            save_budget: 'Simpan',
+                            preferences: 'Preferensi',
+                            language: 'Bahasa',
+                            currency: 'Mata Uang',
+                            new_wallet_placeholder: 'Nama dompet / bank baru...',
+                            add: 'Tambah',
+                            amount: 'Nominal',
+                            wallet: 'Dompet',
+                            from_wallet: 'Dari Dompet',
+                            to_wallet: 'Ke Dompet',
+                            category: 'Kategori',
+                            note: 'Catatan',
+                            note_placeholder: 'Keterangan transaksi...',
+                            save_tx: 'Simpan Transaksi',
+                            welcome_back: 'Selamat datang kembali,'
+                        },
+                        EN: {
+                            brand_home: 'DND Finance Home',
+                            nav_dashboard: 'Overview',
+                            nav_analytics: 'Analytics',
+                            nav_transactions: 'Ledger',
+                            nav_goals: 'Goals',
+                            nav_menu: 'Menu',
+                            sign_in_google: 'Sign in Google',
+                            sign_out: 'Sign out',
+                            light_mode: 'Light Mode',
+                            dark_mode: 'Dark Mode',
+                            export_report: 'Export Report',
+                            export_desc: 'Download your financial report in Excel (.xlsx) or PDF (.pdf).',
+                            personal_ledger: 'Personal Ledger',
+                            greeting: 'Hello',
+                            show_balances: 'Show Balances',
+                            hide_balances: 'Hide Balances',
+                            income: 'Income',
+                            expense: 'Expense',
+                            transfer: 'Transfer',
+                            record_tx: 'Record',
+                            net_balance: 'Net Balance',
+                            health_score: 'Cash Health',
+                            tx_recorded_count: 'recorded transactions',
+                            total_income: 'Total Income',
+                            total_expense: 'Total Expense',
+                            active_wallets: 'Active Wallets',
+                            wallets_accounts: 'Wallets & Accounts',
+                            transfer_between_wallets: 'Transfer Wallets',
+                            recent_transactions: 'Recent Transactions',
+                            view_all: 'View All',
+                            no_transactions: 'No transactions recorded yet.',
+                            cashflow_trend: 'Income vs Expense Trend',
+                            expense_by_category: 'Expense by Category',
+                            ai_assistant_title: 'Financial Intelligence Assistant',
+                            ai_assistant_desc: 'Analyze cash flow, budgets, and goals using your live ledger data.',
+                            full_audit: 'Full Audit',
+                            full_audit_prompt: 'Provide a full financial audit based on my current transactions, wallets, and goals.',
+                            analyzing: 'Analyzing...',
+                            all_transactions: 'All Ledger Transactions',
+                            search_note_category: 'Search note or category...',
+                            all_types: 'All Types',
+                            delete: 'Delete',
+                            savings_goals: 'Savings Goals',
+                            goal_name: 'Goal Name',
+                            target_amount: 'Target Amount',
+                            add_goal: 'Add',
+                            category_budgets: 'Category Budgets',
+                            monthly_limit: 'Monthly Limit',
+                            save_budget: 'Save',
+                            preferences: 'Preferences',
+                            language: 'Language',
+                            currency: 'Currency',
+                            new_wallet_placeholder: 'New wallet / bank name...',
+                            add: 'Add',
+                            amount: 'Amount',
+                            wallet: 'Wallet',
+                            from_wallet: 'From Wallet',
+                            to_wallet: 'To Wallet',
+                            category: 'Category',
+                            note: 'Note',
+                            note_placeholder: 'Transaction note...',
+                            save_tx: 'Save Transaction',
+                            welcome_back: 'Welcome back,'
+                        }
+                    };
+                    return (dict[this.lang] && dict[this.lang][key]) || dict.ID[key] || key;
+                },
+                refreshIcons() {
+                    this.$nextTick(() => {
+                        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                            window.lucide.createIcons();
+                        }
+                    });
+                },
+                showToast(msg) {
+                    this.toastMessage = msg;
+                    if (this.toastTimer) clearTimeout(this.toastTimer);
+                    this.toastTimer = setTimeout(() => {
+                        this.toastMessage = '';
+                    }, 3000);
+                },
+                setTab(tabId) {
+                    if (tabId !== 'dashboard' && this.isCameraOpen) {
+                        this.stopLiveCamera();
+                    }
+                    this.activeTab = tabId;
+                    if (this.googleUser && this.googleUser.email) {
+                        this.fullCloudSync(false);
+                    }
+                    this.refreshIcons();
+                    if (tabId === 'analytics') {
+                        this.$nextTick(() => this.updateAllCharts());
+                    }
+                },
+                toggleTheme() {
+                    this.isDarkMode = !this.isDarkMode;
+                    this.saveLocalState();
+                    this.$nextTick(() => {
+                        this.updateAllCharts();
+                        this.refreshIcons();
+                    });
+                },
+                toggleHideBalances() {
+                    this.hideBalances = !this.hideBalances;
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                    this.refreshIcons();
+                },
+                toggleLanguage() {
+                    this.lang = this.lang === 'ID' ? 'EN' : 'ID';
+                    document.documentElement.lang = this.lang === 'ID' ? 'id' : 'en';
+                    this.initWelcomeAiMessage();
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                    this.$nextTick(() => {
+                        this.updateAllCharts();
+                        this.refreshIcons();
+                    });
+                },
+                onCurrencyChange() {
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                    this.$nextTick(() => this.updateAllCharts());
+                },
+                formatMoney(val) {
+                    if (this.hideBalances) return '••••••••';
+                    const num = Number(val || 0);
+                    if (this.currency === 'USD') {
+                        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(num);
+                    }
+                    if (this.currency === 'SGD') {
+                        return new Intl.NumberFormat('en-SG', { style: 'currency', currency: 'SGD', maximumFractionDigits: 2 }).format(num);
+                    }
+                    return 'Rp ' + new Intl.NumberFormat('id-ID', { maximumFractionDigits: 0 }).format(num);
+                },
+                loadLocalState() {
+                    try {
+                        const savedTheme = localStorage.getItem(`${this.appId}_theme`);
+                        this.isDarkMode = savedTheme === 'dark' || savedTheme === 'black';
+
+                        const savedLang = localStorage.getItem(`${this.appId}_lang`);
+                        if (savedLang === 'ID' || savedLang === 'EN') {
+                            this.lang = savedLang;
+                        } else {
+                            const sysLang = (
+                                (Array.isArray(navigator.languages) && navigator.languages[0]) ||
+                                navigator.language ||
+                                'id'
+                            ).toLowerCase();
+                            this.lang = sysLang.startsWith('id') ? 'ID' : 'EN';
+                        }
+                        document.documentElement.lang = this.lang === 'ID' ? 'id' : 'en';
+
+                        const savedCurr = localStorage.getItem(`${this.appId}_currency`);
+                        if (savedCurr) this.currency = savedCurr;
+
+                        const savedHide = localStorage.getItem(`${this.appId}_hide_balances`);
+                        if (savedHide === '1') this.hideBalances = true;
+
+                        const savedToken = localStorage.getItem(`${this.appId}_google_session`);
+                        if (savedToken) this.googleSessionToken = savedToken;
+
+                        const savedDriveToken = localStorage.getItem(`${this.appId}_google_drive_token`);
+                        const savedDriveExp = Number(localStorage.getItem(`${this.appId}_google_drive_exp`) || 0);
+                        if (savedDriveToken && Date.now() < savedDriveExp) {
+                            this.googleDriveToken = savedDriveToken;
+                            this.googleDriveTokenExpiry = savedDriveExp;
+                        }
+
+                        const savedRefreshToken = localStorage.getItem(`${this.appId}_google_refresh_token`);
+                        if (savedRefreshToken) {
+                            this.googleRefreshToken = savedRefreshToken;
+                        }
+
+                        const savedUser = localStorage.getItem(`${this.appId}_google_user`);
+                        if (savedUser) {
+                            this.googleUser = JSON.parse(savedUser);
+                            this.nicknameDraft = (this.googleUser && this.googleUser.nickname) || '';
+                        }
+                    } catch (e) {}
+
+                    this.loadScopedLedgerData();
+                },
+                loadScopedLedgerData() {
+                    const key = `${this.appId}_data_${this.storageScope}`;
+                    try {
+                        const raw = localStorage.getItem(key);
+                        if (raw) {
+                            const parsed = JSON.parse(raw);
+                            this.banks = Array.isArray(parsed.banks) && parsed.banks.length ? parsed.banks : ['Bank Mandiri', 'Bank BCA', 'Bank BNI', 'Bank Jago', 'SeaBank', 'Gopay', 'Cash'];
+                            this.categories = Array.isArray(parsed.categories) && parsed.categories.length ? parsed.categories : ['Food', 'Transport', 'Trading', 'Online Shopping', 'Investment', 'Salary', 'Utilities'];
+                            this.transactions = Array.isArray(parsed.transactions) ? parsed.transactions : [];
+                            this.goals = Array.isArray(parsed.goals) ? parsed.goals : [];
+                            this.budgets = Array.isArray(parsed.budgets) ? parsed.budgets : [];
+                            this.automationRules = Array.isArray(parsed.automationRules) ? parsed.automationRules : [];
+                            this.deletedTxIds = Array.isArray(parsed.deletedTxIds) ? parsed.deletedTxIds : [];
+                            this.deletedRuleIds = Array.isArray(parsed.deletedRuleIds) ? parsed.deletedRuleIds : [];
+                            this.deletedGoalIds = Array.isArray(parsed.deletedGoalIds) ? parsed.deletedGoalIds : [];
+                            this.deletedBudgetIds = Array.isArray(parsed.deletedBudgetIds) ? parsed.deletedBudgetIds : [];
+                            this.deletedBanks = Array.isArray(parsed.deletedBanks) ? parsed.deletedBanks : [];
+                            this.deletedCategories = Array.isArray(parsed.deletedCategories) ? parsed.deletedCategories : [];
+                            return;
+                        }
+                    } catch (e) {}
+                    this.transactions = [];
+                    this.goals = [];
+                    this.budgets = [];
+                    this.automationRules = [];
+                    this.deletedTxIds = [];
+                    this.deletedRuleIds = [];
+                    this.deletedGoalIds = [];
+                    this.deletedBudgetIds = [];
+                    this.deletedBanks = [];
+                    this.deletedCategories = [];
+                },
+                saveLocalState() {
+                    try {
+                        localStorage.setItem(`${this.appId}_theme`, this.isDarkMode ? 'dark' : 'light');
+                        localStorage.setItem(`${this.appId}_lang`, this.lang);
+                        localStorage.setItem(`${this.appId}_currency`, this.currency);
+                        localStorage.setItem(`${this.appId}_hide_balances`, this.hideBalances ? '1' : '0');
+
+                        if (this.googleSessionToken) {
+                            localStorage.setItem(`${this.appId}_google_session`, this.googleSessionToken);
+                        } else {
+                            localStorage.removeItem(`${this.appId}_google_session`);
+                        }
+
+                        if (this.googleDriveToken && Date.now() < this.googleDriveTokenExpiry) {
+                            localStorage.setItem(`${this.appId}_google_drive_token`, this.googleDriveToken);
+                            localStorage.setItem(`${this.appId}_google_drive_exp`, String(this.googleDriveTokenExpiry));
+                        } else {
+                            localStorage.removeItem(`${this.appId}_google_drive_token`);
+                            localStorage.removeItem(`${this.appId}_google_drive_exp`);
+                        }
+
+                        if (this.googleRefreshToken) {
+                            localStorage.setItem(`${this.appId}_google_refresh_token`, this.googleRefreshToken);
+                        } else {
+                            localStorage.removeItem(`${this.appId}_google_refresh_token`);
+                        }
+
+                        if (this.googleUser) {
+                            localStorage.setItem(`${this.appId}_google_user`, JSON.stringify(this.googleUser));
+                        } else {
+                            localStorage.removeItem(`${this.appId}_google_user`);
+                        }
+
+                        const key = `${this.appId}_data_${this.storageScope}`;
+                        localStorage.setItem(key, JSON.stringify({
+                            banks: this.banks,
+                            categories: this.categories,
+                            transactions: this.transactions,
+                            goals: this.goals,
+                            budgets: this.budgets,
+                            automationRules: this.automationRules,
+                            deletedTxIds: this.deletedTxIds.slice(-300),
+                            deletedRuleIds: this.deletedRuleIds.slice(-150),
+                            deletedGoalIds: this.deletedGoalIds.slice(-150),
+                            deletedBudgetIds: this.deletedBudgetIds.slice(-150),
+                            deletedBanks: this.deletedBanks.slice(-100),
+                            deletedCategories: this.deletedCategories.slice(-100),
+                            updatedAt: Date.now()
+                        }));
+                    } catch (e) {}
+                },
+                migrateGuestDataToAccount() {
+                    if (!this.googleUser || !this.googleUser.email) return false;
+                    try {
+                        const guestKey = `${this.appId}_data_guest`;
+                        const rawGuest = localStorage.getItem(guestKey);
+                        if (!rawGuest) return false;
+                        const guestState = JSON.parse(rawGuest);
+                        const hasGuestRecords =
+                            (Array.isArray(guestState.transactions) && guestState.transactions.length > 0) ||
+                            (Array.isArray(guestState.goals) && guestState.goals.length > 0) ||
+                            (Array.isArray(guestState.budgets) && guestState.budgets.length > 0) ||
+                            (Array.isArray(guestState.automationRules) && guestState.automationRules.length > 0);
+                        if (!hasGuestRecords) return false;
+
+                        this.mergeWorkspaceStates(guestState);
+                        localStorage.removeItem(guestKey);
+                        this.saveLocalState();
+                        return true;
+                    } catch (e) {
+                        return false;
+                    }
+                },
+                mergeWorkspaceStates(incoming) {
+                    if (!incoming || typeof incoming !== 'object') return false;
+                    let changed = false;
+
+                    // Merge tombstone deleted IDs & wallet/category deletions so deletions sync across Handphone, Laptop, iPad & Mac
+                    const incomingDelTx = Array.isArray(incoming.deletedTxIds) ? incoming.deletedTxIds.map(String) : [];
+                    for (const id of incomingDelTx) {
+                        if (!this.deletedTxIds.includes(id)) {
+                            this.deletedTxIds.push(id);
+                            changed = true;
+                        }
+                    }
+                    const delTxSet = new Set(this.deletedTxIds.map(String));
+                    const beforeTxLen = this.transactions.length;
+                    this.transactions = this.transactions.filter(t => !delTxSet.has(String(t.id)));
+                    if (this.transactions.length !== beforeTxLen) changed = true;
+
+                    const incomingDelRules = Array.isArray(incoming.deletedRuleIds) ? incoming.deletedRuleIds.map(String) : [];
+                    for (const id of incomingDelRules) {
+                        if (!this.deletedRuleIds.includes(id)) {
+                            this.deletedRuleIds.push(id);
+                            changed = true;
+                        }
+                    }
+                    const delRuleSet = new Set(this.deletedRuleIds.map(String));
+                    const beforeRuleLen = this.automationRules.length;
+                    this.automationRules = this.automationRules.filter(r => !delRuleSet.has(String(r.id)));
+                    if (this.automationRules.length !== beforeRuleLen) changed = true;
+
+                    const incomingDelGoals = Array.isArray(incoming.deletedGoalIds) ? incoming.deletedGoalIds.map(String) : [];
+                    for (const id of incomingDelGoals) {
+                        if (!this.deletedGoalIds.includes(id)) {
+                            this.deletedGoalIds.push(id);
+                            changed = true;
+                        }
+                    }
+                    const delGoalSet = new Set(this.deletedGoalIds.map(String));
+                    const beforeGoalLen = this.goals.length;
+                    this.goals = this.goals.filter(g => !delGoalSet.has(String(g.id)));
+                    if (this.goals.length !== beforeGoalLen) changed = true;
+
+                    const incomingDelBudgets = Array.isArray(incoming.deletedBudgetIds) ? incoming.deletedBudgetIds.map(String) : [];
+                    for (const id of incomingDelBudgets) {
+                        if (!this.deletedBudgetIds.includes(id)) {
+                            this.deletedBudgetIds.push(id);
+                            changed = true;
+                        }
+                    }
+                    const delBudgetSet = new Set(this.deletedBudgetIds.map(String));
+                    const beforeBudLen = this.budgets.length;
+                    this.budgets = this.budgets.filter(b => !delBudgetSet.has(String(b.id)));
+                    if (this.budgets.length !== beforeBudLen) changed = true;
+
+                    const incomingDelBanks = Array.isArray(incoming.deletedBanks) ? incoming.deletedBanks.map(String) : [];
+                    for (const b of incomingDelBanks) {
+                        if (!this.deletedBanks.includes(b)) {
+                            this.deletedBanks.push(b);
+                            changed = true;
+                        }
+                    }
+                    const delBankSet = new Set(this.deletedBanks);
+
+                    const incomingDelCats = Array.isArray(incoming.deletedCategories) ? incoming.deletedCategories.map(String) : [];
+                    for (const c of incomingDelCats) {
+                        if (!this.deletedCategories.includes(c)) {
+                            this.deletedCategories.push(c);
+                            changed = true;
+                        }
+                    }
+                    const delCatSet = new Set(this.deletedCategories);
+
+                    // 1. Merge Wallets / Banks (respecting deletions)
+                    if (Array.isArray(incoming.banks)) {
+                        for (const b of incoming.banks) {
+                            const clean = String(b || '').trim();
+                            if (clean && !delBankSet.has(clean) && !this.banks.includes(clean)) {
+                                this.banks.push(clean);
+                                changed = true;
+                            }
+                        }
+                    }
+                    if (delBankSet.size > 0 && this.banks.length > 1) {
+                        const filteredBanks = this.banks.filter(b => !delBankSet.has(b));
+                        if (filteredBanks.length > 0 && filteredBanks.length !== this.banks.length) {
+                            this.banks = filteredBanks;
+                            changed = true;
+                        }
+                    }
+
+                    // 2. Merge Categories (respecting deletions)
+                    if (Array.isArray(incoming.categories)) {
+                        for (const c of incoming.categories) {
+                            const clean = String(c || '').trim();
+                            if (clean && !delCatSet.has(clean) && !this.categories.includes(clean)) {
+                                this.categories.push(clean);
+                                changed = true;
+                            }
+                        }
+                    }
+                    if (delCatSet.size > 0 && this.categories.length > 1) {
+                        const filteredCats = this.categories.filter(c => !delCatSet.has(c));
+                        if (filteredCats.length > 0 && filteredCats.length !== this.categories.length) {
+                            this.categories = filteredCats;
+                            changed = true;
+                        }
+                    }
+
+                    // 3. Merge Transactions (skipping deleted IDs)
+                    if (Array.isArray(incoming.transactions) && incoming.transactions.length > 0) {
+                        const existingIds = new Set(this.transactions.map(t => String(t.id)));
+                        const existingSigs = new Set(
+                            this.transactions.map(t => `${t.date}|${t.type}|${Number(t.amount)}|${t.account}|${t.category}|${t.note || ''}`)
+                        );
+                        for (const tx of incoming.transactions) {
+                            if (!tx || Number(tx.amount || 0) <= 0) continue;
+                            const idKey = String(tx.id);
+                            if (delTxSet.has(idKey)) continue;
+                            const sigKey = `${tx.date}|${tx.type}|${Number(tx.amount)}|${tx.account}|${tx.category}|${tx.note || ''}`;
+                            if (!existingIds.has(idKey) && !existingSigs.has(sigKey)) {
+                                this.transactions.push({ ...tx });
+                                existingIds.add(idKey);
+                                existingSigs.add(sigKey);
+                                changed = true;
+                            }
+                        }
+                        if (changed) {
+                            this.transactions.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || Number(b.id || 0) - Number(a.id || 0));
+                        }
+                    }
+
+                    // 4. Merge Savings Goals
+                    if (Array.isArray(incoming.goals)) {
+                        for (const g of incoming.goals) {
+                            if (!g || !g.name || delGoalSet.has(String(g.id))) continue;
+                            const idx = this.goals.findIndex(
+                                x => String(x.id) === String(g.id) || x.name.toLowerCase() === g.name.toLowerCase()
+                            );
+                            if (idx === -1) {
+                                this.goals.push({ ...g });
+                                changed = true;
+                            } else {
+                                const maxCurr = Math.max(Number(this.goals[idx].current || 0), Number(g.current || 0));
+                                const maxTarg = Math.max(Number(this.goals[idx].target || 0), Number(g.target || 0));
+                                if (maxCurr !== Number(this.goals[idx].current || 0) || maxTarg !== Number(this.goals[idx].target || 0)) {
+                                    this.goals[idx].current = maxCurr;
+                                    this.goals[idx].target = maxTarg;
+                                    changed = true;
+                                }
+                            }
+                        }
+                    }
+
+                    // 5. Merge Category Budgets (latest updatedAt wins)
+                    if (Array.isArray(incoming.budgets)) {
+                        for (const b of incoming.budgets) {
+                            if (!b || !b.category || delBudgetSet.has(String(b.id))) continue;
+                            const idx = this.budgets.findIndex(x => x.category === b.category);
+                            if (idx === -1) {
+                                this.budgets.push({ ...b });
+                                changed = true;
+                            } else if (Number(b.updatedAt || 0) > Number(this.budgets[idx].updatedAt || 0)) {
+                                this.budgets[idx] = { ...b };
+                                changed = true;
+                            }
+                        }
+                    }
+
+                    // 6. Merge Automation Rules (latest updatedAt wins)
+                    if (Array.isArray(incoming.automationRules)) {
+                        for (const r of incoming.automationRules) {
+                            if (!r || !r.id || delRuleSet.has(String(r.id))) continue;
+                            const idx = this.automationRules.findIndex(x => String(x.id) === String(r.id));
+                            if (idx === -1) {
+                                this.automationRules.push({ ...r });
+                                changed = true;
+                            } else if (Number(r.updatedAt || 0) > Number(this.automationRules[idx].updatedAt || 0)) {
+                                this.automationRules[idx] = { ...r };
+                                changed = true;
+                            }
+                        }
+                    }
+
+                    // 7. Merge Nickname if synced from another device
+                    if (incoming.nickname && this.googleUser && !this.googleUser.nickname) {
+                        this.googleUser.nickname = incoming.nickname;
+                        this.nicknameDraft = incoming.nickname;
+                        changed = true;
+                    }
+
+                    return changed;
+                },
+                buildWorkspaceSnapshot() {
+                    return {
+                        banks: this.banks,
+                        categories: this.categories,
+                        transactions: this.transactions,
+                        goals: this.goals,
+                        budgets: this.budgets,
+                        automationRules: this.automationRules,
+                        deletedTxIds: this.deletedTxIds.slice(-300),
+                        deletedRuleIds: this.deletedRuleIds.slice(-150),
+                        deletedGoalIds: this.deletedGoalIds.slice(-150),
+                        deletedBudgetIds: this.deletedBudgetIds.slice(-150),
+                        deletedBanks: this.deletedBanks.slice(-100),
+                        deletedCategories: this.deletedCategories.slice(-100),
+                        nickname: (this.googleUser && this.googleUser.nickname) || '',
+                        currency: this.currency,
+                        lang: this.lang,
+                        updatedAt: Date.now()
+                    };
+                },
+                handleWindowFocusSync() {
+                    if (this.googleUser && this.googleUser.email) {
+                        this.fullCloudSync(false);
+                    }
+                },
+                handleVisibilityChangeSync() {
+                    if (!document.hidden && this.googleUser && this.googleUser.email) {
+                        this.fullCloudSync(false);
+                    }
+                },
+                async triggerManualCloudSync() {
+                    if (!this.googleUser) {
+                        this.initiateGoogleLogin();
+                        return;
+                    }
+                    const validDriveToken = await this.ensureValidGoogleDriveToken();
+                    if (!validDriveToken) {
+                        // Try GIS Token Client popup first, fallback to full OAuth redirect
+                        const popupToken = await this.requestDriveAccessTokenViaGis();
+                        if (!popupToken) {
+                            this.initiateGoogleLogin();
+                            return;
+                        }
+                    }
+                    await this.fullCloudSync(true);
+                },
+                requestDriveAccessTokenViaGis() {
+                    return new Promise((resolve) => {
+                        if (!window.google || !window.google.accounts || !window.google.accounts.oauth2 || !this.googleClientId) {
+                            resolve('');
+                            return;
+                        }
+                        try {
+                            const tokenClient = window.google.accounts.oauth2.initTokenClient({
+                                client_id: this.googleClientId,
+                                scope: 'https://www.googleapis.com/auth/drive.appdata',
+                                hint: (this.googleUser && this.googleUser.email) || '',
+                                callback: (tokenResponse) => {
+                                    if (tokenResponse && tokenResponse.access_token) {
+                                        const expSec = Number(tokenResponse.expires_in || 3500);
+                                        this.googleDriveToken = tokenResponse.access_token;
+                                        this.googleDriveTokenExpiry = Date.now() + (expSec - 60) * 1000;
+                                        this.saveLocalState();
+                                        resolve(this.googleDriveToken);
+                                    } else {
+                                        resolve('');
+                                    }
+                                },
+                                error_callback: () => resolve('')
+                            });
+                            tokenClient.requestAccessToken({ prompt: '' });
+                        } catch (e) {
+                            resolve('');
+                        }
+                    });
+                },
+                async ensureValidGoogleDriveToken() {
+                    if (this.googleDriveToken && Date.now() < this.googleDriveTokenExpiry) {
+                        return this.googleDriveToken;
+                    }
+                    if (this.googleRefreshToken || (this.googleUser && this.googleUser.email)) {
+                        try {
+                            const res = await fetch('/api/auth/google/refresh-token', {
+                                method: 'POST',
+                                credentials: 'include',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    refresh_token: this.googleRefreshToken || '',
+                                    email: (this.googleUser && this.googleUser.email) || ''
+                                })
+                            });
+                            if (res.ok) {
+                                const data = await res.json();
+                                if (data.access_token) {
+                                    const expSec = Number(data.expires_in || 3500);
+                                    this.googleDriveToken = data.access_token;
+                                    this.googleDriveTokenExpiry = Date.now() + (expSec - 60) * 1000;
+                                    if (data.refresh_token && !this.googleRefreshToken) {
+                                        this.googleRefreshToken = data.refresh_token;
+                                    }
+                                    this.saveLocalState();
+                                    return this.googleDriveToken;
+                                }
+                            }
+                        } catch (e) {}
+                    }
+                    return '';
+                },
+                async fullCloudSync(showNotification = false) {
+                    if (!this.googleUser || !this.googleUser.email || this.isSyncingNow) return;
+                    this.isSyncingNow = true;
+                    this.syncStatus = 'syncing';
+                    this.refreshIcons();
+
+                    try {
+                        // 1. Pull & Merge from Backend API
+                        await this.pullWorkspaceFromBackend();
+
+                        // 2. Ensure fresh Google Drive AppData token (auto-refreshing if needed)
+                        const driveToken = await this.ensureValidGoogleDriveToken();
+                        if (driveToken) {
+                            await this.pullFromGoogleDriveAppData(driveToken);
+                        }
+
+                        // 3. Push unified state back to Backend API & Google Drive AppData
+                        await this.pushWorkspaceToBackendOnly();
+                        if (driveToken) {
+                            await this.pushToGoogleDriveAppData(driveToken);
+                            this.syncStatus = 'synced';
+                        } else {
+                            this.syncStatus = 'needs_drive_auth';
+                        }
+
+                        this.lastSyncedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                        this.saveLocalState();
+                        this.updateAllCharts();
+                        if (showNotification) {
+                            this.showToast(this.lang === 'ID' ? 'Semua data tersinkronisasi untuk HP, Laptop, iPad & Mac' : 'All data synced across Phone, Laptop, iPad & Mac');
+                        }
+                    } catch (e) {
+                        this.syncStatus = this.hasActiveDriveSync ? 'synced' : 'needs_drive_auth';
+                    } finally {
+                        this.isSyncingNow = false;
+                        this.refreshIcons();
+                    }
+                },
+                async syncWorkspaceToBackend() {
+                    if (!this.googleUser || !this.googleUser.email) return;
+                    this.syncStatus = 'syncing';
+                    await this.pushWorkspaceToBackendOnly();
+                    const driveToken = await this.ensureValidGoogleDriveToken();
+                    if (driveToken) {
+                        await this.pushToGoogleDriveAppData(driveToken);
+                        this.syncStatus = 'synced';
+                    } else {
+                        this.syncStatus = 'needs_drive_auth';
+                    }
+                    this.lastSyncedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    this.refreshIcons();
+                },
+                async pushWorkspaceToBackendOnly() {
+                    if (!this.googleUser || !this.googleUser.email) return;
+                    try {
+                        const res = await fetch('/api/sync/push', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                email: this.googleUser.email,
+                                state: this.buildWorkspaceSnapshot()
+                            })
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.merged_state) {
+                                const changed = this.mergeWorkspaceStates(data.merged_state);
+                                if (changed) this.saveLocalState();
+                            }
+                        }
+                    } catch (e) {}
+                },
+                async pullWorkspaceFromBackend() {
+                    if (!this.googleUser || !this.googleUser.email) return;
+                    try {
+                        const res = await fetch(`/api/sync/pull?email=${encodeURIComponent(this.googleUser.email)}`, {
+                            credentials: 'include'
+                        });
+                        if (!res.ok) return;
+                        const data = await res.json();
+                        if (data.status === 'ok' && data.state) {
+                            const changed = this.mergeWorkspaceStates(data.state);
+                            if (data.state.currency && !this.transactions.length) {
+                                this.currency = data.state.currency;
+                            }
+                            if (changed) {
+                                this.saveLocalState();
+                            }
+                        }
+                    } catch (e) {}
+                },
+
+                // ==========================================
+                // GOOGLE DRIVE APPDATA CROSS-DEVICE CLOUD SYNC
+                // ==========================================
+                async findGoogleDriveSyncFileId(driveToken) {
+                    if (!driveToken) return null;
+                    const q = encodeURIComponent("name='dnd_finance_ledger_sync.json' and trashed=false");
+                    const res = await fetch(
+                        `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${q}&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc`,
+                        {
+                            headers: { Authorization: `Bearer ${driveToken}` }
+                        }
+                    );
+                    if (res.status === 401) {
+                        this.googleDriveToken = '';
+                        this.googleDriveTokenExpiry = 0;
+                        this.saveLocalState();
+                        return null;
+                    }
+                    if (!res.ok) return null;
+                    const data = await res.json();
+                    const files = Array.isArray(data.files) ? data.files : [];
+                    return files.length > 0 ? files[0].id : null;
+                },
+                async pullFromGoogleDriveAppData(driveToken) {
+                    if (!driveToken) return;
+                    const fileId = await this.findGoogleDriveSyncFileId(driveToken);
+                    if (!fileId) return;
+                    const res = await fetch(
+                        `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?alt=media`,
+                        {
+                            headers: { Authorization: `Bearer ${driveToken}` }
+                        }
+                    );
+                    if (!res.ok) return;
+                    const cloudState = await res.json();
+                    const changed = this.mergeWorkspaceStates(cloudState);
+                    if (changed) {
+                        this.saveLocalState();
+                    }
+                },
+                async pushToGoogleDriveAppData(driveToken) {
+                    if (!driveToken) return;
+                    const fileId = await this.findGoogleDriveSyncFileId(driveToken);
+                    const contentJson = JSON.stringify(this.buildWorkspaceSnapshot());
+
+                    if (fileId) {
+                        await fetch(
+                            `https://www.googleapis.com/upload/drive/v3/files/${encodeURIComponent(fileId)}?uploadType=media`,
+                            {
+                                method: 'PATCH',
+                                headers: {
+                                    Authorization: `Bearer ${driveToken}`,
+                                    'Content-Type': 'application/json'
+                                },
+                                body: contentJson
+                            }
+                        );
+                    } else {
+                        const boundary = '-------dnd_finance_sync_boundary';
+                        const metadata = JSON.stringify({
+                            name: 'dnd_finance_ledger_sync.json',
+                            parents: ['appDataFolder']
+                        });
+                        const multipartBody =
+                            `--${boundary}\r\n` +
+                            `Content-Type: application/json; charset=UTF-8\r\n\r\n` +
+                            `${metadata}\r\n` +
+                            `--${boundary}\r\n` +
+                            `Content-Type: application/json\r\n\r\n` +
+                            `${contentJson}\r\n` +
+                            `--${boundary}--`;
+
+                        await fetch(
+                            'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+                            {
+                                method: 'POST',
+                                headers: {
+                                    Authorization: `Bearer ${driveToken}`,
+                                    'Content-Type': `multipart/related; boundary=${boundary}`
+                                },
+                                body: multipartBody
+                            }
+                        );
+                    }
+                },
+
+                // ==========================================
+                // GOOGLE ACCOUNT AUTO-DETECTION & SIGN-IN
+                // ==========================================
+                async fetchGoogleConfig() {
+                    try {
+                        const res = await fetch('/api/auth/google/config', { credentials: 'include' });
+                        if (res.ok) {
+                            const cfg = await res.json();
+                            if (cfg.client_id) this.googleClientId = cfg.client_id;
+                        }
+                    } catch (e) {}
+                },
+
+                async checkGoogleSession() {
+                    const params = new URLSearchParams(window.location.search);
+                    const qSession = (params.get('google_session') || '').trim();
+                    const qDriveToken = (params.get('google_drive_token') || '').trim();
+                    const qRefreshToken = (params.get('google_refresh_token') || '').trim();
+                    const qEmail = (params.get('google_email') || '').trim().toLowerCase();
+                    const qName = (params.get('google_name') || '').trim();
+                    const qPicture = (params.get('google_picture') || '').trim();
+                    const qSub = (params.get('google_sub') || '').trim();
+                    const authError = (params.get('google_auth_error') || '').trim();
+
+                    if (qSession) {
+                        this.googleSessionToken = qSession;
+                    }
+                    if (qDriveToken) {
+                        this.googleDriveToken = qDriveToken;
+                        this.googleDriveTokenExpiry = Date.now() + 3400 * 1000;
+                    }
+                    if (qRefreshToken) {
+                        this.googleRefreshToken = qRefreshToken;
+                    }
+                    if (qEmail) {
+                        this.googleUser = {
+                            sub: qSub || qEmail,
+                            email: qEmail,
+                            name: qName || qEmail.split('@')[0],
+                            nickname: (this.googleUser && this.googleUser.nickname) || '',
+                            picture: qPicture
+                        };
+                        this.nicknameDraft = this.googleUser.nickname || '';
+                        this.loadScopedLedgerData();
+                        this.migrateGuestDataToAccount();
+                        this.saveLocalState();
+                    }
+                    if (params.has('google_auth_success') || params.has('google_auth_error') || qSession || qEmail || qDriveToken || qRefreshToken) {
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    }
+                    if (authError) {
+                        this.showToast(`Google Sign-In: ${authError}`);
+                    }
+
+                    try {
+                        const query = new URLSearchParams();
+                        if (this.googleSessionToken) query.set('session_token', this.googleSessionToken);
+                        if (this.googleUser && this.googleUser.email) query.set('email', this.googleUser.email);
+                        const qs = query.toString() ? `?${query.toString()}` : '';
+                        const headers = {};
+                        if (this.googleSessionToken) {
+                            headers['Authorization'] = `Bearer ${this.googleSessionToken}`;
+                        }
+
+                        const res = await fetch(`/api/auth/google/me${qs}`, {
+                            credentials: 'include',
+                            headers
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.authenticated && data.user) {
+                                const prevEmail = this.googleUser && this.googleUser.email;
+                                this.googleUser = data.user;
+                                this.nicknameDraft = data.user.nickname || '';
+                                if (data.session_token) this.googleSessionToken = data.session_token;
+                                if (data.drive_access_token) {
+                                    this.googleDriveToken = data.drive_access_token;
+                                    this.googleDriveTokenExpiry = Date.now() + 3400 * 1000;
+                                }
+                                if (data.refresh_token && !this.googleRefreshToken) {
+                                    this.googleRefreshToken = data.refresh_token;
+                                }
+                                this.loadScopedLedgerData();
+                                this.migrateGuestDataToAccount();
+                                await this.fullCloudSync(false);
+                                this.saveLocalState();
+                                this.updateAllCharts();
+                                this.refreshIcons();
+                                if (!prevEmail) {
+                                    this.showToast(`${this.t('welcome_back')} ${this.displayUserName}`);
+                                }
+                                return;
+                            }
+                        }
+                    } catch (e) {}
+
+                    if (this.googleUser && this.googleUser.email) {
+                        this.migrateGuestDataToAccount();
+                        await this.fullCloudSync(false);
+                        this.updateAllCharts();
+                        this.refreshIcons();
+                    }
+                },
+
+                initGoogleOneTapAutoPrompt() {
+                    if (this.googleUser || !this.googleClientId) return;
+                    const tryPrompt = (attempt = 0) => {
+                        if (this.googleUser) return;
+                        if (window.google && window.google.accounts && window.google.accounts.id) {
+                            try {
+                                window.google.accounts.id.initialize({
+                                    client_id: this.googleClientId,
+                                    callback: (resp) => this.handleGoogleCredentialResponse(resp),
+                                    auto_select: true,
+                                    cancel_on_tap_outside: true,
+                                    use_fedcm_for_prompt: true
+                                });
+                                window.google.accounts.id.prompt();
+                            } catch (e) {}
+                        } else if (attempt < 15) {
+                            setTimeout(() => tryPrompt(attempt + 1), 350);
+                        }
+                    };
+                    tryPrompt();
+                },
+
+                handleGoogleHeaderClick() {
+                    if (!this.googleUser) {
+                        this.initiateGoogleLogin();
+                    } else {
+                        this.setTab('more');
+                    }
+                },
+
+                initiateGoogleLogin() {
+                    // Unified OAuth flow grants profile + Google Drive AppData sync across Handphone, Laptop, iPad & Mac
+                    window.location.href = '/api/auth/google/login';
+                },
+
+                async handleGoogleCredentialResponse(response) {
+                    if (!response || !response.credential) return;
+                    try {
+                        const res = await fetch('/api/auth/google/verify-token', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id_token: response.credential })
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data.user) {
+                                this.googleUser = data.user;
+                                this.nicknameDraft = data.user.nickname || '';
+                                if (data.session_token) this.googleSessionToken = data.session_token;
+                                if (data.drive_access_token) {
+                                    this.googleDriveToken = data.drive_access_token;
+                                    this.googleDriveTokenExpiry = Date.now() + 3400 * 1000;
+                                }
+                                if (data.refresh_token && !this.googleRefreshToken) {
+                                    this.googleRefreshToken = data.refresh_token;
+                                }
+                                this.loadScopedLedgerData();
+                                this.migrateGuestDataToAccount();
+                                await this.fullCloudSync(false);
+                                this.saveLocalState();
+                                this.updateAllCharts();
+                                this.refreshIcons();
+                                this.showToast(`${this.t('welcome_back')} ${this.displayUserName}`);
+                            }
+                        }
+                    } catch (e) {
+                        window.location.href = '/api/auth/google/login';
+                    }
+                },
+
+                async saveCustomNickname() {
+                    if (!this.googleUser || !this.googleUser.email) return;
+                    const clean = (this.nicknameDraft || '').trim();
+                    this.googleUser.nickname = clean;
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                    try {
+                        await fetch('/api/auth/google/nickname', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email: this.googleUser.email, nickname: clean })
+                        });
+                    } catch (e) {}
+                    this.showToast(this.lang === 'ID' ? 'Nama profil diperbarui & tersinkron' : 'Profile name updated & synced');
+                },
+
+                async logoutGoogle() {
+                    try {
+                        if (window.google && window.google.accounts && window.google.accounts.id) {
+                            window.google.accounts.id.disableAutoSelect();
+                        }
+                        await fetch('/api/auth/google/logout', {
+                            method: 'POST',
+                            credentials: 'include'
+                        });
+                    } catch (e) {}
+                    this.googleUser = null;
+                    this.nicknameDraft = '';
+                    this.googleSessionToken = '';
+                    this.googleDriveToken = '';
+                    this.googleDriveTokenExpiry = 0;
+                    this.googleRefreshToken = '';
+                    this.syncStatus = 'idle';
+                    this.saveLocalState();
+                    this.loadScopedLedgerData();
+                    this.updateAllCharts();
+                    this.refreshIcons();
+                    this.showToast(this.lang === 'ID' ? 'Keluar dari akun Google' : 'Signed out from Google');
+                },
+
+                // ==========================================
+                // WALLETS & TRANSACTIONS
+                // ==========================================
+                getWalletBalance(walletName) {
+                    let bal = 0;
+                    for (const tx of this.transactions) {
+                        const amt = Number(tx.amount || 0);
+                        const fee = Number(tx.adminFee || 0);
+                        if (tx.type === 'income' && tx.account === walletName) {
+                            bal += amt;
+                        } else if ((tx.type === 'expense' || tx.type === 'withdrawal') && tx.account === walletName) {
+                            bal -= amt;
+                        } else if (tx.type === 'transfer') {
+                            if (tx.account === walletName) bal -= (amt + fee);
+                            if (tx.toAccount === walletName) bal += amt;
+                        }
+                    }
+                    return bal;
+                },
+                getCategoryExpense(catName) {
+                    return this.transactions
+                        .filter(t => t.type === 'expense' && t.category === catName)
+                        .reduce((acc, t) => acc + Number(t.amount || 0), 0);
+                },
+                openQuickTxModal(type = 'expense') {
+                    this.txForm = {
+                        type,
+                        amount: '',
+                        account: this.banks[0] || 'Bank BCA',
+                        toAccount: this.banks[1] || this.banks[0] || 'Bank Jago',
+                        category: this.categories[0] || 'Food',
+                        note: ''
+                    };
+                    this.showTxModal = true;
+                    this.refreshIcons();
+                },
+                async submitQuickTransaction() {
+                    const amt = Number(this.txForm.amount || 0);
+                    if (amt <= 0) return;
+
+                    const txObj = {
+                        id: Date.now(),
+                        type: this.txForm.type,
+                        amount: amt,
+                        account: this.txForm.account,
+                        toAccount: this.txForm.type === 'transfer' ? this.txForm.toAccount : '',
+                        adminFee: 0,
+                        category: this.txForm.type === 'transfer' ? 'Transfer' : this.txForm.category,
+                        note: this.txForm.note || '',
+                        currency: this.currency,
+                        date: new Date().toISOString().slice(0, 16).replace('T', ' ')
+                    };
+
+                    this.transactions.unshift(txObj);
+                    this.applyAutopilotOnTransaction(txObj);
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+
+                    try {
+                        await fetch('/api/transactions', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                amount: txObj.amount,
+                                type: txObj.type,
+                                category: txObj.category,
+                                account: txObj.account,
+                                to_account: txObj.toAccount,
+                                admin_fee: txObj.adminFee,
+                                note: txObj.note,
+                                currency: txObj.currency,
+                                date: txObj.date
+                            })
+                        });
+                    } catch (e) {}
+
+                    this.showTxModal = false;
+                    this.updateAllCharts();
+                    this.refreshIcons();
+                    this.showToast(this.lang === 'ID' ? 'Transaksi tersimpan & disinkronkan' : 'Transaction saved & synced');
+                },
+                deleteTransaction(id) {
+                    const idStr = String(id);
+                    if (!this.deletedTxIds.includes(idStr)) {
+                        this.deletedTxIds.push(idStr);
+                    }
+                    this.transactions = this.transactions.filter(t => String(t.id) !== idStr);
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                    this.updateAllCharts();
+                    this.refreshIcons();
+                },
+                addNewWallet() {
+                    const clean = (this.newWalletName || '').trim();
+                    if (!clean || this.banks.includes(clean)) return;
+                    this.deletedBanks = this.deletedBanks.filter(b => b !== clean);
+                    this.banks.push(clean);
+                    this.newWalletName = '';
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                },
+                removeWallet(name) {
+                    if (this.banks.length <= 1) return;
+                    if (!this.deletedBanks.includes(name)) {
+                        this.deletedBanks.push(name);
+                    }
+                    this.banks = this.banks.filter(b => b !== name);
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                },
+
+                // ==========================================
+                // GOALS & BUDGETS
+                // ==========================================
+                addGoal() {
+                    const name = (this.newGoal.name || '').trim();
+                    const target = Number(this.newGoal.target || 0);
+                    if (!name || target <= 0) return;
+                    this.goals.push({
+                        id: 'goal_' + Date.now(),
+                        name,
+                        target,
+                        current: 0,
+                        updatedAt: Date.now()
+                    });
+                    this.newGoal = { name: '', target: '' };
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                },
+                deleteGoal(id) {
+                    const idStr = String(id);
+                    if (!this.deletedGoalIds.includes(idStr)) {
+                        this.deletedGoalIds.push(idStr);
+                    }
+                    this.goals = this.goals.filter(g => String(g.id) !== idStr);
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                },
+                saveBudget() {
+                    const limit = Number(this.newBudget.limit || 0);
+                    if (!this.newBudget.category || limit <= 0) return;
+                    const idx = this.budgets.findIndex(b => b.category === this.newBudget.category);
+                    if (idx >= 0) {
+                        this.budgets[idx].limit = limit;
+                        this.budgets[idx].updatedAt = Date.now();
+                    } else {
+                        this.budgets.push({
+                            id: 'bud_' + Date.now(),
+                            category: this.newBudget.category,
+                            limit,
+                            updatedAt: Date.now()
+                        });
+                    }
+                    this.newBudget.limit = '';
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                },
+                deleteBudget(id) {
+                    const idStr = String(id);
+                    if (!this.deletedBudgetIds.includes(idStr)) {
+                        this.deletedBudgetIds.push(idStr);
+                    }
+                    this.budgets = this.budgets.filter(b => String(b.id) !== idStr);
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                },
+
+                // ==========================================
+                // SPLIT BILL + AUTO API CAMERA SCANNER
+                // ==========================================
+                stepSplitPeople(delta) {
+                    const nextVal = Math.max(1, Number(this.splitBill.people || 1) + delta);
+                    this.splitBill.people = nextVal;
+                    this.recalculateSplitBill();
+                },
+                resetSplitBill() {
+                    this.splitBill = {
+                        subtotal: 0,
+                        taxPercent: 0,
+                        people: 1,
+                        grandTotal: 0,
+                        perPerson: 0,
+                        note: '',
+                        items: []
+                    };
+                    this.scanStatusText = '';
+                },
+                recalculateSplitBill() {
+                    const sub = Math.max(0, Number(this.splitBill.subtotal || 0));
+                    const tax = Math.max(0, Number(this.splitBill.taxPercent || 0));
+                    const ppl = Math.max(1, Math.floor(Number(this.splitBill.people || 1)));
+                    this.splitBill.people = ppl;
+                    const grand = sub + (sub * (tax / 100));
+                    this.splitBill.grandTotal = grand;
+                    this.splitBill.perPerson = grand / ppl;
+                },
+                async toggleLiveCamera() {
+                    if (this.isCameraOpen) {
+                        this.stopLiveCamera();
+                        return;
+                    }
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        this.showToast(this.lang === 'ID' ? 'Kamera tidak didukung di browser ini' : 'Camera not supported in this browser');
+                        return;
+                    }
+                    try {
+                        this.cameraStream = await navigator.mediaDevices.getUserMedia({
+                            video: { facingMode: { ideal: 'environment' } },
+                            audio: false
+                        });
+                        this.isCameraOpen = true;
+                        this.$nextTick(() => {
+                            if (this.$refs.cameraVideo) {
+                                this.$refs.cameraVideo.srcObject = this.cameraStream;
+                            }
+                            this.refreshIcons();
+                        });
+                    } catch (e) {
+                        this.showToast(this.lang === 'ID' ? 'Izinkan akses kamera terlebih dahulu' : 'Please allow camera access');
+                    }
+                },
+                stopLiveCamera() {
+                    if (this.cameraStream) {
+                        this.cameraStream.getTracks().forEach(track => track.stop());
+                        this.cameraStream = null;
+                    }
+                    this.isCameraOpen = false;
+                    this.refreshIcons();
+                },
+                async captureReceiptFromCamera() {
+                    const video = this.$refs.cameraVideo;
+                    if (!video || !video.videoWidth) return;
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                    const base64Data = dataUrl.split(',')[1] || '';
+                    this.stopLiveCamera();
+                    await this.scanReceiptBase64(base64Data, 'image/jpeg');
+                },
+                async handleReceiptFileUpload(event) {
+                    const file = event.target.files && event.target.files[0];
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = async () => {
+                        const resultStr = String(reader.result || '');
+                        const base64Data = resultStr.split(',')[1] || '';
+                        await this.scanReceiptBase64(base64Data, file.type || 'image/jpeg');
+                    };
+                    reader.readAsDataURL(file);
+                    event.target.value = '';
+                },
+                async scanReceiptBase64(base64Data, mimeType) {
+                    if (!base64Data) return;
+                    this.isScanningReceipt = true;
+                    this.scanStatusText = '';
+                    this.refreshIcons();
+
+                    try {
+                        const res = await fetch('/api/scan/receipt', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                image_base64: base64Data,
+                                mime_type: mimeType || 'image/jpeg'
+                            })
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            const extractedSub = Number(data.subtotal || data.amount || 0);
+                            const extractedTax = Number(data.tax_percent || 0);
+                            if (extractedSub > 0) {
+                                this.splitBill.subtotal = extractedSub;
+                                this.splitBill.taxPercent = extractedTax;
+                                if (Number(this.splitBill.people || 1) < 2) {
+                                    this.splitBill.people = 2;
+                                }
+                                this.splitBill.note = data.note || '';
+                                this.splitBill.items = Array.isArray(data.items) ? data.items : [];
+                                this.recalculateSplitBill();
+                                this.scanStatusText = this.lang === 'ID'
+                                    ? `Terdeteksi otomatis: ${this.formatMoney(extractedSub)}${data.note ? ' (' + data.note + ')' : ''}`
+                                    : `Auto-extracted: ${this.formatMoney(extractedSub)}${data.note ? ' (' + data.note + ')' : ''}`;
+                            } else {
+                                this.scanStatusText = this.lang === 'ID'
+                                    ? 'Nominal tidak terbaca otomatis, silakan masukkan subtotal secara manual.'
+                                    : 'Total not automatically detected, please enter subtotal manually.';
+                            }
+                        } else {
+                            this.scanStatusText = this.lang === 'ID'
+                                ? 'Layanan scan sedang sibuk, silakan masukkan subtotal secara manual.'
+                                : 'Scan service busy, please enter subtotal manually.';
+                        }
+                    } catch (e) {
+                        this.scanStatusText = this.lang === 'ID'
+                            ? 'Tidak dapat terhubung ke API scan, silakan isi subtotal manual.'
+                            : 'Could not reach scan API, please enter subtotal manually.';
+                    } finally {
+                        this.isScanningReceipt = false;
+                        this.refreshIcons();
+                    }
+                },
+                async recordSplitShareAsExpense() {
+                    const share = Number(this.splitBill.perPerson || 0);
+                    if (share <= 0) return;
+                    const roundedShare = Math.round(share);
+                    const txObj = {
+                        id: Date.now(),
+                        type: 'expense',
+                        amount: roundedShare,
+                        account: this.banks[0] || 'Cash',
+                        toAccount: '',
+                        adminFee: 0,
+                        category: 'Food',
+                        note: this.splitBill.note ? `Split Bill: ${this.splitBill.note}` : `Split Bill (${this.splitBill.people} org)`,
+                        currency: this.currency,
+                        date: new Date().toISOString().slice(0, 16).replace('T', ' ')
+                    };
+                    this.transactions.unshift(txObj);
+                    this.applyAutopilotOnTransaction(txObj);
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+
+                    try {
+                        await fetch('/api/transactions', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                amount: txObj.amount,
+                                type: txObj.type,
+                                category: txObj.category,
+                                account: txObj.account,
+                                note: txObj.note,
+                                currency: txObj.currency,
+                                date: txObj.date
+                            })
+                        });
+                    } catch (e) {}
+
+                    this.updateAllCharts();
+                    this.showToast(this.lang === 'ID' ? `Bagian ${this.formatMoney(roundedShare)} dicatat` : `Recorded share ${this.formatMoney(roundedShare)}`);
+                },
+
+                // ==========================================
+                // AUTOPILOT RULES
+                // ==========================================
+                describeRule(rule) {
+                    if (this.lang === 'ID') {
+                        if (rule.actionType === 'auto_save_goal') {
+                            return `Sisihkan ${rule.percent || 20}% pemasukan ke "${rule.targetGoalName || 'Target'}"`;
+                        }
+                        if (rule.actionType === 'fixed_save_goal') {
+                            return `Sisihkan ${this.formatMoney(rule.fixedAmount || 50000)} per pemasukan ke "${rule.targetGoalName || 'Target'}"`;
+                        }
+                        if (rule.actionType === 'auto_transfer_wallet') {
+                            return `Auto-transfer ${rule.percent || 15}% pemasukan ke ${rule.destWallet || 'Wallet'}`;
+                        }
+                        if (rule.actionType === 'expense_save_goal') {
+                            return `Sisihkan ${rule.percent || 10}% pengeluaran ke "${rule.targetGoalName || 'Target'}"`;
+                        }
+                        return `Peringatan saat pengeluaran ≥ ${this.formatMoney(rule.thresholdAmount || 500000)}`;
+                    }
+                    if (rule.actionType === 'auto_save_goal') {
+                        return `Save ${rule.percent || 20}% of income to "${rule.targetGoalName || 'Goal'}"`;
+                    }
+                    if (rule.actionType === 'fixed_save_goal') {
+                        return `Save ${this.formatMoney(rule.fixedAmount || 50000)} per income to "${rule.targetGoalName || 'Goal'}"`;
+                    }
+                    if (rule.actionType === 'auto_transfer_wallet') {
+                        return `Auto-transfer ${rule.percent || 15}% of income to ${rule.destWallet || 'Wallet'}`;
+                    }
+                    if (rule.actionType === 'expense_save_goal') {
+                        return `Save ${rule.percent || 10}% of expense to "${rule.targetGoalName || 'Goal'}"`;
+                    }
+                    return `Alert when expense ≥ ${this.formatMoney(rule.thresholdAmount || 500000)}`;
+                },
+                openRuleEditor(rule = null) {
+                    if (rule) {
+                        this.editingRule = {
+                            id: rule.id && !String(rule.id).startsWith('preset_') ? rule.id : 'rule_' + Date.now(),
+                            name: rule.name || '',
+                            actionType: rule.actionType || 'auto_save_goal',
+                            percent: Number(rule.percent || 20),
+                            fixedAmount: Number(rule.fixedAmount || 50000),
+                            targetGoalName: rule.targetGoalName || (this.lang === 'ID' ? 'Dana Darurat' : 'Emergency Fund'),
+                            destWallet: rule.destWallet || this.banks[1] || 'Bank BCA',
+                            thresholdAmount: Number(rule.thresholdAmount || 500000),
+                            enabled: rule.enabled !== undefined ? Boolean(rule.enabled) : true,
+                            runCount: Number(rule.runCount || 0)
+                        };
+                    } else {
+                        this.editingRule = {
+                            id: '',
+                            name: this.lang === 'ID' ? 'Aturan Otomatis Baru' : 'New Autopilot Rule',
+                            actionType: 'auto_save_goal',
+                            percent: 20,
+                            fixedAmount: 50000,
+                            targetGoalName: this.lang === 'ID' ? 'Dana Darurat' : 'Emergency Fund',
+                            destWallet: this.banks[1] || 'Bank BCA',
+                            thresholdAmount: 500000,
+                            enabled: true,
+                            runCount: 0
+                        };
+                    }
+                    this.showRuleModal = true;
+                    this.refreshIcons();
+                },
+                activatePresetRule(preset) {
+                    const ruleObj = {
+                        id: 'rule_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                        name: preset.name,
+                        actionType: preset.actionType,
+                        percent: preset.percent || 20,
+                        fixedAmount: preset.fixedAmount || 50000,
+                        targetGoalName: preset.targetGoalName || '',
+                        destWallet: preset.destWallet || '',
+                        thresholdAmount: preset.thresholdAmount || 500000,
+                        enabled: true,
+                        runCount: 0,
+                        updatedAt: Date.now()
+                    };
+                    this.automationRules.unshift(ruleObj);
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                    this.refreshIcons();
+                    this.showToast(this.lang === 'ID' ? 'Aturan Autopilot diaktifkan' : 'Autopilot rule activated');
+                },
+                saveRuleFromModal() {
+                    const cleanName = (this.editingRule.name || '').trim();
+                    if (!cleanName) return;
+                    const payload = {
+                        ...this.editingRule,
+                        id: this.editingRule.id || ('rule_' + Date.now()),
+                        name: cleanName,
+                        updatedAt: Date.now()
+                    };
+                    const idx = this.automationRules.findIndex(r => r.id === payload.id);
+                    if (idx >= 0) {
+                        this.automationRules[idx] = payload;
+                    } else {
+                        this.automationRules.unshift(payload);
+                    }
+                    this.showRuleModal = false;
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                    this.refreshIcons();
+                    this.showToast(this.lang === 'ID' ? 'Aturan Autopilot tersimpan' : 'Autopilot rule saved');
+                },
+                toggleRuleEnabled(rule) {
+                    rule.enabled = !rule.enabled;
+                    rule.updatedAt = Date.now();
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                },
+                deleteRule(id) {
+                    const idStr = String(id);
+                    if (!this.deletedRuleIds.includes(idStr)) {
+                        this.deletedRuleIds.push(idStr);
+                    }
+                    this.automationRules = this.automationRules.filter(r => String(r.id) !== idStr);
+                    this.saveLocalState();
+                    this.syncWorkspaceToBackend();
+                    this.refreshIcons();
+                },
+                applyAutopilotOnTransaction(tx) {
+                    for (const rule of this.automationRules) {
+                        if (!rule.enabled) continue;
+                        const amt = Number(tx.amount || 0);
+                        if (rule.actionType === 'auto_save_goal' && tx.type === 'income' && amt > 0) {
+                            const alloc = Math.round(amt * ((Number(rule.percent || 20)) / 100));
+                            const goal = this.goals.find(g => g.name.toLowerCase() === String(rule.targetGoalName || '').toLowerCase());
+                            if (goal) goal.current = Number(goal.current || 0) + alloc;
+                            rule.runCount = Number(rule.runCount || 0) + 1;
+                        } else if (rule.actionType === 'fixed_save_goal' && tx.type === 'income' && amt > 0) {
+                            const alloc = Math.round(Number(rule.fixedAmount || 50000));
+                            const goal = this.goals.find(g => g.name.toLowerCase() === String(rule.targetGoalName || '').toLowerCase());
+                            if (goal) goal.current = Number(goal.current || 0) + alloc;
+                            rule.runCount = Number(rule.runCount || 0) + 1;
+                        } else if (rule.actionType === 'expense_save_goal' && tx.type === 'expense' && amt > 0) {
+                            const alloc = Math.round(amt * ((Number(rule.percent || 10)) / 100));
+                            const goal = this.goals.find(g => g.name.toLowerCase() === String(rule.targetGoalName || '').toLowerCase());
+                            if (goal) goal.current = Number(goal.current || 0) + alloc;
+                            rule.runCount = Number(rule.runCount || 0) + 1;
+                        } else if (rule.actionType === 'spend_alert' && tx.type === 'expense' && amt >= Number(rule.thresholdAmount || 500000)) {
+                            rule.runCount = Number(rule.runCount || 0) + 1;
+                            this.showToast(this.lang === 'ID' ? `Peringatan: Pengeluaran ${this.formatMoney(amt)}` : `Alert: Expense ${this.formatMoney(amt)}`);
+                        }
+                    }
+                },
+
+                // ==========================================
+                // AI ASSISTANT
+                // ==========================================
+                initWelcomeAiMessage() {
+                    if (this.aiMessages.length === 0) {
+                        this.aiMessages.push({
+                            role: 'assistant',
+                            text: this.lang === 'ID'
+                                ? 'Halo! Saya siap membantu menganalisis arus kas, pengeluaran per kategori, anggaran, dan target tabungan Anda.'
+                                : 'Hello! Ready to analyze your cash flow, category spending, budgets, and savings goals.'
+                        });
+                    }
+                },
+                renderMarkdown(text) {
+                    if (window.marked && typeof window.marked.parse === 'function') {
+                        return window.marked.parse(String(text || ''));
+                    }
+                    return String(text || '').replace(/\n/g, '<br>');
+                },
+                submitAiForm() {
+                    const q = (this.aiInput || '').trim();
+                    if (!q || this.isAiLoading) return;
+                    this.aiInput = '';
+                    this.runAiPrompt(q);
+                },
+                async runAiPrompt(promptText) {
+                    const clean = String(promptText || '').trim();
+                    if (!clean || this.isAiLoading) return;
+                    this.aiMessages.push({ role: 'user', text: clean });
+                    this.isAiLoading = true;
+
+                    const walletSummary = this.banks.map(b => `${b}: ${this.formatMoney(this.getWalletBalance(b))}`).join(', ');
+                    const contextStr = [
+                        `Net Balance: ${this.formatMoney(this.netBalance)}`,
+                        `Total Income: ${this.formatMoney(this.totalIncome)}`,
+                        `Total Outflow: ${this.formatMoney(this.totalOutflow)}`,
+                        `Wallets: ${walletSummary}`,
+                        `Transactions Count: ${this.transactions.length}`
+                    ].join('\n');
+
+                    try {
+                        const res = await fetch('/api/ai/analyze', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                prompt: clean,
+                                lang: this.lang,
+                                currency: this.currency,
+                                financial_context: contextStr,
+                                transactions: this.transactions
+                            })
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            this.aiMessages.push({ role: 'assistant', text: data.analysis || '' });
+                        } else {
+                            this.aiMessages.push({
+                                role: 'assistant',
+                                text: this.lang === 'ID' ? 'Maaf, analisis tidak dapat diproses saat ini.' : 'Sorry, analysis could not be processed right now.'
+                            });
+                        }
+                    } catch (e) {
+                        this.aiMessages.push({
+                            role: 'assistant',
+                            text: this.lang === 'ID' ? 'Koneksi ke server analisis terganggu.' : 'Connection to analysis server interrupted.'
+                        });
+                    } finally {
+                        this.isAiLoading = false;
+                    }
+                },
+
+                // ==========================================
+                // CHARTS & EXPORT
+                // ==========================================
+                updateAllCharts() {
+                    if (this.activeTab !== 'analytics' || typeof Chart === 'undefined') return;
+                    const gridColor = this.isDarkMode ? 'rgba(148, 163, 184, 0.12)' : 'rgba(15, 23, 42, 0.08)';
+                    const tickColor = this.isDarkMode ? '#94A3B8' : '#475569';
+
+                    const cfCanvas = document.getElementById('cashflowChart');
+                    if (cfCanvas) {
+                        if (this.charts.cashflow) this.charts.cashflow.destroy();
+                        this.charts.cashflow = new Chart(cfCanvas.getContext('2d'), {
+                            type: 'bar',
+                            data: {
+                                labels: [this.t('total_income'), this.t('total_expense'), this.t('net_balance')],
+                                datasets: [{
+                                    label: this.currency,
+                                    data: [this.totalIncome, this.totalOutflow, this.netBalance],
+                                    backgroundColor: ['#10B981', '#F43F5E', '#1D4ED8'],
+                                    borderRadius: 10
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { ticks: { color: tickColor }, grid: { display: false } },
+                                    y: { ticks: { color: tickColor }, grid: { color: gridColor } }
+                                }
+                            }
+                        });
+                    }
+
+                    const catCanvas = document.getElementById('categoryChart');
+                    if (catCanvas) {
+                        if (this.charts.category) this.charts.category.destroy();
+                        const map = {};
+                        for (const tx of this.transactions) {
+                            if (tx.type === 'expense') {
+                                const c = tx.category || 'Other';
+                                map[c] = (map[c] || 0) + Number(tx.amount || 0);
+                            }
+                        }
+                        const labels = Object.keys(map);
+                        const values = Object.values(map);
+                        this.charts.category = new Chart(catCanvas.getContext('2d'), {
+                            type: 'doughnut',
+                            data: {
+                                labels: labels.length ? labels : [this.lang === 'ID' ? 'Belum Ada Data' : 'No Data'],
+                                datasets: [{
+                                    data: values.length ? values : [1],
+                                    backgroundColor: values.length
+                                        ? ['#1D4ED8', '#10B981', '#F59E0B', '#EC4899', '#8B5CF6', '#06B6D4']
+                                        : ['#CBD5E1']
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { position: 'bottom', labels: { color: tickColor } } }
+                            }
+                        });
+                    }
+                },
+                openExportModal() {
+                    this.showExportModal = true;
+                    this.refreshIcons();
+                },
+                downloadReport(format) {
+                    const emailParam = this.googleUser && this.googleUser.email ? `&email=${encodeURIComponent(this.googleUser.email)}` : '';
+                    const url = format === 'pdf'
+                        ? `/api/export/pdf?lang=${this.lang}${emailParam}`
+                        : `/api/export/excel?lang=${this.lang}${emailParam}`;
+                    window.open(url, '_blank');
+                    this.showExportModal = false;
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
