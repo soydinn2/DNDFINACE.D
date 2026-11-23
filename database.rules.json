@@ -1,0 +1,27 @@
+{
+"rules": {
+".read": false,
+".write": false,
+"workspaces": {
+"$accountKey": {
+".read": false,
+".write": false,
+".validate": "newData.hasChildren(['account_key', 'revision', 'state', 'updated_at']) && newData.child('account_key').isString() && newData.child('revision').isNumber()"
+}
+},
+"receipt_scans": {
+"$scanId": {
+".read": false,
+".write": false,
+".validate": "newData.hasChildren(['account_key', 'grand_total', 'created_at']) && newData.child('account_key').isString() && newData.child('grand_total').isNumber()"
+}
+},
+"report_files": {
+"$fileId": {
+".read": false,
+".write": false,
+".validate": "newData.hasChildren(['account_key', 'filename', 'created_at'])"
+}
+}
+}
+}
