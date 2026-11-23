@@ -2,6 +2,10 @@
 "rules": {
 ".read": false,
 ".write": false,
+"_health_check": {
+".read": false,
+".write": false
+},
 "workspaces": {
 "$accountKey": {
 ".read": false,
