@@ -1,17 +1,22 @@
 {
-"functions": {
-"api/index.py": {
-"includeFiles": "{main.py,index.html,dnd_engine.cpp}"
+"version": 2,
+"builds": [
+{
+"src": "main.py",
+"use": "@vercel/python",
+"config": {
+"includeFiles": [
+"index.html",
+"quant_ai_engine.cpp",
+".env"
+]
 }
-},
-"rewrites": [
+}
+],
+"routes": [
 {
-"source": "/api/(.)",
-"destination": "/api/index.py"
-},
-{
-"source": "/(.)",
-"destination": "/api/index.py"
+"src": "/(.*)",
+"dest": "main.py"
 }
 ]
 }
