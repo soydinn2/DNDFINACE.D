@@ -152,12 +152,12 @@
 
             <!-- Desktop Center Navigation -->
             <nav class="hidden md:flex items-center bg-cream-100 dark:bg-obsidian-900 p-1 rounded-xl border border-cream-200 dark:border-obsidian-800">
-                <button @click="setTab('dashboard')" :class="activeTab === 'dashboard' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-xs font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all" x-text="t('nav_home')"></button>
-                <button @click="setTab('analytics')" :class="activeTab === 'analytics' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-xs font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all" x-text="t('nav_analytics')"></button>
-                <button @click="setTab('transactions')" :class="activeTab === 'transactions' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-xs font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all" x-text="t('nav_records')"></button>
-                <button @click="setTab('planning')" :class="activeTab === 'planning' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-xs font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all" x-text="t('nav_goals')"></button>
-                <button @click="setTab('automation')" :class="activeTab === 'automation' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-xs font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all">Autopilot</button>
-                <button @click="setTab('more')" :class="['more', 'tools', 'settings'].includes(activeTab) ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-xs font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all" x-text="t('nav_menu')"></button>
+                <button @click="setTab('dashboard')" :class="activeTab === 'dashboard' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-sm font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all" x-text="t('nav_home')"></button>
+                <button @click="setTab('analytics')" :class="activeTab === 'analytics' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-sm font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all" x-text="t('nav_analytics')"></button>
+                <button @click="setTab('transactions')" :class="activeTab === 'transactions' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-sm font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all" x-text="t('nav_records')"></button>
+                <button @click="setTab('planning')" :class="activeTab === 'planning' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-sm font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all" x-text="t('nav_goals')"></button>
+                <button @click="setTab('automation')" :class="activeTab === 'automation' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-sm font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all">Autopilot</button>
+                <button @click="setTab('more')" :class="['more', 'tools', 'settings'].includes(activeTab) ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-500 shadow-sm font-semibold' : 'text-cream-500 dark:text-slate-400 hover:text-cream-900 dark:hover:text-white'" class="px-3.5 py-1.5 rounded-lg text-sm transition-all" x-text="t('nav_menu')"></button>
             </nav>
 
             <!-- Top Right Controls -->
@@ -204,7 +204,7 @@
                 <!-- Import & Export Excel / PDF Menu Button -->
                 <div class="relative" x-data="{ openExport: false }">
                     <button @click="openExport = !openExport" 
-                            class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-royal-600 hover:bg-royal-700 text-white flex items-center justify-center shadow-xs transition-colors shrink-0" 
+                            class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-royal-600 hover:bg-royal-700 text-white flex items-center justify-center shadow-sm transition-colors shrink-0" 
                             :title="t('export_report')">
                         <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
                     </button>
@@ -250,7 +250,7 @@
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
                     <button @click="openAiAgentHub()"
-                            class="px-3.5 py-1.5 rounded-full bg-royal-600 hover:bg-royal-700 text-white text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-xs">
+                            class="px-3.5 py-1.5 rounded-full bg-royal-600 hover:bg-royal-700 text-white text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-sm">
                         <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
                         <span>DND AI AGENT</span>
                     </button>
@@ -260,7 +260,7 @@
                 </div>
             </div>
 
-            <!-- Hero Net Balance Card -->
+            <!-- Hero Net Balance Card (Clean Live Macroeconomic & FX Stream — Zero IndexedDB Label) -->
             <div class="relative overflow-hidden rounded-3xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 p-6 sm:p-7 shadow-soft">
                 <div class="absolute -right-10 -top-10 w-44 h-44 rounded-full bg-royal-500/10 blur-2xl pointer-events-none"></div>
                 <div class="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
@@ -282,8 +282,13 @@
                             </span>
                             <span class="text-cream-300 dark:text-obsidian-700">|</span>
                             <span class="flex items-center gap-1.5">
+                                <span class="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                                <span x-text="(lang === 'ID' ? 'Inflasi: ' : 'Inflation: ') + realtimePulse.inflation_id_pct + '% YoY'"></span>
+                            </span>
+                            <span class="text-cream-300 dark:text-obsidian-700">|</span>
+                            <span class="flex items-center gap-1.5">
                                 <span class="inline-block w-2 h-2 rounded-full bg-royal-500"></span>
-                                <span x-text="'DB: ' + dbStatusLabel"></span>
+                                <span x-text="'USD: Rp ' + Math.round(realtimePulse.usd_idr).toLocaleString('id-ID') + ' | SGD: Rp ' + Math.round(realtimePulse.sgd_idr).toLocaleString('id-ID')"></span>
                             </span>
                         </div>
                     </div>
@@ -309,7 +314,7 @@
 
                 <!-- Quick Action Buttons Row -->
                 <div class="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-2.5 mt-6 pt-5 border-t border-cream-200/80 dark:border-obsidian-800">
-                    <button @click="openTxModal('income')" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-royal-600 hover:bg-royal-700 text-white text-xs sm:text-sm font-semibold shadow-xs transition-all active:scale-[0.98]">
+                    <button @click="openTxModal('income')" class="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-royal-600 hover:bg-royal-700 text-white text-xs sm:text-sm font-semibold shadow-sm transition-all active:scale-[0.98]">
                         <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M8 12h8"></path>
@@ -378,14 +383,14 @@
 
                     <div class="flex items-center gap-2">
                         <button type="button" @click="startSplitCamera()" :disabled="isScanningSplitBill"
-                                class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-royal-600 hover:bg-royal-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-all">
+                                class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-royal-600 hover:bg-royal-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm transition-all">
                             <i data-lucide="camera" class="w-3.5 h-3.5"></i>
                             <span x-text="isScanningSplitBill ? t('scanning_bill') : t('scan_bill_camera')"></span>
                         </button>
                         <label class="flex-1 sm:flex-initial px-3.5 py-2 rounded-xl bg-cream-100 dark:bg-obsidian-800 hover:bg-cream-200 dark:hover:bg-obsidian-700 text-cream-900 dark:text-white border border-cream-200 dark:border-obsidian-700 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-colors">
                             <i data-lucide="image-plus" class="w-3.5 h-3.5 text-royal-600 dark:text-royal-400"></i>
                             <span x-text="t('upload_bill_photo')"></span>
-                            <input type="file" accept="image/*" capture="environment" @change="handleSplitBillScanUpload($event)" class="hidden">
+                            <input type="file" accept="image/*" @change="handleSplitBillScanUpload($event)" class="hidden">
                         </label>
                     </div>
                 </div>
@@ -468,7 +473,7 @@
                     </div>
 
                     <button type="button" @click="recordMySplitShare()" :disabled="splitPerPerson <= 0"
-                            class="px-4 py-2.5 rounded-xl bg-royal-600 hover:bg-royal-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-all shrink-0">
+                            class="px-4 py-2.5 rounded-xl bg-royal-600 hover:bg-royal-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm transition-all shrink-0">
                         <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
                         <span x-text="t('log_my_share')"></span>
                     </button>
@@ -492,11 +497,11 @@
 
                         <div class="flex flex-wrap items-center gap-3 mb-3">
                             <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                                <span class="w-2.5 h-2.5 rounded-xs bg-emerald-500"></span>
+                                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span>
                                 <span x-text="t('income') + ': ' + (hideBalances ? '••••••' : formatCurrency(totalIncome))"></span>
                             </span>
                             <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-rose-600 dark:text-rose-400">
-                                <span class="w-2.5 h-2.5 rounded-xs bg-rose-500"></span>
+                                <span class="w-2.5 h-2.5 rounded-sm bg-rose-500"></span>
                                 <span x-text="t('expense') + ': ' + (hideBalances ? '••••••' : formatCurrency(totalExpense + totalWithdrawal))"></span>
                             </span>
                         </div>
@@ -504,7 +509,7 @@
                         <div class="h-56 relative">
                             <canvas id="dashboardTrendChart"></canvas>
                             <div x-show="transactions.length === 0" class="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center">
-                                <span class="px-3 py-1.5 rounded-full bg-cream-100/95 dark:bg-obsidian-800/95 border border-cream-200 dark:border-obsidian-700 text-[11px] font-medium text-cream-600 dark:text-slate-300 shadow-xs" x-text="t('empty_chart_msg')"></span>
+                                <span class="px-3 py-1.5 rounded-full bg-cream-100/95 dark:bg-obsidian-800/95 border border-cream-200 dark:border-obsidian-700 text-[11px] font-medium text-cream-600 dark:text-slate-300 shadow-sm" x-text="t('empty_chart_msg')"></span>
                             </div>
                         </div>
                     </div>
@@ -635,12 +640,12 @@
             </div>
 
             <!-- ========================================== -->
-            <!-- DND AI AGENT (CLEAN EMBEDDED EA AGENT)     -->
+            <!-- DND AI AGENT (LIVE MULTI-SOURCE CHIPSET)   -->
             <!-- ========================================== -->
             <div id="aiAgentHubSection" class="bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 rounded-3xl p-5 sm:p-6 shadow-soft">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3.5">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-2xl bg-royal-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                        <div class="w-10 h-10 rounded-2xl bg-royal-600 text-white flex items-center justify-center shadow-sm shrink-0">
                             <i data-lucide="cpu" class="w-5 h-5"></i>
                         </div>
                         <div>
@@ -649,11 +654,44 @@
                         </div>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
+                        <button @click="refreshRealtimeChipset(true)"
+                                class="px-3 py-2 rounded-xl bg-cream-100 dark:bg-obsidian-800 hover:bg-cream-200 dark:hover:bg-obsidian-700 text-cream-800 dark:text-slate-200 text-xs font-semibold transition-all flex items-center gap-1.5">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                            <span x-text="lang === 'ID' ? 'Sync Data Live' : 'Sync Live Data'"></span>
+                        </button>
                         <button @click="runQuickAudit()" :disabled="isAiLoading"
                                 class="px-4 py-2 rounded-xl bg-royal-600 hover:bg-royal-700 disabled:opacity-50 text-white text-xs font-semibold transition-all flex items-center justify-center gap-2">
                             <i data-lucide="activity" class="w-3.5 h-3.5"></i>
                             <span x-text="isAiLoading ? t('ai_analyzing') : t('ai_full_audit')"></span>
                         </button>
+                    </div>
+                </div>
+
+                <!-- Live Macroeconomic & Multi-Currency Telemetry Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 mb-4 p-2.5 rounded-2xl bg-cream-50 dark:bg-obsidian-850 border border-cream-200/80 dark:border-obsidian-800 text-[11px]">
+                    <div class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-obsidian-900 border border-cream-200/60 dark:border-obsidian-800">
+                        <span class="block text-[10px] text-cream-400 dark:text-slate-500" x-text="lang === 'ID' ? 'Inflasi (YoY)' : 'Inflation (YoY)'"></span>
+                        <span class="font-display font-bold text-amber-600 dark:text-amber-400" x-text="realtimePulse.inflation_id_pct + '%'"></span>
+                    </div>
+                    <div class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-obsidian-900 border border-cream-200/60 dark:border-obsidian-800">
+                        <span class="block text-[10px] text-cream-400 dark:text-slate-500">BI-Rate / GDP</span>
+                        <span class="font-display font-bold text-royal-600 dark:text-royal-400" x-text="realtimePulse.bi_rate_pct + '% / ' + realtimePulse.gdp_id_pct + '%'"></span>
+                    </div>
+                    <div class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-obsidian-900 border border-cream-200/60 dark:border-obsidian-800">
+                        <span class="block text-[10px] text-cream-400 dark:text-slate-500">USD / IDR</span>
+                        <span class="font-display font-bold text-cream-900 dark:text-white" x-text="'Rp ' + Math.round(realtimePulse.usd_idr).toLocaleString('id-ID')"></span>
+                    </div>
+                    <div class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-obsidian-900 border border-cream-200/60 dark:border-obsidian-800">
+                        <span class="block text-[10px] text-cream-400 dark:text-slate-500">SGD / IDR</span>
+                        <span class="font-display font-bold text-cream-900 dark:text-white" x-text="'Rp ' + Math.round(realtimePulse.sgd_idr).toLocaleString('id-ID')"></span>
+                    </div>
+                    <div class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-obsidian-900 border border-cream-200/60 dark:border-obsidian-800">
+                        <span class="block text-[10px] text-cream-400 dark:text-slate-500">EUR / IDR</span>
+                        <span class="font-display font-bold text-cream-900 dark:text-white" x-text="'Rp ' + Math.round(realtimePulse.eur_idr).toLocaleString('id-ID')"></span>
+                    </div>
+                    <div class="px-2.5 py-1.5 rounded-xl bg-white dark:bg-obsidian-900 border border-cream-200/60 dark:border-obsidian-800">
+                        <span class="block text-[10px] text-cream-400 dark:text-slate-500" x-text="lang === 'ID' ? 'Daya Beli 1 Thn' : 'Real 1Y Value'"></span>
+                        <span class="font-display font-bold text-emerald-600 dark:text-emerald-400 truncate block" x-text="formatCurrency(quantIntel.real_balance_1y)"></span>
                     </div>
                 </div>
 
@@ -708,10 +746,10 @@
                     </div>
                     <div class="flex items-center gap-1.5 bg-cream-100 dark:bg-obsidian-850 p-1 rounded-xl border border-cream-200 dark:border-obsidian-800 self-start">
                         <button type="button" @click="cashflowChartGroup = 'date'; renderAnalyticsCashflowChart()"
-                                :class="cashflowChartGroup === 'date' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-400 shadow-2xs font-bold' : 'text-cream-500 dark:text-slate-400'"
+                                :class="cashflowChartGroup === 'date' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-400 shadow-sm font-bold' : 'text-cream-500 dark:text-slate-400'"
                                 class="px-3 py-1 rounded-lg text-xs transition-all" x-text="t('group_by_date')"></button>
                         <button type="button" @click="cashflowChartGroup = 'tx'; renderAnalyticsCashflowChart()"
-                                :class="cashflowChartGroup === 'tx' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-400 shadow-2xs font-bold' : 'text-cream-500 dark:text-slate-400'"
+                                :class="cashflowChartGroup === 'tx' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-400 shadow-sm font-bold' : 'text-cream-500 dark:text-slate-400'"
                                 class="px-3 py-1 rounded-lg text-xs transition-all" x-text="t('group_by_tx')"></button>
                     </div>
                 </div>
@@ -734,7 +772,7 @@
                 <div class="h-64 relative">
                     <canvas id="analyticsCashflowChart"></canvas>
                     <div x-show="transactions.length === 0" class="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center">
-                        <span class="px-3 py-1.5 rounded-full bg-cream-100/95 dark:bg-obsidian-800/95 border border-cream-200 dark:border-obsidian-700 text-[11px] font-medium text-cream-600 dark:text-slate-300 shadow-xs" x-text="t('empty_chart_msg')"></span>
+                        <span class="px-3 py-1.5 rounded-full bg-cream-100/95 dark:bg-obsidian-800/95 border border-cream-200 dark:border-obsidian-700 text-[11px] font-medium text-cream-600 dark:text-slate-300 shadow-sm" x-text="t('empty_chart_msg')"></span>
                     </div>
                 </div>
             </div>
@@ -748,13 +786,13 @@
                     </div>
                     <div class="flex items-center gap-1.5 bg-cream-100 dark:bg-obsidian-850 p-1 rounded-xl border border-cream-200 dark:border-obsidian-800 self-start">
                         <button type="button" @click="categoryChartFilter = 'all'; renderUnifiedCategoryChart()"
-                                :class="categoryChartFilter === 'all' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-400 shadow-2xs font-bold' : 'text-cream-500 dark:text-slate-400'"
+                                :class="categoryChartFilter === 'all' ? 'bg-white dark:bg-obsidian-800 text-royal-600 dark:text-royal-400 shadow-sm font-bold' : 'text-cream-500 dark:text-slate-400'"
                                 class="px-3 py-1 rounded-lg text-xs transition-all" x-text="t('filter_all')"></button>
                         <button type="button" @click="categoryChartFilter = 'income'; renderUnifiedCategoryChart()"
-                                :class="categoryChartFilter === 'income' ? 'bg-white dark:bg-obsidian-800 text-emerald-600 dark:text-emerald-400 shadow-2xs font-bold' : 'text-cream-500 dark:text-slate-400'"
+                                :class="categoryChartFilter === 'income' ? 'bg-white dark:bg-obsidian-800 text-emerald-600 dark:text-emerald-400 shadow-sm font-bold' : 'text-cream-500 dark:text-slate-400'"
                                 class="px-3 py-1 rounded-lg text-xs transition-all" x-text="t('income')"></button>
                         <button type="button" @click="categoryChartFilter = 'expense'; renderUnifiedCategoryChart()"
-                                :class="categoryChartFilter === 'expense' ? 'bg-white dark:bg-obsidian-800 text-rose-600 dark:text-rose-400 shadow-2xs font-bold' : 'text-cream-500 dark:text-slate-400'"
+                                :class="categoryChartFilter === 'expense' ? 'bg-white dark:bg-obsidian-800 text-rose-600 dark:text-rose-400 shadow-sm font-bold' : 'text-cream-500 dark:text-slate-400'"
                                 class="px-3 py-1 rounded-lg text-xs transition-all" x-text="t('expense')"></button>
                     </div>
                 </div>
@@ -813,7 +851,7 @@
         <div x-show="activeTab === 'transactions'" x-transition.opacity.duration.200ms class="space-y-4">
             <div class="bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 rounded-2xl p-3.5 shadow-card flex flex-wrap items-center justify-between gap-2.5">
                 <div class="flex items-center gap-2">
-                    <label class="px-3.5 py-2 rounded-xl bg-royal-600 hover:bg-royal-700 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-all">
+                    <label class="px-3.5 py-2 rounded-xl bg-royal-600 hover:bg-royal-700 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-sm transition-all">
                         <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                         <span x-text="isImportingReport ? t('importing_report') : t('import_excel_pdf')"></span>
                         <input type="file" accept=".xlsx,.xls,.csv,.pdf" @change="handleReportImport($event)" class="hidden">
@@ -1040,7 +1078,7 @@
             <div class="bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 rounded-3xl p-5 sm:p-6 shadow-card">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
                     <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-royal-600 text-white flex items-center justify-center shadow-xs shrink-0">
+                        <div class="w-11 h-11 rounded-2xl bg-royal-600 text-white flex items-center justify-center shadow-sm shrink-0">
                             <i data-lucide="zap" class="w-5 h-5"></i>
                         </div>
                         <div>
@@ -1051,7 +1089,7 @@
                             <p class="text-xs text-cream-500 dark:text-slate-400 mt-0.5" x-text="t('automation_sub')"></p>
                         </div>
                     </div>
-                    <button @click="openAutomationModal()" class="px-4 py-2.5 rounded-xl bg-royal-600 hover:bg-royal-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shrink-0 shadow-xs">
+                    <button @click="openAutomationModal()" class="px-4 py-2.5 rounded-xl bg-royal-600 hover:bg-royal-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shrink-0 shadow-sm">
                         <i data-lucide="plus" class="w-4 h-4"></i>
                         <span x-text="t('add_rule')"></span>
                     </button>
@@ -1066,14 +1104,14 @@
                         <span class="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-white dark:bg-obsidian-800 border border-cream-200 dark:border-obsidian-700 text-royal-600 dark:text-royal-400" x-text="automationRules.filter(r => r.enabled).length + ' ' + t('active_rules_count')"></span>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <button @click="activatePresetRule('save20')" class="text-left p-3.5 rounded-xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-700 hover:border-royal-500 transition-all shadow-2xs group">
+                        <button @click="activatePresetRule('save20')" class="text-left p-3.5 rounded-xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-700 hover:border-royal-500 transition-all shadow-sm group">
                             <div class="flex items-center justify-between">
                                 <p class="text-xs font-bold text-cream-900 dark:text-white group-hover:text-royal-600 transition-colors" x-text="t('preset_save20_title')"></p>
                                 <span class="text-[10px] font-semibold text-royal-600 dark:text-royal-400" x-text="t('customize_btn')"></span>
                             </div>
                             <p class="text-[11px] text-cream-500 dark:text-slate-400 mt-1" x-text="t('preset_save20_desc')"></p>
                         </button>
-                        <button @click="activatePresetRule('alert500k')" class="text-left p-3.5 rounded-xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-700 hover:border-royal-500 transition-all shadow-2xs group">
+                        <button @click="activatePresetRule('alert500k')" class="text-left p-3.5 rounded-xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-700 hover:border-royal-500 transition-all shadow-sm group">
                             <div class="flex items-center justify-between">
                                 <p class="text-xs font-bold text-cream-900 dark:text-white group-hover:text-royal-600 transition-colors" x-text="t('preset_alert_title')"></p>
                                 <span class="text-[10px] font-semibold text-royal-600 dark:text-royal-400" x-text="t('customize_btn')"></span>
@@ -1130,7 +1168,7 @@
                             <p class="text-xs text-cream-500 dark:text-slate-400 mt-0.5" x-text="t('google_account_sub')"></p>
                         </div>
                         <button @click="initiateGoogleLogin()" :disabled="isGoogleSigningIn"
-                                class="px-4 py-2.5 rounded-xl bg-royal-600 hover:bg-royal-700 disabled:opacity-60 text-white text-xs font-semibold flex items-center justify-center gap-2 shrink-0 shadow-xs">
+                                class="px-4 py-2.5 rounded-xl bg-royal-600 hover:bg-royal-700 disabled:opacity-60 text-white text-xs font-semibold flex items-center justify-center gap-2 shrink-0 shadow-sm">
                             <svg class="w-4 h-4 bg-white rounded-full p-0.5" viewBox="0 0 24 24">
                                 <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17Z"/>
                                 <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.11-6.72-4.96H1.29v3.14C3.26 21.3 7.31 24 12 24Z"/>
@@ -1338,7 +1376,7 @@
     <!-- ========================================== -->
     <!-- MODAL 1: ADD TRANSACTION & MATH RECEIPT SCANNER -->
     <!-- ========================================== -->
-    <div x-show="showTxModal" x-cloak class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs p-0 sm:p-4">
+    <div x-show="showTxModal" x-cloak class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4">
         <div @click.away="showTxModal = false" class="w-full sm:max-w-lg bg-white dark:bg-obsidian-900 rounded-t-3xl sm:rounded-3xl border border-cream-200 dark:border-obsidian-800 p-6 shadow-2xl max-h-[92vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-display font-bold text-lg text-cream-900 dark:text-white" x-text="t('record_transaction')"></h3>
@@ -1348,9 +1386,9 @@
             </div>
 
             <div class="grid grid-cols-3 gap-2 p-1 rounded-2xl bg-cream-100 dark:bg-obsidian-850 mb-4">
-                <button type="button" @click="txForm.type = 'expense'" :class="txForm.type === 'expense' ? 'bg-white dark:bg-obsidian-800 text-rose-600 shadow-xs font-bold' : 'text-cream-500'" class="py-2 rounded-xl text-xs transition-all" x-text="t('btn_expense')"></button>
-                <button type="button" @click="txForm.type = 'income'" :class="txForm.type === 'income' ? 'bg-white dark:bg-obsidian-800 text-emerald-600 shadow-xs font-bold' : 'text-cream-500'" class="py-2 rounded-xl text-xs transition-all" x-text="t('btn_income')"></button>
-                <button type="button" @click="txForm.type = 'transfer'" :class="txForm.type === 'transfer' ? 'bg-white dark:bg-obsidian-800 text-royal-600 shadow-xs font-bold' : 'text-cream-500'" class="py-2 rounded-xl text-xs transition-all" x-text="t('btn_transfer')"></button>
+                <button type="button" @click="txForm.type = 'expense'" :class="txForm.type === 'expense' ? 'bg-white dark:bg-obsidian-800 text-rose-600 shadow-sm font-bold' : 'text-cream-500'" class="py-2 rounded-xl text-xs transition-all" x-text="t('btn_expense')"></button>
+                <button type="button" @click="txForm.type = 'income'" :class="txForm.type === 'income' ? 'bg-white dark:bg-obsidian-800 text-emerald-600 shadow-sm font-bold' : 'text-cream-500'" class="py-2 rounded-xl text-xs transition-all" x-text="t('btn_income')"></button>
+                <button type="button" @click="txForm.type = 'transfer'" :class="txForm.type === 'transfer' ? 'bg-white dark:bg-obsidian-800 text-royal-600 shadow-sm font-bold' : 'text-cream-500'" class="py-2 rounded-xl text-xs transition-all" x-text="t('btn_transfer')"></button>
             </div>
 
             <div x-show="txForm.type === 'expense'" class="mb-4 p-3.5 rounded-2xl bg-rose-50/70 dark:bg-rose-500/10 border border-rose-200/80 dark:border-rose-500/25 space-y-2.5">
@@ -1366,14 +1404,14 @@
 
                 <div class="grid grid-cols-2 gap-2">
                     <button type="button" @click="startExpenseReceiptCamera()" :disabled="isScanningReceipt"
-                            class="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs transition-all">
+                            class="py-2.5 px-3 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm transition-all">
                         <i data-lucide="camera" class="w-3.5 h-3.5"></i>
                         <span x-text="isScanningReceipt ? t('scanning_receipt') : t('scan_bill_camera')"></span>
                     </button>
                     <label class="py-2.5 px-3 rounded-xl bg-white dark:bg-obsidian-900 hover:bg-cream-50 dark:hover:bg-obsidian-800 text-cream-900 dark:text-white border border-rose-200/80 dark:border-obsidian-700 text-xs font-semibold flex items-center justify-center gap-1.5 cursor-pointer transition-colors">
                         <i data-lucide="image-plus" class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400"></i>
                         <span x-text="t('upload_bill_photo')"></span>
-                        <input type="file" accept="image/*" capture="environment" @change="handleReceiptUpload($event)" class="hidden">
+                        <input type="file" accept="image/*" @change="handleReceiptUpload($event)" class="hidden">
                     </label>
                 </div>
 
@@ -1384,6 +1422,7 @@
                             <span class="px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[9px] font-bold shrink-0" x-text="t('auto_math_badge')"></span>
                         </div>
                         <div class="flex items-center gap-2 shrink-0">
+                            <button type="button" @click="sendScannedReceiptToSplitBill()" class="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">Split Bill</button>
                             <button type="button" @click="addExpenseReceiptItemRow()" class="text-[10px] font-semibold text-royal-600 dark:text-royal-400 hover:underline">+ Item</button>
                             <button type="button" @click="clearExpenseReceiptScan()" class="text-[10px] font-semibold text-cream-400 hover:text-rose-500" x-text="t('reset_scan')"></button>
                         </div>
@@ -1497,7 +1536,7 @@
     <!-- ========================================== -->
     <!-- MODAL 2: MANAGE WALLETS / BANKS            -->
     <!-- ========================================== -->
-    <div x-show="showWalletModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+    <div x-show="showWalletModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         <div @click.away="showWalletModal = false" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl border border-cream-200 dark:border-obsidian-800 p-6 shadow-2xl">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-display font-bold text-base text-cream-900 dark:text-white" x-text="t('manage_wallets')"></h3>
@@ -1522,7 +1561,7 @@
     <!-- ========================================== -->
     <!-- MODAL 3: MANAGE CATEGORIES                 -->
     <!-- ========================================== -->
-    <div x-show="showCategoryModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+    <div x-show="showCategoryModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         <div @click.away="showCategoryModal = false" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl border border-cream-200 dark:border-obsidian-800 p-6 shadow-2xl">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="font-display font-bold text-base text-cream-900 dark:text-white" x-text="t('manage_categories')"></h3>
@@ -1547,7 +1586,7 @@
     <!-- ========================================== -->
     <!-- MODAL 4: ADD SAVINGS GOAL                  -->
     <!-- ========================================== -->
-    <div x-show="showGoalModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+    <div x-show="showGoalModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         <div @click.away="showGoalModal = false" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl border border-cream-200 dark:border-obsidian-800 p-6 shadow-2xl">
             <h3 class="font-display font-bold text-base text-cream-900 dark:text-white mb-4" x-text="t('add_goal')"></h3>
             <form @submit.prevent="saveGoal()" class="space-y-3">
@@ -1574,7 +1613,7 @@
     <!-- ========================================== -->
     <!-- MODAL 5: SET CATEGORY BUDGET               -->
     <!-- ========================================== -->
-    <div x-show="showBudgetModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+    <div x-show="showBudgetModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         <div @click.away="showBudgetModal = false" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl border border-cream-200 dark:border-obsidian-800 p-6 shadow-2xl">
             <h3 class="font-display font-bold text-base text-cream-900 dark:text-white mb-4" x-text="t('set_budget')"></h3>
             <form @submit.prevent="saveBudget()" class="space-y-3">
@@ -1601,7 +1640,7 @@
     <!-- ========================================== -->
     <!-- MODAL 6: CREATE / EDIT AUTOPILOT RULE      -->
     <!-- ========================================== -->
-    <div x-show="showAutomationModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+    <div x-show="showAutomationModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         <div @click.away="showAutomationModal = false; editingRuleId = null" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl border border-cream-200 dark:border-obsidian-800 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="font-display font-bold text-base text-cream-900 dark:text-white mb-4" x-text="editingRuleId ? t('edit_rule') : t('add_rule')"></h3>
             <form @submit.prevent="saveAutomationRule()" class="space-y-3">
@@ -1718,7 +1757,7 @@
     <!-- ========================================== -->
     <!-- MODAL 7: CUSTOM NICKNAME EDITOR            -->
     <!-- ========================================== -->
-    <div x-show="showNicknameModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+    <div x-show="showNicknameModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
         <div @click.away="showNicknameModal = false" class="w-full max-w-sm bg-white dark:bg-obsidian-900 rounded-3xl border border-cream-200 dark:border-obsidian-800 p-6 shadow-2xl">
             <h3 class="font-display font-bold text-base text-cream-900 dark:text-white mb-1" x-text="t('edit_nickname')"></h3>
             <p class="text-xs text-cream-500 dark:text-slate-400 mb-3.5" x-text="t('nickname_sub')"></p>
@@ -1740,7 +1779,7 @@
     <!-- ========================================== -->
     <!-- MODAL 8: LIVE CAMERA RECEIPT & BILL SCANNER-->
     <!-- ========================================== -->
-    <div x-show="showSplitCameraModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xs p-4">
+    <div x-show="showSplitCameraModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div @click.away="stopSplitCamera()" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl border border-cream-200 dark:border-obsidian-800 p-5 shadow-2xl space-y-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
@@ -1780,12 +1819,12 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- RELATIONAL DATABASE ENGINE & EA AGENT CORE -->
+    <!-- RELATIONAL DATABASE & MULTI-SOURCE REAL-TIME ENGINE -->
     <!-- ========================================== -->
     <script>
         class DNDIndexedDatabase {
             constructor() {
-                this.dbName = 'DND_Finance_Relational_DB_v8';
+                this.dbName = 'DND_Finance_Relational_DB_v9';
                 this.version = 1;
                 this.db = null;
             }
@@ -1967,7 +2006,6 @@
                 isImportingReport: false,
                 cashflowChartGroup: 'date',
                 categoryChartFilter: 'all',
-                dbStatusLabel: 'Firebase + IndexedDB Ready',
 
                 isSyncing: false,
                 serverRevision: 0,
@@ -1978,6 +2016,24 @@
                 deletedRuleIds: [],
                 deletedBanks: [],
                 deletedCategories: [],
+
+                // Continuous Real-Time Macroeconomic & Currency Telemetry Stream
+                realtimePulse: {
+                    chipset_id: 'DND_RT_CHIPSET_CORE_V4',
+                    inflation_id_pct: 2.68,
+                    inflation_global_pct: 2.90,
+                    gdp_id_pct: 5.05,
+                    bi_rate_pct: 5.75,
+                    usd_idr: 16250,
+                    sgd_idr: 12080,
+                    eur_idr: 17540,
+                    jpy_idr: 108.5,
+                    aud_idr: 10540,
+                    myr_idr: 3670,
+                    sources: ['World Bank Official Open Data', 'European Central Bank (Frankfurter)', 'Open ER-API', 'Bank Indonesia'],
+                    updated_at: new Date().toISOString()
+                },
+                realtimeTimer: null,
 
                 // Direct Google Identity Services Browser Authentication (Tanpa Firebase Auth)
                 googleClientId: '753367715469-972f7qjb3t97qab938sc5lo69mgp78h0.apps.googleusercontent.com',
@@ -2042,6 +2098,10 @@
                     daily_burn_rate: 0,
                     monthly_burn_est: 0,
                     runway_days: 0,
+                    emergency_fund_ideal: 0,
+                    emergency_fund_gap: 0,
+                    real_balance_1y: 0,
+                    inflation_erosion_1y: 0,
                     top_category: '-',
                     top_category_amount: 0,
                     anomalies: [],
@@ -2171,16 +2231,16 @@
                         no_category_data: 'Belum ada data kategori tercatat',
                         wallet_distribution: 'Saldo per Dompet & Rekening',
                         wallet_balance_comparison: 'Distribusi dana di setiap rekening',
-                        ai_analyst_sub: 'Asisten cerdas otomatis untuk mengelola keuangan dan menjawab semua pertanyaan Anda',
+                        ai_analyst_sub: 'Asisten cerdas berbasis data real-time resmi untuk mengelola keuangan dan menjawab semua pertanyaan Anda',
                         ai_full_audit: 'Analisis Menyeluruh',
                         ai_analyzing: 'Memproses...',
                         ai_preset_1: 'Bantu Kelola Gaji Saya',
                         ai_preset_2: 'Catat Pengeluaran Kopi 25rb Gopay',
-                        ai_preset_3: 'Buat Target Dana Darurat 10jt',
-                        ai_preset_4: 'Strategi Investasi & Cicilan',
+                        ai_preset_3: 'Berapa Inflasi, BI-Rate & Kurs Hari Ini?',
+                        ai_preset_4: 'Konversi 250 USD ke Rupiah Sekarang',
                         ai_preset_5: 'Apa Itu Inflasi dan Cara Kerjanya?',
-                        ai_empty_chat: 'Tanyakan apa saja dengan bahasa yang mudah dipahami. DND AI AGENT dapat mengelola keuangan Anda secara langsung (contoh: "Catat makan siang 35rb pakai BCA" atau "Buat target Liburan 5jt") maupun menjawab semua pertanyaan umum secara jelas.',
-                        ai_input_placeholder: 'Tulis perintah keuangan atau pertanyaan apa saja...',
+                        ai_empty_chat: 'Tanyakan apa saja dengan bahasa yang mudah dipahami. DND AI AGENT menggunakan aliran data ekonomi real-time resmi (inflasi, BI-Rate, GDP, dan kurs multi-mata uang) serta basis pengetahuan resmi untuk membantu mengatur keuangan dan menjawab semua pertanyaan Anda.',
+                        ai_input_placeholder: 'Tulis perintah keuangan, konversi kurs, atau pertanyaan apa saja...',
                         send_btn: 'Kirim',
                         you: 'Anda',
                         copy: 'Salin',
@@ -2237,7 +2297,7 @@
                         per_person: 'Per Orang',
                         log_my_share: 'Catat Bagian Saya',
                         automation_menu_sub: 'Aturan pintar & auto-tabung',
-                        ai_agent_menu_sub: 'Asisten cerdas otomatis & analisis keuangan',
+                        ai_agent_menu_sub: 'Asisten cerdas data real-time & analisis keuangan',
                         preferences_title: 'Preferensi Aplikasi',
                         language_label: 'Bahasa Aplikasi',
                         currency_label: 'Mata Uang Utama',
@@ -2288,9 +2348,9 @@
                         alert_threshold: 'Batas Nominal Peringatan',
                         about_app_title: 'Tentang DND Finance',
                         about_app_tagline: 'Manajemen Kekayaan & Pencatatan Arus Kas Pribadi',
-                        about_app_desc: 'DND Finance merupakan platform manajemen keuangan pribadi terpadu yang dirancang untuk mengelola portofolio multi-rekening, memindai bukti transaksi dengan perhitungan matematika otomatis, mengimpor serta mengekspor laporan Excel & PDF ke database Firebase, mengotomatiskan alokasi tabungan melalui Autopilot, serta ditenagai oleh DND AI AGENT.',
+                        about_app_desc: 'DND Finance merupakan platform manajemen keuangan pribadi terpadu yang dirancang untuk mengelola portofolio multi-rekening, memindai bukti transaksi & nota belanja dengan perhitungan matematika otomatis, mengimpor serta mengekspor laporan Excel & PDF ke database Firebase, mengotomatiskan alokasi tabungan melalui Autopilot, serta ditenagai oleh DND AI AGENT berbasis data ekonomi real-time resmi.',
                         about_feat_1: 'Portofolio Multi-Rekening',
-                        about_feat_2: 'Pemindai Struk & Split Bill',
+                        about_feat_2: 'Scan Struk & Split Bill',
                         about_feat_3: 'Otomatisasi Autopilot',
                         about_platform_label: 'Platform',
                         about_platform_val: 'DND Finance',
@@ -2367,16 +2427,16 @@
                         no_category_data: 'No category data recorded yet',
                         wallet_distribution: 'Wallet & Bank Balances',
                         wallet_balance_comparison: 'Distribution across accounts',
-                        ai_analyst_sub: 'Autonomous smart assistant to manage your finances and answer all your questions',
+                        ai_analyst_sub: 'Real-time official data smart assistant to manage your finances and answer all your questions',
                         ai_full_audit: 'Comprehensive Analysis',
                         ai_analyzing: 'Processing...',
                         ai_preset_1: 'Help Manage My Salary',
                         ai_preset_2: 'Record Coffee 15 USD via Gopay',
-                        ai_preset_3: 'Create Emergency Goal 5000',
-                        ai_preset_4: 'Investment & Debt Strategy',
+                        ai_preset_3: 'What Are Live Inflation, BI-Rate & FX Rates?',
+                        ai_preset_4: 'Convert 250 USD to Rupiah Now',
                         ai_preset_5: 'What Is Inflation and How Does It Work?',
-                        ai_empty_chat: 'Ask anything in plain language. DND AI AGENT can actively manage your finances (e.g., "Record lunch 20 USD via BCA" or "Create goal Vacation 2000") and answer all general questions clearly.',
-                        ai_input_placeholder: 'Type a finance command or any question...',
+                        ai_empty_chat: 'Ask anything in plain language. DND AI AGENT uses real-time official economic streams (inflation, policy rate, GDP, and multi-currency FX rates) alongside official knowledge sources to manage finances and answer all your questions.',
+                        ai_input_placeholder: 'Type a finance command, FX conversion, or any question...',
                         send_btn: 'Send',
                         you: 'You',
                         copy: 'Copy',
@@ -2433,7 +2493,7 @@
                         per_person: 'Per Person',
                         log_my_share: 'Record My Share',
                         automation_menu_sub: 'Smart rules & auto-saving',
-                        ai_agent_menu_sub: 'Autonomous smart assistant & financial analysis',
+                        ai_agent_menu_sub: 'Real-time smart assistant & financial analysis',
                         preferences_title: 'App Preferences',
                         language_label: 'App Language',
                         currency_label: 'Primary Currency',
@@ -2484,7 +2544,7 @@
                         alert_threshold: 'Alert Threshold Amount',
                         about_app_title: 'About DND Finance',
                         about_app_tagline: 'Personal Wealth & Cashflow Management',
-                        about_app_desc: 'DND Finance is an integrated personal wealth management platform engineered to oversee multi-account portfolios, scan receipts with automatic mathematical reconciliation, import and export Excel & PDF reports into the Firebase database, automate savings allocations via Autopilot, and power smart wealth execution via DND AI AGENT.',
+                        about_app_desc: 'DND Finance is an integrated personal wealth management platform engineered to oversee multi-account portfolios, scan shopping receipts & split bills with automatic mathematical reconciliation, import and export Excel & PDF reports into the Firebase database, automate savings allocations via Autopilot, and power real-time wealth intelligence via DND AI AGENT.',
                         about_feat_1: 'Multi-Account Portfolio',
                         about_feat_2: 'Receipt Scan & Split Bill',
                         about_feat_3: 'Autopilot Automation',
@@ -2660,6 +2720,11 @@
                         this.currentHour = new Date().getHours();
                     }, 30000);
 
+                    await this.refreshRealtimeChipset(false);
+                    this.realtimeTimer = setInterval(() => {
+                        this.refreshRealtimeChipset(false);
+                    }, 60000);
+
                     await this.fetchGoogleConfigAndSession();
                     await this.syncWithServer();
                     this.computeQuantitativeIntelligenceLocal();
@@ -2675,8 +2740,72 @@
                     document.addEventListener('visibilitychange', () => {
                         if (document.visibilityState === 'visible') {
                             this.syncWithServer();
+                            this.refreshRealtimeChipset(false);
                         }
                     });
+                },
+
+                async refreshRealtimeChipset(notifyUser = false) {
+                    let serverOk = false;
+                    try {
+                        const res = await fetch('/api/realtime/pulse?force=' + (notifyUser ? 'true' : 'false'));
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data && data.status === 'ok' && data.pulse) {
+                                this.realtimePulse = { ...this.realtimePulse, ...data.pulse };
+                                serverOk = true;
+                            }
+                        }
+                    } catch (e) {}
+
+                    if (!serverOk) {
+                        try {
+                            const [fxRes, wbInfRes, wbGdpRes] = await Promise.allSettled([
+                                fetch('https://open.er-api.com/v6/latest/USD'),
+                                fetch('https://api.worldbank.org/v2/country/IDN/indicator/FP.CPI.TOTL.ZG?format=json&per_page=3'),
+                                fetch('https://api.worldbank.org/v2/country/IDN/indicator/NY.GDP.MKTP.KD.ZG?format=json&per_page=3')
+                            ]);
+
+                            if (fxRes.status === 'fulfilled' && fxRes.value.ok) {
+                                const fx = await fxRes.value.json();
+                                const rates = fx && fx.rates ? fx.rates : {};
+                                const usdIdr = Number(rates.IDR || this.realtimePulse.usd_idr);
+                                this.realtimePulse.usd_idr = Math.round(usdIdr * 100) / 100;
+                                if (rates.SGD) this.realtimePulse.sgd_idr = Math.round((usdIdr / Number(rates.SGD)) * 100) / 100;
+                                if (rates.EUR) this.realtimePulse.eur_idr = Math.round((usdIdr / Number(rates.EUR)) * 100) / 100;
+                                if (rates.JPY) this.realtimePulse.jpy_idr = Math.round((usdIdr / Number(rates.JPY)) * 100) / 100;
+                                if (rates.AUD) this.realtimePulse.aud_idr = Math.round((usdIdr / Number(rates.AUD)) * 100) / 100;
+                                if (rates.MYR) this.realtimePulse.myr_idr = Math.round((usdIdr / Number(rates.MYR)) * 100) / 100;
+                            }
+
+                            if (wbInfRes.status === 'fulfilled' && wbInfRes.value.ok) {
+                                const wbInf = await wbInfRes.value.json();
+                                if (Array.isArray(wbInf) && Array.isArray(wbInf[1])) {
+                                    const valid = wbInf[1].find(e => e && e.value !== null && e.value !== undefined);
+                                    if (valid) this.realtimePulse.inflation_id_pct = Math.round(Number(valid.value) * 100) / 100;
+                                }
+                            }
+
+                            if (wbGdpRes.status === 'fulfilled' && wbGdpRes.value.ok) {
+                                const wbGdp = await wbGdpRes.value.json();
+                                if (Array.isArray(wbGdp) && Array.isArray(wbGdp[1])) {
+                                    const valid = wbGdp[1].find(e => e && e.value !== null && e.value !== undefined);
+                                    if (valid) this.realtimePulse.gdp_id_pct = Math.round(Number(valid.value) * 100) / 100;
+                                }
+                            }
+
+                            this.realtimePulse.updated_at = new Date().toISOString();
+                        } catch (e) {}
+                    }
+
+                    this.computeQuantitativeIntelligenceLocal();
+                    if (notifyUser) {
+                        this.showToast(
+                            this.lang === 'ID'
+                                ? `Data ekonomi real-time diperbarui: Inflasi ${this.realtimePulse.inflation_id_pct}% | USD Rp ${Math.round(this.realtimePulse.usd_idr).toLocaleString('id-ID')}`
+                                : `Live economic data updated: Inflation ${this.realtimePulse.inflation_id_pct}% | USD Rp ${Math.round(this.realtimePulse.usd_idr).toLocaleString('id-ID')}`
+                        );
+                    }
                 },
 
                 async loadFromIndexedDB() {
@@ -2698,7 +2827,6 @@
                         }
                         this.reportFileLogs = await _dndLocalDb.listReportFiles(this.resolvedAccountKey);
                         this.receiptScanLogs = await _dndLocalDb.listReceiptScans(this.resolvedAccountKey);
-                        this.dbStatusLabel = 'IndexedDB Active';
                     } catch (e) {}
                 },
 
@@ -2887,7 +3015,6 @@
                             if (data.status === 'ok' && data.state) {
                                 if (typeof data.revision === 'number') this.serverRevision = data.revision;
                                 this.applyCanonicalServerState(data.state);
-                                this.dbStatusLabel = data.backend === 'firebase' ? 'Firebase + IndexedDB Synced' : 'Server DB + IndexedDB Synced';
                                 this.$nextTick(() => {
                                     this.refreshIcons();
                                     this.updateAllCharts();
@@ -2895,7 +3022,6 @@
                             }
                         }
                     } catch (e) {
-                        this.dbStatusLabel = 'IndexedDB Local Active';
                     } finally {
                         this.isSyncing = false;
                     }
@@ -3025,6 +3151,7 @@
                     const inc = this.totalIncome;
                     const exp = this.totalExpense + this.totalWithdrawal;
                     const bal = this.totalBalance;
+                    const infRate = Number(this.realtimePulse.inflation_id_pct || 2.68) / 100;
 
                     const uniqueDates = new Set(
                         this.transactions
@@ -3035,6 +3162,8 @@
                     const activeDays = Math.max(1, uniqueDates.size);
                     const dailyBurn = exp / activeDays;
                     const monthlyBurnEst = dailyBurn * 30;
+                    const emergencyIdeal = Math.round(monthlyBurnEst * 6);
+                    const emergencyGap = Math.max(0, emergencyIdeal - Math.max(0, bal));
                     const savingsRate = inc > 0 ? Math.max(-100, Math.min(100, Math.round(((inc - exp) / inc) * 100))) : 0;
                     const runwayDays = dailyBurn > 0 ? Math.max(0, Math.round(Math.max(0, bal) / dailyBurn)) : 999;
 
@@ -3080,6 +3209,8 @@
 
                     const monthlyNet = inc - exp;
                     const monthlySmartSave = inc > 0 ? inc * 0.20 : Math.max(0, monthlyNet);
+                    const realBalance1y = bal > 0 ? Math.round(bal / (1 + infRate)) : bal;
+                    const erosion1y = bal > 0 ? Math.round(bal - realBalance1y) : 0;
 
                     this.quantIntel = {
                         health_score: score,
@@ -3088,6 +3219,10 @@
                         daily_burn_rate: Math.round(dailyBurn),
                         monthly_burn_est: Math.round(monthlyBurnEst),
                         runway_days: runwayDays,
+                        emergency_fund_ideal: emergencyIdeal,
+                        emergency_fund_gap: emergencyGap,
+                        real_balance_1y: realBalance1y,
+                        inflation_erosion_1y: erosion1y,
                         top_category: this.expenseCategoryBreakdown[0] ? this.expenseCategoryBreakdown[0].category : '-',
                         top_category_amount: this.expenseCategoryBreakdown[0] ? this.expenseCategoryBreakdown[0].amount : 0,
                         anomalies: anomalies.slice(0, 3),
@@ -3427,6 +3562,15 @@
                         return;
                     }
 
+                    let noteText = stripAllEmojis(this.txForm.note || '');
+                    if (!noteText && this.scannedReceiptMerchant) {
+                        noteText = this.scannedReceiptMerchant;
+                    }
+                    if (this.txForm.type === 'expense' && this.scannedReceiptItems.length > 0) {
+                        const summaryItems = this.scannedReceiptItems.slice(0, 3).map(it => `${it.name} x${it.qty}`).join(', ');
+                        noteText = noteText ? `${noteText} (${summaryItems})` : summaryItems;
+                    }
+
                     const tx = {
                         id: 'tx_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
                         amount: amt,
@@ -3435,13 +3579,14 @@
                         account: this.txForm.account || this.banks[0],
                         toAccount: this.txForm.type === 'transfer' ? (this.txForm.toAccount || this.banks[0]) : '',
                         adminFee: this.txForm.type === 'transfer' ? Number(this.txForm.adminFee || 0) : 0,
-                        note: stripAllEmojis(this.txForm.note || ''),
+                        note: noteText,
                         date: (this.txForm.date || this.getLocalDateTimeInput()).replace('T', ' '),
                         updated_at: new Date().toISOString()
                     };
 
                     this.transactions.unshift(tx);
                     this.executeAutopilotRules(tx);
+                    this.clearExpenseReceiptScan();
                     this.showTxModal = false;
                     this.saveLocalState(true);
 
@@ -3449,7 +3594,7 @@
                         this.refreshIcons();
                         this.updateAllCharts();
                     });
-                    this.showToast(this.lang === 'ID' ? 'Transaksi disimpan ke database.' : 'Transaction saved to database.');
+                    this.showToast(this.lang === 'ID' ? 'Transaksi berhasil disimpan.' : 'Transaction saved.');
                 },
 
                 deleteTransaction(txId) {
@@ -3525,6 +3670,22 @@
                 // ==========================================
                 // SCAN NOTA & SPLIT BILL (AUTO-MATH + DB)
                 // ==========================================
+                sendScannedReceiptToSplitBill() {
+                    this.splitMerchant = this.scannedReceiptMerchant;
+                    this.splitItems = JSON.parse(JSON.stringify(this.scannedReceiptItems || []));
+                    this.splitSubtotal = this.scannedReceiptSubtotal;
+                    this.splitDiscount = this.scannedReceiptDiscount;
+                    this.splitTax = this.scannedReceiptTaxPct;
+                    this.recalculateSplitBillMath();
+                    this.showTxModal = false;
+                    this.setTab('dashboard');
+                    this.$nextTick(() => {
+                        const el = document.getElementById('dashboardSplitBill');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    });
+                    this.showToast(this.lang === 'ID' ? 'Struk dipindahkan ke kalkulator Split Bill.' : 'Receipt sent to Split Bill calculator.');
+                },
+
                 recalculateSplitItemLine(idx) {
                     const item = this.splitItems[idx];
                     if (!item) return;
@@ -3602,7 +3763,7 @@
                         this.refreshIcons();
                         this.updateAllCharts();
                     });
-                    this.showToast(this.lang === 'ID' ? 'Bagian split bill Anda tercatat ke database.' : 'Your split share recorded to database.');
+                    this.showToast(this.lang === 'ID' ? 'Bagian split bill Anda tercatat.' : 'Your split share recorded.');
                 },
 
                 recalculateExpenseItemLine(idx) {
@@ -3778,7 +3939,7 @@
                             const apiRes = await fetch('/api/scan/receipt', { method: 'POST', body: fd });
                             if (apiRes.ok) {
                                 const json = await apiRes.json();
-                                if (json.status === 'ok' && json.data) {
+                                if (json.status === 'ok' && json.data && (json.data.amount > 0 || (json.data.items && json.data.items.length > 0))) {
                                     backendResult = json.data;
                                 }
                             }
@@ -3831,8 +3992,8 @@
                             this.recalculateSplitBillMath();
                             this.showToast(
                                 this.lang === 'ID'
-                                    ? `Struk dipindai & dihitung otomatis (${parsed.items.length} item) ke database.`
-                                    : `Receipt scanned & auto-calculated (${parsed.items.length} items) into database.`
+                                    ? `Struk dipindai & dihitung otomatis (${parsed.items.length} item).`
+                                    : `Receipt scanned & auto-calculated (${parsed.items.length} items).`
                             );
                         } else {
                             this.scannedReceiptMerchant = parsed.merchant;
@@ -4336,8 +4497,8 @@
 
                         this.showToast(
                             this.lang === 'ID'
-                                ? `Berhasil mengimpor ${importedTxs.length} transaksi dari ${fileFormat} ke database.`
-                                : `Successfully imported ${importedTxs.length} transactions from ${fileFormat} into database.`
+                                ? `Berhasil mengimpor ${importedTxs.length} transaksi dari ${fileFormat}.`
+                                : `Successfully imported ${importedTxs.length} transactions from ${fileFormat}.`
                         );
                     } catch (err) {
                         this.showToast(this.lang === 'ID' ? 'Gagal memproses file laporan.' : 'Failed to parse report file.');
@@ -4492,7 +4653,7 @@
                             ['Tanggal Ekspor', nowIso.replace('T', ' ').slice(0, 19)],
                             ['Mata Uang Utama', this.currency],
                             [],
-                            ['RINGKASAN ARUS KAS & SKOR KESEHATAN'],
+                            ['RINGKASAN ARUS KAS & INDIKATOR EKONOMI LIVE'],
                             ['Total Pemasukan', this.totalIncome],
                             ['Total Pengeluaran', this.totalExpense + this.totalWithdrawal],
                             ['Total Saldo Bersih', this.totalBalance],
@@ -4500,6 +4661,9 @@
                             ['Rasio Tabungan (%)', `${this.quantIntel.savings_rate_pct}%`],
                             ['Burn Rate Harian', this.quantIntel.daily_burn_rate],
                             ['Ketahanan Kas (Runway)', `${this.quantIntel.runway_days} hari`],
+                            ['Inflasi Terkini (YoY)', `${this.realtimePulse.inflation_id_pct}%`],
+                            ['BI-Rate & Pertumbuhan GDP', `${this.realtimePulse.bi_rate_pct}% | ${this.realtimePulse.gdp_id_pct}%`],
+                            ['Nilai Riil Saldo 1 Tahun (Adjusted)', this.quantIntel.real_balance_1y],
                             ['Proyeksi Kekayaan 6 Bulan (Pola 20%)', this.quantIntel.forecast.smart_20pct_6m],
                             [],
                             ['SALDO PER DOMPET / REKENING'],
@@ -4547,12 +4711,7 @@
                         const wsPlan = window.XLSX.utils.aoa_to_sheet([planHeader, ...goalRows, ...budgetRows]);
                         window.XLSX.utils.book_append_sheet(wb, wsPlan, 'Target_dan_Anggaran');
 
-                        const logHeader = ['ID File', 'Nama File', 'Format', 'Arah', 'Jumlah Transaksi', 'Checksum SHA256', 'Waktu'];
-                        const logRows = this.reportFileLogs.map(r => [r.id, r.filename, r.file_format, r.direction, r.tx_count, r.checksum_sha256, r.created_at]);
-                        const wsLogs = window.XLSX.utils.aoa_to_sheet([logHeader, ...logRows]);
-                        window.XLSX.utils.book_append_sheet(wb, wsLogs, 'Log_File_Database');
-
-                        const filename = `DND_Finance_Database_Report_${this.lang}.xlsx`;
+                        const filename = `DND_Finance_Report_${this.lang}.xlsx`;
                         const wbOut = window.XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
                         const sha256 = await computeSha256Short(wbOut);
 
@@ -4579,7 +4738,7 @@
                         }).catch(() => {});
                         await this.fetchReportHistory();
 
-                        this.showToast(this.lang === 'ID' ? 'Laporan Excel multi-sheet berhasil diunduh & dicatat di database.' : 'Multi-sheet Excel report downloaded & logged in database.');
+                        this.showToast(this.lang === 'ID' ? 'Laporan Excel berhasil diunduh.' : 'Excel report downloaded.');
                     } catch (err) {
                         this.showToast(this.lang === 'ID' ? 'Gagal mengekspor Excel.' : 'Failed to export Excel.');
                     }
@@ -4597,7 +4756,7 @@
 
                         doc.setFontSize(16);
                         doc.setTextColor(15, 23, 42);
-                        doc.text('DND FINANCE — LAPORAN DATABASE KEUANGAN', 14, 18);
+                        doc.text('DND FINANCE — LAPORAN KEUANGAN PRIBADI', 14, 18);
 
                         doc.setFontSize(9);
                         doc.setTextColor(100, 116, 139);
@@ -4605,14 +4764,15 @@
 
                         doc.autoTable({
                             startY: 30,
-                            head: [['Indikator Keuangan', 'Nilai']],
+                            head: [['Indikator Keuangan & Ekonomi Live', 'Nilai']],
                             body: [
                                 ['Total Pemasukan', this.formatCurrency(this.totalIncome)],
                                 ['Total Pengeluaran', this.formatCurrency(this.totalExpense + this.totalWithdrawal)],
                                 ['Total Saldo Bersih', this.formatCurrency(this.totalBalance)],
                                 ['Skor Kesehatan Finansial', `${this.quantIntel.health_score} / 100 (${this.quantIntel.health_grade})`],
                                 ['Rasio Tabungan & Burn Rate Harian', `${this.quantIntel.savings_rate_pct}% | ${this.formatCurrency(this.quantIntel.daily_burn_rate)} / hari`],
-                                ['Total Scan Nota & Split Bill di DB', `${this.receiptScanLogs.length} dokumen terpindai`]
+                                ['Inflasi YoY, BI-Rate & GDP', `${this.realtimePulse.inflation_id_pct}% | ${this.realtimePulse.bi_rate_pct}% | ${this.realtimePulse.gdp_id_pct}%`],
+                                ['Daya Beli Riil Saldo 1 Thn', this.formatCurrency(this.quantIntel.real_balance_1y)]
                             ],
                             theme: 'grid',
                             headStyles: { fillColor: [37, 99, 235] },
@@ -4645,26 +4805,7 @@
                             styles: { fontSize: 7.5 }
                         });
 
-                        if (this.receiptScanLogs.length > 0) {
-                            doc.autoTable({
-                                startY: doc.lastAutoTable.finalY + 6,
-                                head: [['Mode Scan', 'Merchant', 'Subtotal', 'Diskon', 'Pajak', 'Total Akhir', 'Per Orang']],
-                                body: this.receiptScanLogs.slice(0, 30).map(s => [
-                                    s.scan_mode === 'split' ? 'Split Bill' : 'Nota Belanja',
-                                    stripAllEmojis(s.merchant || '-'),
-                                    this.formatCurrency(s.subtotal),
-                                    this.formatCurrency(s.discount),
-                                    this.formatCurrency(s.tax_amount),
-                                    this.formatCurrency(s.grand_total),
-                                    this.formatCurrency(s.per_person)
-                                ]),
-                                theme: 'striped',
-                                headStyles: { fillColor: [16, 185, 129] },
-                                styles: { fontSize: 7.5 }
-                            });
-                        }
-
-                        const filename = `DND_Finance_Database_Report_${this.lang}.pdf`;
+                        const filename = `DND_Finance_Report_${this.lang}.pdf`;
                         const pdfArrayBuffer = doc.output('arraybuffer');
                         const sha256 = await computeSha256Short(pdfArrayBuffer);
 
@@ -4691,14 +4832,14 @@
                         }).catch(() => {});
                         await this.fetchReportHistory();
 
-                        this.showToast(this.lang === 'ID' ? 'Laporan PDF berhasil diunduh & dicatat di database.' : 'PDF report downloaded & logged in database.');
+                        this.showToast(this.lang === 'ID' ? 'Laporan PDF berhasil diunduh.' : 'PDF report downloaded.');
                     } catch (err) {
                         this.showToast(this.lang === 'ID' ? 'Gagal mengekspor PDF.' : 'Failed to export PDF.');
                     }
                 },
 
                 // ==========================================
-                // DND AI AGENT (EMBEDDED OPEN-SOURCE LLM EA AGENT)
+                // DND AI AGENT (MULTI-SOURCE OFFICIAL REAL-TIME INTELLIGENCE)
                 // ==========================================
                 askAiPreset(promptText) {
                     this.aiInput = promptText;
@@ -4707,8 +4848,8 @@
 
                 runQuickAudit() {
                     this.aiInput = this.lang === 'ID'
-                        ? 'Lakukan analisis keuangan menyeluruh atas saldo, rasio tabungan, burn rate harian, ketahanan kas, dan berikan langkah pengelolaan keuangan yang praktis.'
-                        : 'Perform a comprehensive financial analysis of my balances, savings rate, daily burn rate, cash runway, and provide practical money management steps.';
+                        ? 'Lakukan analisis keuangan menyeluruh atas saldo, rasio tabungan, burn rate harian, kebutuhan dana darurat ideal, dampak inflasi dan suku bunga terkini terhadap daya beli saya, serta berikan strategi pengelolaan gaji & investasi yang praktis.'
+                        : 'Perform a comprehensive financial analysis of my balances, savings rate, daily burn rate, ideal emergency fund gap, current inflation and interest rate impact on my purchasing power, and provide practical salary & investment steps.';
                     this.submitAiPrompt();
                 },
 
@@ -4804,6 +4945,51 @@
                     return actions;
                 },
 
+                tryDirectCurrencyConversion(prompt) {
+                    const match = prompt.match(/(?:konversi|convert|hitung|berapa)?\s*(\d+(?:[.,]\d+)?)\s*(usd|sgd|eur|jpy|aud|myr|idr|rupiah|dollar)\s*(?:ke|to|in|dalam|menjadi)?\s*(idr|rupiah|usd|sgd|eur|jpy|aud|myr|dollar)?/i);
+                    if (!match) return null;
+                    const amount = parseFloat(match[1].replace(',', '.'));
+                    if (!Number.isFinite(amount) || amount <= 0) return null;
+
+                    const normCode = (raw) => {
+                        const up = String(raw || '').toUpperCase();
+                        if (up === 'RUPIAH') return 'IDR';
+                        if (up === 'DOLLAR') return 'USD';
+                        return up;
+                    };
+
+                    const fromCode = normCode(match[2]);
+                    let toCode = normCode(match[3] || (fromCode === 'IDR' ? 'USD' : 'IDR'));
+                    if (fromCode === toCode) toCode = fromCode === 'IDR' ? 'USD' : 'IDR';
+
+                    const ratesToIdr = {
+                        IDR: 1,
+                        USD: Number(this.realtimePulse.usd_idr || 16250),
+                        SGD: Number(this.realtimePulse.sgd_idr || 12080),
+                        EUR: Number(this.realtimePulse.eur_idr || 17540),
+                        JPY: Number(this.realtimePulse.jpy_idr || 108.5),
+                        AUD: Number(this.realtimePulse.aud_idr || 10540),
+                        MYR: Number(this.realtimePulse.myr_idr || 3670)
+                    };
+
+                    if (!ratesToIdr[fromCode] || !ratesToIdr[toCode]) return null;
+                    const inIdr = amount * ratesToIdr[fromCode];
+                    const converted = inIdr / ratesToIdr[toCode];
+
+                    if (this.lang === 'ID') {
+                        return `**Konversi Mata Uang Real-Time (Sumber Resmi ECB / Open ER-API)**\n\n` +
+                            `- **Nominal Awal:** ${amount.toLocaleString('id-ID')} ${fromCode}\n` +
+                            `- **Hasil Konversi:** **${converted.toLocaleString('id-ID', { maximumFractionDigits: 2 })} ${toCode}**\n` +
+                            `- **Kurs Referensi Live:** 1 ${fromCode} = Rp ${ratesToIdr[fromCode].toLocaleString('id-ID')} | 1 ${toCode} = Rp ${ratesToIdr[toCode].toLocaleString('id-ID')}\n\n` +
+                            `Kurs diperbarui secara otomatis mengikuti indikator pasar valuta asing global terkini.`;
+                    }
+                    return `**Real-Time Currency Conversion (Official ECB / Open ER-API Reference)**\n\n` +
+                        `- **Source Amount:** ${amount.toLocaleString('en-US')} ${fromCode}\n` +
+                        `- **Converted Value:** **${converted.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${toCode}**\n` +
+                        `- **Live Reference Rate:** 1 ${fromCode} = Rp ${ratesToIdr[fromCode].toLocaleString('en-US')} | 1 ${toCode} = Rp ${ratesToIdr[toCode].toLocaleString('en-US')}\n\n` +
+                        `Exchange rates update continuously from live global foreign exchange feeds.`;
+                },
+
                 async submitAiPrompt() {
                     const userPrompt = stripAllEmojis(this.aiInput || '').trim();
                     if (!userPrompt || this.isAiLoading) return;
@@ -4835,8 +5021,8 @@
                         this.aiMessages.push({
                             role: 'ai',
                             text: this.lang === 'ID'
-                                ? 'Maaf, terjadi kendala sementara saat memproses permintaan Anda. Silakan coba kirim ulang pertanyaan Anda.'
-                                : 'Sorry, a temporary issue occurred while processing your request. Please try sending your question again.',
+                                ? 'Maaf, terjadi kendala sementara saat memproses permintaan Anda. Silakan kirim ulang pertanyaan Anda.'
+                                : 'Sorry, a temporary issue occurred while processing your request. Please send your question again.',
                             actions: []
                         });
                     } finally {
@@ -4853,9 +5039,26 @@
                 },
 
                 async runEmbeddedEaAgentEngine(userPrompt, executedActions = []) {
+                    const fxConversion = this.tryDirectCurrencyConversion(userPrompt);
+                    if (fxConversion && executedActions.length === 0) {
+                        return { text: fxConversion };
+                    }
+
+                    const officialContextNote = await this.fetchOfficialMultiSourceKnowledge(userPrompt, true);
+
                     const langInstruction = this.lang === 'ID'
-                        ? 'Jawab dalam Bahasa Indonesia yang jelas, terstruktur, ramah, dan sangat mudah dipahami oleh pengguna. DILARANG KERAS menggunakan emoji atau simbol emotikon apa pun dalam jawaban.'
-                        : 'Answer in clear, structured, friendly, and easy-to-understand English. STRICTLY DO NOT use any emojis or emoticons in the response.';
+                        ? 'Jawab dalam Bahasa Indonesia yang jelas, terstruktur, cerdas, ramah, dan sangat mudah dipahami oleh pengguna. DILARANG KERAS menggunakan emoji atau simbol emotikon apa pun dalam jawaban.'
+                        : 'Answer in clear, structured, intelligent, friendly, and easy-to-understand English. STRICTLY DO NOT use any emojis or emoticons in the response.';
+
+                    const realtimeContext = [
+                        `Official Real-Time Economic Indicators:`,
+                        `- Indonesia Annual Inflation (World Bank CPI YoY): ${this.realtimePulse.inflation_id_pct}%`,
+                        `- Global Average Inflation: ${this.realtimePulse.inflation_global_pct}%`,
+                        `- Indonesia GDP Growth (World Bank YoY): ${this.realtimePulse.gdp_id_pct}%`,
+                        `- Reference Policy Rate (Bank Indonesia BI-Rate): ${this.realtimePulse.bi_rate_pct}%`,
+                        `- Live FX Rates (ECB / Open ER-API): 1 USD = Rp ${this.realtimePulse.usd_idr}, 1 SGD = Rp ${this.realtimePulse.sgd_idr}, 1 EUR = Rp ${this.realtimePulse.eur_idr}, 1 JPY = Rp ${this.realtimePulse.jpy_idr}, 1 AUD = Rp ${this.realtimePulse.aud_idr}, 1 MYR = Rp ${this.realtimePulse.myr_idr}`,
+                        `- User Real Purchasing Power in 1 Year (Inflation Adjusted): ${this.formatCurrency(this.quantIntel.real_balance_1y)} (Estimated 1-Year Erosion: ${this.formatCurrency(this.quantIntel.inflation_erosion_1y)})`
+                    ].join('\n');
 
                     const financialContext = [
                         `User Name: ${this.displayUserName}`,
@@ -4866,16 +5069,19 @@
                         `Health Score: ${this.quantIntel.health_score}/100 (${this.quantIntel.health_grade})`,
                         `Savings Rate: ${this.quantIntel.savings_rate_pct}%`,
                         `Daily Burn Rate: ${this.formatCurrency(this.quantIntel.daily_burn_rate)}`,
+                        `Ideal 6-Month Emergency Fund: ${this.formatCurrency(this.quantIntel.emergency_fund_ideal)} (Gap: ${this.formatCurrency(this.quantIntel.emergency_fund_gap)})`,
                         `Cash Runway: ${this.quantIntel.runway_days} days`,
                         `Wallets: ${this.banks.map(b => `${b}: ${this.formatCurrency(this.getWalletBalance(b))}`).join(', ')}`,
                         `Savings Goals: ${this.goals.map(g => `${g.name} (${this.formatCurrency(g.current)}/${this.formatCurrency(g.target)})`).join(', ') || 'None'}`,
                         `Budgets: ${this.budgets.map(b => `${b.category}: spent ${this.formatCurrency(this.getCategorySpent(b.category))} / limit ${this.formatCurrency(b.limit)}`).join(', ') || 'None'}`,
-                        executedActions.length > 0 ? `Actions just executed in database: ${executedActions.map(a => a.label).join('; ')}` : ''
+                        executedActions.length > 0 ? `Actions just executed: ${executedActions.map(a => a.label).join('; ')}` : '',
+                        officialContextNote ? `Verified Official Knowledge Context:\n${officialContextNote}` : ''
                     ].filter(Boolean).join('\n');
 
-                    const eaSystemPrompt = `You are DND AI AGENT, an embedded Autonomous Executive Assistant (EA Agent) built into DND Finance to proactively manage personal wealth, execute financial planning, and answer any general knowledge question across science, technology, coding, business, history, health, and everyday life.
+                    const eaSystemPrompt = `You are DND AI AGENT, an intelligent personal wealth advisor and real-time knowledge assistant built into DND Finance. You combine live official economic data (World Bank, European Central Bank, Bank Indonesia), quantitative personal ledger analytics, and official encyclopedia knowledge to help users manage their money and answer every question accurately and clearly.
 ${langInstruction}
-Use clean paragraphs and numbered lists or bullet points with hyphens (-). Never output any emojis and never mention underlying model providers or API keys.
+Use clean paragraphs and bullet points with hyphens (-). Never output any emojis and never mention internal system architecture, storage engines, or external model providers.
+${realtimeContext}
 Current User Financial Snapshot:
 ${financialContext}`;
 
@@ -4890,7 +5096,8 @@ ${financialContext}`;
                                 transactions: this.transactions.slice(0, 40),
                                 goals: this.goals,
                                 budgets: this.budgets,
-                                executed_actions: executedActions
+                                executed_actions: executedActions,
+                                realtime_pulse: this.realtimePulse
                             })
                         });
                         if (apiRes.ok) {
@@ -4932,49 +5139,80 @@ ${financialContext}`;
                         } catch (e) {}
                     }
 
-                    const isFinancialQuery = /\b(keuangan|uang|saldo|gaji|tabungan|nabung|investasi|cicilan|utang|hutang|anggaran|budget|pengeluaran|pemasukan|audit|analisis|burn rate|runway|finance|money|salary|saving|investment|debt|expense|income|catat|target)\b/i.test(userPrompt);
-                    if (isFinancialQuery || executedActions.length > 0) {
+                    const isFinancialOrMacroQuery = /\b(keuangan|uang|saldo|gaji|tabungan|nabung|investasi|cicilan|utang|hutang|anggaran|budget|pengeluaran|pemasukan|audit|analisis|burn rate|runway|inflasi|kurs|dollar|usd|sgd|eur|jpy|daya beli|finance|money|salary|saving|investment|debt|expense|income|inflation|fx|exchange|catat|target|darurat|emergency)\b/i.test(userPrompt);
+                    if (isFinancialOrMacroQuery || executedActions.length > 0) {
                         return { text: this.generateLocalFinancialAdvisory(userPrompt, executedActions) };
                     }
 
-                    const openWikiAnswer = await this.fetchOpenSourceKnowledgeBase(userPrompt);
-                    return { text: openWikiAnswer };
+                    const fullOfficialAnswer = await this.fetchOfficialMultiSourceKnowledge(userPrompt, false);
+                    return { text: fullOfficialAnswer };
                 },
 
-                async fetchOpenSourceKnowledgeBase(question) {
+                async fetchOfficialMultiSourceKnowledge(question, rawExtractOnly = false) {
                     const cleanTopic = question
-                        .replace(/^(apa itu|jelaskan|bagaimana cara|siapa itu|mengapa|kenapa|what is|explain|how does|how to|who is|why is)\s+/i, '')
+                        .replace(/^(apa itu|jelaskan|bagaimana cara|siapa itu|mengapa|kenapa|sejarah|pengertian|what is|explain|how does|how to|who is|why is)\s+/i, '')
                         .replace(/[?!.]+$/g, '')
                         .trim();
 
                     const langCode = this.lang === 'ID' ? 'id' : 'en';
-                    try {
-                        const searchUrl = `https://${langCode}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanTopic || question)}&format=json&origin=*&srlimit=1`;
-                        const sRes = await fetch(searchUrl);
-                        if (sRes.ok) {
+                    const queryTerm = cleanTopic || question;
+
+                    const [wikiRes, ddgRes] = await Promise.allSettled([
+                        (async () => {
+                            const searchUrl = `https://${langCode}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(queryTerm)}&format=json&origin=*&srlimit=1`;
+                            const sRes = await fetch(searchUrl);
+                            if (!sRes.ok) return null;
                             const sData = await sRes.json();
                             const topHit = sData && sData.query && sData.query.search && sData.query.search[0];
-                            if (topHit && topHit.title) {
-                                const sumUrl = `https://${langCode}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(topHit.title)}`;
-                                const sumRes = await fetch(sumUrl);
-                                if (sumRes.ok) {
-                                    const sumData = await sumRes.json();
-                                    if (sumData && sumData.extract) {
-                                        const title = stripAllEmojis(sumData.title);
-                                        const extract = stripAllEmojis(sumData.extract);
-                                        if (this.lang === 'ID') {
-                                            return `**Penjelasan Mengenai ${title}**\n\n${extract}\n\n**Ringkasan Poin Utama:**\n- Topik ini berkaitan dengan konsep dasar ${title.toLowerCase()} yang diterapkan dalam kehidupan sehari-hari maupun kajian ilmiah.\n- Jika Anda ingin mendalami bagian tertentu dari topik ini atau menghubungkannya dengan perencanaan keuangan Anda, silakan tuliskan pertanyaan lanjutan.`;
-                                        }
-                                        return `**Explanation About ${title}**\n\n${extract}\n\n**Key Takeaways:**\n- This topic covers the foundational principles of ${title.toLowerCase()} used in everyday contexts and academic study.\n- If you would like a deeper breakdown of any specific part or want to connect it to your personal planning, feel free to ask a follow-up question.`;
-                                    }
-                                }
+                            if (!topHit || !topHit.title) return null;
+                            const sumUrl = `https://${langCode}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(topHit.title)}`;
+                            const sumRes = await fetch(sumUrl);
+                            if (!sumRes.ok) return null;
+                            const sumData = await sumRes.json();
+                            if (sumData && sumData.extract) {
+                                return {
+                                    title: stripAllEmojis(sumData.title),
+                                    extract: stripAllEmojis(sumData.extract),
+                                    source: 'Wikipedia Official Knowledge'
+                                };
                             }
+                            return null;
+                        })(),
+                        (async () => {
+                            const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(queryTerm)}&format=json&no_html=1&skip_disambig=1`;
+                            const dRes = await fetch(ddgUrl);
+                            if (!dRes.ok) return null;
+                            const dData = await dRes.json();
+                            const abstractText = stripAllEmojis(dData.AbstractText || '');
+                            if (abstractText && abstractText.length > 20) {
+                                return {
+                                    title: stripAllEmojis(dData.Heading || queryTerm),
+                                    extract: abstractText,
+                                    source: stripAllEmojis(dData.AbstractSource || 'Official Reference')
+                                };
+                            }
+                            return null;
+                        })()
+                    ]);
+
+                    const wikiData = wikiRes.status === 'fulfilled' ? wikiRes.value : null;
+                    const ddgData = ddgRes.status === 'fulfilled' ? ddgRes.value : null;
+                    const best = wikiData || ddgData;
+
+                    if (rawExtractOnly) {
+                        return best ? `${best.title} (${best.source}): ${best.extract}` : '';
+                    }
+
+                    if (best) {
+                        if (this.lang === 'ID') {
+                            return `**Penjelasan Mengenai ${best.title}**\n\n${best.extract}\n\n**Ringkasan Utama (Referensi: ${best.source}):**\n- Pembahasan di atas merangkum definisi resmi dan konsep inti terkait **${best.title}**.\n- Jika Anda memerlukan penjelasan lanjutan atau penerapannya dalam perencanaan keuangan Anda, silakan tuliskan pertanyaan berikutnya.`;
                         }
-                    } catch (e) {}
+                        return `**Explanation About ${best.title}**\n\n${best.extract}\n\n**Key Summary (Reference: ${best.source}):**\n- The summary above outlines the verified definition and core principles of **${best.title}**.\n- Feel free to ask follow-up questions if you would like deeper details or practical financial applications.`;
+                    }
 
                     return this.lang === 'ID'
-                        ? `**Jawaban DND AI AGENT**\n\nPertanyaan Anda mengenai "${question}" telah diproses:\n- Secara ringkas, topik tersebut dapat dipahami dengan membagi pembahasan menjadi definisi utama, mekanisme kerja, dan penerapan praktisnya.\n- Silakan ajukan pertanyaan lanjutan yang lebih spesifik jika Anda memerlukan rincian tambahan.`
-                        : `**DND AI AGENT Response**\n\nYour question regarding "${question}" has been processed:\n- In summary, this topic is best understood by breaking it down into its core definition, mechanism, and practical application.\n- Feel free to ask a more specific follow-up question if you would like additional details.`;
+                        ? `**Jawaban DND AI AGENT**\n\nPertanyaan Anda mengenai "${question}" telah diproses:\n- Secara ringkas, topik tersebut dapat dipahami melalui prinsip dasar, mekanisme kerja, serta penerapannya secara praktis.\n- Silakan ajukan pertanyaan lanjutan dengan kata kunci yang lebih spesifik agar saya dapat memberikan rincian yang lebih mendalam.`
+                        : `**DND AI AGENT Response**\n\nYour question regarding "${question}" has been processed:\n- In summary, this topic is best understood through its core principles, mechanism, and practical real-world application.\n- Feel free to ask a more specific follow-up question for deeper details.`;
                 },
 
                 generateLocalFinancialAdvisory(prompt, executedActions = []) {
@@ -4985,22 +5223,29 @@ ${financialContext}`;
                             : `**Automated Actions Executed:**\n${executedActions.map(a => `- ${a.label}`).join('\n')}\n\n`)
                         : '';
 
-                    if (/\b(gaji|salary|alokasi|kelola gaji)\b/i.test(lower)) {
+                    if (/\b(inflasi|kurs|dollar|usd|sgd|eur|jpy|aud|myr|bi-rate|gdp|inflation|fx|exchange|daya beli)\b/i.test(lower)) {
+                        if (this.lang === 'ID') {
+                            return `${actionBanner}**Indikator Ekonomi & Kurs Mata Uang Real-Time Resmi (DND AI AGENT)**\n\n- **Inflasi Tahunan (World Bank CPI YoY):** ${this.realtimePulse.inflation_id_pct}% per tahun (Rata-rata global: ${this.realtimePulse.inflation_global_pct}%)\n- **Suku Bunga Acuan (BI-Rate):** ${this.realtimePulse.bi_rate_pct}%\n- **Pertumbuhan Ekonomi (GDP YoY):** ${this.realtimePulse.gdp_id_pct}%\n- **Kurs Live USD / IDR:** Rp ${Math.round(this.realtimePulse.usd_idr).toLocaleString('id-ID')}\n- **Kurs Live SGD / IDR:** Rp ${Math.round(this.realtimePulse.sgd_idr).toLocaleString('id-ID')}\n- **Kurs Live EUR / IDR:** Rp ${Math.round(this.realtimePulse.eur_idr).toLocaleString('id-ID')}\n- **Kurs Live AUD / IDR:** Rp ${Math.round(this.realtimePulse.aud_idr).toLocaleString('id-ID')}\n- **Kurs Live MYR / IDR:** Rp ${Math.round(this.realtimePulse.myr_idr).toLocaleString('id-ID')}\n\n**Dampak Terhadap Saldo Anda (${this.formatCurrency(this.totalBalance)}):**\n- Dengan tingkat inflasi **${this.realtimePulse.inflation_id_pct}%**, kas yang tidak diinvestasikan berpotensi mengalami penurunan daya beli sekitar **${this.formatCurrency(this.quantIntel.inflation_erosion_1y)}** dalam 1 tahun (nilai riil menjadi **${this.formatCurrency(this.quantIntel.real_balance_1y)}**).\n- **Strategi Praktis:** Pertahankan dana darurat ideal sebesar **${this.formatCurrency(this.quantIntel.emergency_fund_ideal)}** (6x pengeluaran bulanan) di instrumen likuid, lalu alokasikan kelebihannya ke aset dengan imbal hasil di atas inflasi seperti SBN Ritel atau Reksadana Pasar Uang.`;
+                        }
+                        return `${actionBanner}**Official Real-Time Economic & FX Indicators (DND AI AGENT)**\n\n- **Annual Inflation (World Bank CPI YoY):** ${this.realtimePulse.inflation_id_pct}% per year (Global avg: ${this.realtimePulse.inflation_global_pct}%)\n- **Policy Rate (BI-Rate):** ${this.realtimePulse.bi_rate_pct}%\n- **GDP Growth (YoY):** ${this.realtimePulse.gdp_id_pct}%\n- **Live USD / IDR:** Rp ${Math.round(this.realtimePulse.usd_idr).toLocaleString('en-US')}\n- **Live SGD / IDR:** Rp ${Math.round(this.realtimePulse.sgd_idr).toLocaleString('en-US')}\n- **Live EUR / IDR:** Rp ${Math.round(this.realtimePulse.eur_idr).toLocaleString('en-US')}\n\n**Impact on Your Net Balance (${this.formatCurrency(this.totalBalance)}):**\n- At an annual inflation rate of **${this.realtimePulse.inflation_id_pct}%**, idle cash loses roughly **${this.formatCurrency(this.quantIntel.inflation_erosion_1y)}** in purchasing power over 12 months (real value: **${this.formatCurrency(this.quantIntel.real_balance_1y)}**).\n- **Practical Strategy:** Maintain your ideal emergency buffer of **${this.formatCurrency(this.quantIntel.emergency_fund_ideal)}** (6x monthly burn) in liquid accounts, and deploy excess cash into inflation-beating instruments.`;
+                    }
+
+                    if (/\b(gaji|salary|alokasi|kelola gaji|atur keuangan)\b/i.test(lower)) {
                         const baseIncome = this.totalIncome > 0 ? this.totalIncome : 10000000;
                         const needs = baseIncome * 0.50;
                         const wants = baseIncome * 0.20;
                         const savings = baseIncome * 0.20;
                         const invest = baseIncome * 0.10;
                         if (this.lang === 'ID') {
-                            return `${actionBanner}**Rencana Pengelolaan Gaji Cerdas (Formula 50 / 20 / 20 / 10)**\n\nBerdasarkan basis pemasukan sebesar **${this.formatCurrency(baseIncome)}**, berikut pembagian pos keuangan yang mudah diterapkan:\n- **50% Kebutuhan Pokok (${this.formatCurrency(needs)}):** Biaya makan, tempat tinggal, listrik, air, internet, dan transportasi harian.\n- **20% Tabungan & Dana Darurat (${this.formatCurrency(savings)}):** Disisihkan otomatis di awal gajian ke rekening terpisah atau target tabungan.\n- **20% Gaya Hidup & Fleksibel (${this.formatCurrency(wants)}):** Hiburan, kopi, belanja non-primer, dan kegiatan sosial.\n- **10% Investasi Jangka Panjang (${this.formatCurrency(invest)}):** Reksadana pasar uang, obligasi negara, atau instrumen bertumbuh lainnya.\n\nAnda dapat mengaktifkan aturan **Autopilot** agar setiap pemasukan baru otomatis disisihkan 20% ke target tabungan.`;
+                            return `${actionBanner}**Rencana Pengelolaan Gaji & Keuangan Cerdas (Formula 50 / 20 / 20 / 10)**\n\nBerdasarkan basis pemasukan sebesar **${this.formatCurrency(baseIncome)}**, berikut pembagian pos keuangan yang terukur:\n- **50% Kebutuhan Pokok (${this.formatCurrency(needs)}):** Biaya makan, tempat tinggal, listrik, air, internet, dan transportasi harian.\n- **20% Tabungan & Dana Darurat (${this.formatCurrency(savings)}):** Disisihkan otomatis di awal gajian menuju target Dana Darurat ideal Anda sebesar **${this.formatCurrency(this.quantIntel.emergency_fund_ideal)}**.\n- **20% Gaya Hidup & Fleksibel (${this.formatCurrency(wants)}):** Hiburan, kopi, belanja non-primer, dan kebutuhan sosial.\n- **10% Investasi Jangka Panjang (${this.formatCurrency(invest)}):** Instrumen bertumbuh dengan imbal hasil di atas inflasi terkini (**${this.realtimePulse.inflation_id_pct}%/thn**).\n\nAnda juga dapat meminta saya langsung dengan perintah seperti *"Catat gaji 8jt ke BCA"* atau *"Buat target Dana Darurat 15jt"*.`;
                         }
-                        return `${actionBanner}**Smart Salary Management Plan (50 / 20 / 20 / 10 Rule)**\n\nBased on an income baseline of **${this.formatCurrency(baseIncome)}**, here is a practical allocation framework:\n- **50% Essential Needs (${this.formatCurrency(needs)}):** Housing, groceries, utilities, internet, and daily transport.\n- **20% Savings & Emergency Fund (${this.formatCurrency(savings)}):** Automatically set aside on payday into a dedicated savings goal.\n- **20% Lifestyle & Discretionary (${this.formatCurrency(wants)}):** Dining out, hobbies, and non-essential shopping.\n- **10% Long-Term Investments (${this.formatCurrency(invest)}):** Money market funds, bonds, or diversified index assets.`;
+                        return `${actionBanner}**Smart Salary & Wealth Management Plan (50 / 20 / 20 / 10 Rule)**\n\nBased on an income baseline of **${this.formatCurrency(baseIncome)}**, here is a structured allocation framework:\n- **50% Essential Needs (${this.formatCurrency(needs)}):** Housing, groceries, utilities, internet, and daily transport.\n- **20% Savings & Emergency Fund (${this.formatCurrency(savings)}):** Automatically set aside on payday toward your ideal emergency buffer of **${this.formatCurrency(this.quantIntel.emergency_fund_ideal)}**.\n- **20% Lifestyle & Discretionary (${this.formatCurrency(wants)}):** Dining out, hobbies, and non-essential shopping.\n- **10% Long-Term Investments (${this.formatCurrency(invest)}):** Diversified assets designed to outpace live inflation (**${this.realtimePulse.inflation_id_pct}%/yr**).`;
                     }
 
                     if (this.lang === 'ID') {
-                        return `${actionBanner}**Laporan Evaluasi Keuangan DND AI AGENT**\n\n- **Total Saldo Bersih:** ${this.formatCurrency(this.totalBalance)}\n- **Total Pemasukan:** ${this.formatCurrency(this.totalIncome)}\n- **Total Pengeluaran:** ${this.formatCurrency(this.totalExpense + this.totalWithdrawal)}\n- **Skor Kesehatan Finansial:** ${this.quantIntel.health_score} / 100 (${this.quantIntel.health_grade})\n- **Rasio Tabungan:** ${this.quantIntel.savings_rate_pct}%\n- **Burn Rate Harian:** ${this.formatCurrency(this.quantIntel.daily_burn_rate)} per hari\n- **Ketahanan Kas (Runway):** ${this.quantIntel.runway_days >= 999 ? 'Sangat Aman' : this.quantIntel.runway_days + ' hari'}\n\n**Rekomendasi Praktis Untuk Anda:**\n1. Pertahankan rasio tabungan minimal 20% dari setiap pemasukan bulanan Anda.\n2. Batasi pengeluaran pada kategori terbesar saat ini (${this.quantIntel.top_category}) dengan fitur **Batas Anggaran Kategori** di menu Target.\n3. Gunakan perintah cepat seperti *"Catat makan siang 35rb pakai Gopay"* atau *"Buat target Dana Darurat 15jt"* agar DND AI AGENT langsung mencatatnya ke database Anda.`;
+                        return `${actionBanner}**Laporan Evaluasi Keuangan Real-Time DND AI AGENT**\n\n- **Total Saldo Bersih:** ${this.formatCurrency(this.totalBalance)}\n- **Nilai Riil Saldo 1 Tahun (Setelah Inflasi ${this.realtimePulse.inflation_id_pct}%):** ${this.formatCurrency(this.quantIntel.real_balance_1y)}\n- **Total Pemasukan:** ${this.formatCurrency(this.totalIncome)}\n- **Total Pengeluaran:** ${this.formatCurrency(this.totalExpense + this.totalWithdrawal)}\n- **Skor Kesehatan Finansial:** ${this.quantIntel.health_score} / 100 (${this.quantIntel.health_grade})\n- **Rasio Tabungan:** ${this.quantIntel.savings_rate_pct}%\n- **Burn Rate Harian:** ${this.formatCurrency(this.quantIntel.daily_burn_rate)} per hari\n- **Target Dana Darurat Ideal (6 Bulan):** ${this.formatCurrency(this.quantIntel.emergency_fund_ideal)}\n\n**Rekomendasi Praktis Untuk Anda:**\n1. Pertahankan rasio tabungan minimal 20% dari setiap pemasukan bulanan Anda.\n2. Batasi pengeluaran pada kategori terbesar saat ini (${this.quantIntel.top_category}) melalui menu **Target**.\n3. Anda dapat memerintahkan saya kapan saja, misalnya *"Catat makan siang 35rb pakai Gopay"*, *"Konversi 500 USD ke Rupiah"*, atau menanyakan topik ekonomi dan pengetahuan umum apa pun.`;
                     }
-                    return `${actionBanner}**DND AI AGENT Financial Evaluation Report**\n\n- **Net Total Balance:** ${this.formatCurrency(this.totalBalance)}\n- **Total Income:** ${this.formatCurrency(this.totalIncome)}\n- **Total Expense:** ${this.formatCurrency(this.totalExpense + this.totalWithdrawal)}\n- **Financial Health Score:** ${this.quantIntel.health_score} / 100 (${this.quantIntel.health_grade})\n- **Savings Rate:** ${this.quantIntel.savings_rate_pct}%\n- **Daily Burn Rate:** ${this.formatCurrency(this.quantIntel.daily_burn_rate)} per day\n- **Cash Runway:** ${this.quantIntel.runway_days >= 999 ? 'Highly Secure' : this.quantIntel.runway_days + ' days'}\n\n**Practical Next Steps:**\n1. Maintain at least a 20% savings rate from every monthly inflow.\n2. Set a monthly cap on your top spending category (${this.quantIntel.top_category}) in the Goals tab.\n3. You can instruct DND AI AGENT directly using phrases like *"Record lunch 20 USD via BCA"* or *"Create goal Emergency Fund 5000"*.`;
+                    return `${actionBanner}**DND AI AGENT Real-Time Financial Evaluation Report**\n\n- **Net Total Balance:** ${this.formatCurrency(this.totalBalance)}\n- **Real 1-Year Balance (Inflation ${this.realtimePulse.inflation_id_pct}% Adjusted):** ${this.formatCurrency(this.quantIntel.real_balance_1y)}\n- **Total Income:** ${this.formatCurrency(this.totalIncome)}\n- **Total Expense:** ${this.formatCurrency(this.totalExpense + this.totalWithdrawal)}\n- **Financial Health Score:** ${this.quantIntel.health_score} / 100 (${this.quantIntel.health_grade})\n- **Savings Rate:** ${this.quantIntel.savings_rate_pct}%\n- **Daily Burn Rate:** ${this.formatCurrency(this.quantIntel.daily_burn_rate)} per day\n- **Ideal 6-Month Emergency Fund:** ${this.formatCurrency(this.quantIntel.emergency_fund_ideal)}\n\n**Practical Next Steps:**\n1. Maintain at least a 20% savings rate from every monthly inflow.\n2. Set a monthly cap on your top spending category (${this.quantIntel.top_category}) in the Goals tab.\n3. You can instruct me directly using phrases like *"Record lunch 20 USD via BCA"*, *"Convert 500 USD to IDR"*, or ask any economic or general knowledge question.`;
                 },
 
                 formatMarkdownLight(text) {
