@@ -1,0 +1,43 @@
+rules_version = '2';
+
+service cloud.firestore {
+match /databases/{database}/documents {
+function isValidWorkspace(data) {
+return data.keys().hasAll(['account_key', 'revision', 'state', 'updated_at'])
+&& data.account_key is string
+&& data.account_key.size() >= 3
+&& data.revision is int
+&& data.revision >= 1
+&& data.state is map;
+}
+
+function isValidReceiptScan(data) {
+  return data.keys().hasAll(['account_key', 'grand_total', 'created_at'])
+    && data.account_key is string
+    && data.grand_total is number
+    && data.grand_total >= 0;
+}
+
+match /workspaces/{accountKey} {
+  allow read: if false;
+  allow create, update: if false && isValidWorkspace(request.resource.data);
+  allow delete: if false;
+}
+
+match /receipt_scans/{scanId} {
+  allow read: if false;
+  allow create, update: if false && isValidReceiptScan(request.resource.data);
+  allow delete: if false;
+}
+
+match /report_files/{fileId} {
+  allow read, write: if false;
+}
+
+match /{document=**} {
+  allow read, write: if false;
+}
+
+
+}
+}
