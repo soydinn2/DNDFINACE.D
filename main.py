@@ -1,6 +1,7 @@
 """
-DND Finance — Server Backend FastAPI (Vercel & Local Auto-Bootstrap Edition)
-- Bebas syntax error, kompatibel penuh dengan Vercel Serverless (/tmp) & Local Server
+DND Finance — Server Backend FastAPI (Vercel Serverless & Local Auto-Bootstrap Edition)
+- Multi-Path File Resolver sehingga seluruh berkas proyek (`index.html`, `quant_ai_engine.cpp`,
+  `database.rules.json`, `firestore.rules`, `.env`, `vercel.json`) selalu terbaca oleh sistem
 - Login Google Langsung di Browser (Google OAuth2 / ID Token / Email Workspace, Tanpa Firebase Auth)
 - Firebase Realtime Database (`dnd-finance-3590e-default-rtdb.asia-southeast1.firebasedatabase.app`)
 - Embedded DND AI AGENT + Multi-Source Real-Time Macroeconomic, Gold, FX & Knowledge Chipset
@@ -28,7 +29,7 @@ WRITABLE_DIR = "/tmp" if IS_VERCEL else BASE_DIR
 
 
 def resolve_project_file(filename: str) -> Optional[str]:
-    """Mencari file proyek di beberapa kandidat direktori Vercel (/var/task, BASE_DIR, CWD)."""
+    """Mencari berkas proyek di seluruh kandidat direktori runtime (BASE_DIR, CWD, /var/task)."""
     candidates = [
         os.path.join(BASE_DIR, filename),
         os.path.join(os.getcwd(), filename),
@@ -42,7 +43,7 @@ def resolve_project_file(filename: str) -> Optional[str]:
 
 
 def ensure_core_dependencies() -> None:
-    """Memastikan pustaka inti terpasang otomatis saat dijalankan secara lokal."""
+    """Memastikan pustaka inti terpasang otomatis saat dijalankan di lingkungan lokal."""
     if IS_VERCEL:
         return
     required = {
@@ -74,10 +75,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 
-def load_local_env_file(env_filename: str = ".env") -> None:
+def load_local_env_file(env_filename: str = ".env") -> Optional[str]:
     env_path = resolve_project_file(env_filename) or resolve_project_file("env.example")
     if not env_path:
-        return
+        return None
     try:
         with open(env_path, "r", encoding="utf-8") as f:
             for raw_line in f:
@@ -89,11 +90,13 @@ def load_local_env_file(env_filename: str = ".env") -> None:
                 val = val.strip().strip('"').strip("'")
                 if key and key not in os.environ:
                     os.environ[key] = val
+        return env_path
     except Exception as exc:
         print(f"[DND Finance .env Loader Warning]: {exc}")
+        return None
 
 
-load_local_env_file()
+LOADED_ENV_PATH = load_local_env_file()
 
 # ==============================================================================
 # KONFIGURASI PROYEK DND FINANCE (dnd-finance-3590e) & FIREBASE REALTIME DATABASE
@@ -122,7 +125,6 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip(
 EMBEDDED_OSS_MODEL = os.getenv("EMBEDDED_OSS_MODEL", "qwen2.5:7b")
 OPEN_LLM_FALLBACK_URL = os.getenv("OPEN_LLM_FALLBACK_URL", "https://text.pollinations.ai/openai")
 
-CPP_SOURCE_FILE = resolve_project_file("quant_ai_engine.cpp") or os.path.join(BASE_DIR, "quant_ai_engine.cpp")
 CPP_ENGINE_BINARY = os.path.join(
     WRITABLE_DIR,
     "quant_ai_engine.exe" if os.name == "nt" else "quant_ai_engine",
@@ -131,7 +133,7 @@ LOCAL_SQLITE_DB = os.path.join(WRITABLE_DIR, "dnd_finance_mirror.db")
 
 
 def compile_cpp_engine_if_needed() -> bool:
-    """Mengompilasi mesin kuantitatif C++17 (quant_ai_engine.cpp) secara otomatis."""
+    """Mengompilasi mesin kuantitatif C++17 (quant_ai_engine.cpp) secara otomatis jika g++ tersedia."""
     if os.path.isfile(CPP_ENGINE_BINARY):
         return True
     src_path = resolve_project_file("quant_ai_engine.cpp")
@@ -259,7 +261,6 @@ async def get_live_realtime_pulse(force_refresh: bool = False) -> Dict[str, Any]
 
     pulse = dict(_REALTIME_CACHE["pulse"])
 
-    # 1. Live FX Feed: Open ER-API + Frankfurter (European Central Bank)
     fx_fetched = False
     try:
         async with httpx.AsyncClient(timeout=4.5) as client:
@@ -313,7 +314,6 @@ async def get_live_realtime_pulse(force_refresh: bool = False) -> Dict[str, Any]
 
     pulse["gold_idr_gram"] = round((float(pulse["gold_usd_oz"]) * float(pulse["usd_idr"])) / 31.1035, 0)
 
-    # 2. World Bank Official Open Data: Indonesia CPI Inflation (YoY)
     try:
         async with httpx.AsyncClient(timeout=4.5) as client:
             wb_res = await client.get(
@@ -330,7 +330,6 @@ async def get_live_realtime_pulse(force_refresh: bool = False) -> Dict[str, Any]
     except Exception:
         pass
 
-    # 3. World Bank Official Open Data: Global Inflation & Indonesia GDP Growth (YoY)
     try:
         async with httpx.AsyncClient(timeout=4.5) as client:
             wld_res = await client.get(
@@ -366,7 +365,6 @@ async def get_live_realtime_pulse(force_refresh: bool = False) -> Dict[str, Any]
 
 
 async def fetch_official_knowledge_snippet(query: str, lang: str = "ID") -> str:
-    """Mengambil referensi pengetahuan resmi (Wikipedia REST API & DuckDuckGo) untuk memperkaya jawaban AI."""
     clean_q = re.sub(
         r"^(apa itu|jelaskan|bagaimana cara|siapa itu|mengapa|kenapa|sejarah|pengertian|what is|explain|how does|how to|who is|why is)\s+",
         "",
@@ -621,6 +619,7 @@ async def lifespan(app_instance: FastAPI):
     print("  DND FINANCE SERVER AKTIF & SIAP DIGUNAKAN")
     print("============================================================")
     print(f"  Alamat Aplikasi : http://localhost:{port}")
+    print(f"  Cek Status File : http://localhost:{port}/api/system/files")
     print(f"  Cek Status DB   : http://localhost:{port}/api/firebase/status")
     print(f"  Firebase RTDB   : {'TERHUBUNG (' + fb_status['method'] + ')' if fb_status['connected'] else 'MODE LOKAL'}")
     print(f"  Mesin C++17     : {'AKTIF (quant_ai_engine)' if cpp_ready else 'AKTIF (Python Quant Engine)'}")
@@ -629,7 +628,7 @@ async def lifespan(app_instance: FastAPI):
     yield
 
 
-app = FastAPI(title="DND Finance API Server", version="10.1.0", lifespan=lifespan)
+app = FastAPI(title="DND Finance API Server", version="11.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -698,8 +697,22 @@ def run_cpp_quantitative_engine(
         score += 5
     score = max(5, min(100, score))
 
+    grade = "Stabil / Bertumbuh"
+    if score >= 80:
+        grade = "Sangat Sehat (Prima)"
+    elif score >= 60:
+        grade = "Sehat & Terkendali"
+    elif score < 40:
+        grade = "Perlu Penghematan"
+
+    monthly_smart_save = (total_income * 0.20) if total_income > 0 else max(0.0, net_balance)
+    forecast_6m = round(net_balance + monthly_smart_save * 6.0, 2)
+    forecast_12m = round(net_balance + monthly_smart_save * 12.0, 2)
+
     return {
+        "engine": "python_quant_engine",
         "health_score": score,
+        "health_grade": grade,
         "savings_rate_pct": savings_rate,
         "daily_burn_rate": round(daily_burn, 2),
         "monthly_burn_est": round(monthly_burn, 2),
@@ -712,7 +725,55 @@ def run_cpp_quantitative_engine(
         "real_balance_3y": real_balance_3y,
         "real_balance_5y": real_balance_5y,
         "inflation_erosion_1y": erosion_1y,
-        "engine": "python_quant_engine",
+        "forecast_6m_smart": forecast_6m,
+        "forecast_12m_smart": forecast_12m,
+    }
+
+
+def run_cpp_receipt_reconciler(
+    subtotal: float,
+    discount: float,
+    tax_percent: float,
+    people_count: int = 1,
+) -> Dict[str, Any]:
+    payload = {
+        "subtotal": subtotal,
+        "discount": discount,
+        "tax_percent": tax_percent,
+        "people_count": max(1, people_count),
+    }
+    if os.path.isfile(CPP_ENGINE_BINARY):
+        try:
+            proc = subprocess.run(
+                [CPP_ENGINE_BINARY, "--reconcile-receipt"],
+                input=json.dumps(payload).encode("utf-8"),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                timeout=3.0,
+            )
+            if proc.returncode == 0 and proc.stdout:
+                return json.loads(proc.stdout.decode("utf-8"))
+        except Exception:
+            pass
+
+    sub = max(0.0, float(subtotal))
+    disc = max(0.0, float(discount))
+    net_base = max(0.0, sub - disc)
+    tax_pct = max(0.0, float(tax_percent))
+    tax_amount = round(net_base * (tax_pct / 100.0), 2)
+    grand_total = round(net_base + tax_amount, 2)
+    ppl = max(1, int(people_count))
+    per_person = round(grand_total / float(ppl), 2)
+
+    return {
+        "subtotal": sub,
+        "discount": disc,
+        "net_base": net_base,
+        "tax_percent": tax_pct,
+        "tax_amount": tax_amount,
+        "grand_total": grand_total,
+        "people_count": ppl,
+        "per_person": per_person,
     }
 
 
@@ -767,6 +828,20 @@ class SyncMergeRequest(BaseModel):
     state: Dict[str, Any] = Field(default_factory=dict)
 
 
+class QuantAnalyzeRequest(BaseModel):
+    transactions: List[Dict[str, Any]] = Field(default_factory=list)
+    goals: List[Dict[str, Any]] = Field(default_factory=list)
+    rules: List[Dict[str, Any]] = Field(default_factory=list)
+    inflation_pct: float = 2.68
+
+
+class ReceiptReconcileRequest(BaseModel):
+    subtotal: float = 0.0
+    discount: float = 0.0
+    tax_percent: float = 0.0
+    people_count: int = 1
+
+
 class AiAnalyzeRequest(BaseModel):
     prompt: str
     lang: str = "ID"
@@ -793,26 +868,71 @@ async def serve_frontend():
         return HTMLResponse(f.read())
 
 
+@app.get("/api/app/info")
+async def get_app_info():
+    """Metadata aplikasi & konfigurasi Google Client ID untuk frontend."""
+    return {
+        "status": "ok",
+        "platform": "DND Finance",
+        "version": "11.0.0",
+        "project_id": "dnd-finance-3590e",
+        "google_client_id": GOOGLE_CLIENT_ID,
+        "developer": "Dinda",
+        "instagram_handle": "@di_ndaaa29",
+        "instagram_url": "https://www.instagram.com/di_ndaaa29?hvrq=MWNnaXczbm1xbGt4MQ==",
+        "firebase_connected": db_engine.is_firebase_active,
+        "cpp_engine_compiled": os.path.isfile(CPP_ENGINE_BINARY),
+    }
+
+
 @app.get("/api/system/files")
 async def verify_bundled_files():
-    """Endpoint diagnostik untuk memastikan seluruh file proyek terbaca di Vercel."""
+    """Endpoint diagnostik untuk memastikan seluruh berkas proyek terbaca oleh sistem."""
     tracked_files = [
         "index.html",
         "main.py",
+        "app.py",
+        "api/index.py",
         "quant_ai_engine.cpp",
         "database.rules.json",
+        "firestore.rules",
         ".env",
+        "env.example",
         "requirements.txt",
         "vercel.json",
+        "run.sh",
+        "run.bat",
     ]
     resolved_map = {fname: resolve_project_file(fname) for fname in tracked_files}
+
+    cpp_path = resolved_map.get("quant_ai_engine.cpp")
+    db_rules_path = resolved_map.get("database.rules.json")
+    fs_rules_path = resolved_map.get("firestore.rules")
+
+    parsed_db_rules = None
+    if db_rules_path:
+        try:
+            with open(db_rules_path, "r", encoding="utf-8") as f:
+                parsed_db_rules = json.load(f)
+        except Exception:
+            parsed_db_rules = None
+
     return {
         "status": "ok",
+        "all_core_files_readable": all(
+            bool(resolved_map.get(k))
+            for k in ["index.html", "main.py", "api/index.py", "quant_ai_engine.cpp", "database.rules.json", "vercel.json"]
+        ),
         "is_vercel": IS_VERCEL,
         "base_dir": BASE_DIR,
         "cwd": os.getcwd(),
+        "loaded_env_path": LOADED_ENV_PATH,
         "files_found": {k: bool(v) for k, v in resolved_map.items()},
         "resolved_paths": resolved_map,
+        "cpp_source_bytes": os.path.getsize(cpp_path) if cpp_path else 0,
+        "cpp_binary_ready": os.path.isfile(CPP_ENGINE_BINARY),
+        "database_rules_valid_json": bool(parsed_db_rules and "rules" in parsed_db_rules),
+        "firestore_rules_readable": bool(fs_rules_path),
         "firebase_connected": db_engine.is_firebase_active,
         "firebase_url": FIREBASE_DATABASE_URL,
     }
@@ -827,6 +947,28 @@ async def check_firebase_status():
 async def realtime_pulse_endpoint(force: bool = False):
     pulse = await get_live_realtime_pulse(force_refresh=force)
     return {"status": "ok", "pulse": pulse}
+
+
+@app.post("/api/quant/analyze")
+async def quant_analyze_endpoint(req: QuantAnalyzeRequest):
+    result = run_cpp_quantitative_engine(
+        req.transactions,
+        req.goals,
+        req.rules,
+        inflation_pct=req.inflation_pct,
+    )
+    return {"status": "ok", "quant": result}
+
+
+@app.post("/api/quant/reconcile-receipt")
+async def quant_reconcile_receipt_endpoint(req: ReceiptReconcileRequest):
+    result = run_cpp_receipt_reconciler(
+        subtotal=req.subtotal,
+        discount=req.discount,
+        tax_percent=req.tax_percent,
+        people_count=req.people_count,
+    )
+    return {"status": "ok", "reconciled": result}
 
 
 @app.post("/api/auth/google/verify")
@@ -1207,18 +1349,17 @@ async def scan_receipt_endpoint(file: UploadFile = File(...)):
                 items.append({"name": name[:40], "qty": 1, "price": val})
                 subtotal += val
 
-    net_base = max(0.0, subtotal - discount)
-    grand_total = round(net_base * (1.0 + tax_percent / 100.0), 2)
+    reconciled = run_cpp_receipt_reconciler(subtotal, discount, tax_percent, 1)
 
     return {
         "status": "ok",
         "data": {
             "merchant": merchant,
             "items": items,
-            "subtotal": round(subtotal, 2),
-            "discount": round(discount, 2),
-            "tax_percent": round(tax_percent, 2),
-            "amount": grand_total,
+            "subtotal": reconciled["subtotal"],
+            "discount": reconciled["discount"],
+            "tax_percent": reconciled["tax_percent"],
+            "amount": reconciled["grand_total"],
             "category": "Food",
         },
     }
@@ -1226,7 +1367,7 @@ async def scan_receipt_endpoint(file: UploadFile = File(...)):
 
 @app.get("/{full_path:path}", response_class=HTMLResponse)
 async def spa_catch_all(full_path: str):
-    """Mencegah 404 pada rute SPA non-API di Vercel dengan menyajikan index.html."""
+    """Menyajikan index.html untuk seluruh rute SPA non-API agar tidak pernah 404."""
     if full_path.startswith("api/"):
         raise HTTPException(status_code=404, detail="API endpoint not found")
     html_path = resolve_project_file("index.html")
