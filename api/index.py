@@ -1,6 +1,6 @@
 """
-Vercel Python Serverless Entrypoint Bridge for DND Finance.
-Memastikan Vercel selalu menemukan instance FastAPI `app` baik lewat `main.py` maupun `api/index.py`.
+Vercel Python Serverless Entrypoint for DND Finance.
+Menghubungkan seluruh rute HTTP & API Vercel ke instance FastAPI utama di `main.py`.
 """
 import os
 import sys
