@@ -651,10 +651,15 @@ app.add_middleware(
 @app.middleware("http")
 async def normalize_vercel_root_path(request: Request, call_next):
     """Menormalisasi jalur `/api/index.py` dari Vercel rewrite menjadi `/` agar UI HTML langsung tampil."""
-    raw_path = request.scope.get("path", "")
-    if raw_path in ("/api/index.py", "/api/index", "/index.py"):
+    raw_path = (request.scope.get("path") or "/").rstrip("/") or "/"
+    request.scope["root_path"] = ""
+    if raw_path in ("/api/index.py", "/api/index", "/index.py", "/api"):
         request.scope["path"] = "/"
         request.scope["raw_path"] = b"/"
+    elif raw_path.startswith("/api/index.py/"):
+        trimmed = raw_path[len("/api/index.py"):] or "/"
+        request.scope["path"] = trimmed
+        request.scope["raw_path"] = trimmed.encode("utf-8")
     return await call_next(request)
 
 
@@ -1392,14 +1397,40 @@ async def scan_receipt_endpoint(file: UploadFile = File(...)):
 
 
 @app.get("/{full_path:path}", response_class=HTMLResponse)
-async def spa_catch_all(full_path: str):
+async def spa_catch_all(full_path: str, request: Request):
     """Menyajikan index.html untuk seluruh rute SPA non-API agar tidak pernah 404."""
     clean_p = (full_path or "").strip("/")
-    if clean_p in ("", "index.html", "api/index.py", "api/index", "index.py"):
+    if clean_p in ("", "index.html", "api", "api/index.py", "api/index", "index.py") or clean_p.startswith("api/index"):
         return render_index_html_response()
     if clean_p.startswith("api/"):
+        accept_header = (request.headers.get("accept") or "").lower()
+        if "text/html" in accept_header and "application/json" not in accept_header:
+            return render_index_html_response()
         raise HTTPException(status_code=404, detail="API endpoint not found")
     return render_index_html_response()
+
+
+class _RootVercelAsgiBridge:
+    """Lapisan ASGI terluar untuk menormalisasi path Vercel sebelum diproses oleh router FastAPI."""
+
+    def __init__(self, inner_app):
+        self.inner_app = inner_app
+
+    async def __call__(self, scope, receive, send):
+        if scope.get("type") == "http":
+            raw_path = (scope.get("path") or "/").rstrip("/") or "/"
+            scope["root_path"] = ""
+            if raw_path in ("/api/index.py", "/api/index", "/index.py", "/api"):
+                scope["path"] = "/"
+                scope["raw_path"] = b"/"
+            elif raw_path.startswith("/api/index.py/"):
+                trimmed = raw_path[len("/api/index.py"):] or "/"
+                scope["path"] = trimmed
+                scope["raw_path"] = trimmed.encode("utf-8")
+        await self.inner_app(scope, receive, send)
+
+
+app = _RootVercelAsgiBridge(app)
 
 
 if __name__ == "__main__":
