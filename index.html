@@ -63,7 +63,7 @@
         }
     </script>
 
-    <!-- Direct Google Identity Services (Login Google Langsung di Browser, Tanpa Firebase Auth) -->
+    <!-- Direct Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer onload="window.dispatchEvent(new Event('dnd-gsi-loaded'))"></script>
 
     <!-- Alpine.js -->
@@ -135,21 +135,16 @@
       x-data="dndFinanceApp()" 
       x-init="initApp()">
 
-    <!-- ========================================== -->
-    <!-- TOAST NOTIFICATION BANNER                  -->
-    <!-- ========================================== -->
+    <!-- TOAST NOTIFICATION BANNER -->
     <div x-show="toastMessage" x-transition.opacity.duration.200ms x-cloak
          class="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-full bg-cream-900 dark:bg-white text-white dark:text-obsidian-950 text-xs font-semibold shadow-xl flex items-center gap-2 max-w-[90vw]">
         <span class="w-2 h-2 rounded-full bg-royal-500 shrink-0"></span>
         <span class="truncate" x-text="toastMessage"></span>
     </div>
 
-    <!-- ========================================== -->
-    <!-- TOP STICKY HEADER                          -->
-    <!-- ========================================== -->
+    <!-- TOP STICKY HEADER -->
     <header class="sticky top-0 z-30 bg-white/90 dark:bg-obsidian-950/90 backdrop-blur-md border-b border-cream-200/80 dark:border-obsidian-800 pt-safe">
         <div class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
-            <!-- Custom DND Calligraphic Vector Monogram & Page Title -->
             <div class="flex items-center gap-2 min-w-0">
                 <button type="button" @click="setTab('dashboard')" class="dnd-brand-mark text-cream-900 dark:text-white shrink-0 transition-transform active:scale-95" aria-label="DND Finance">
                     <svg viewBox="0 0 220 110" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -160,9 +155,7 @@
                 <span class="font-display font-bold text-sm sm:text-base text-cream-900 dark:text-white truncate" x-text="pageTitle"></span>
             </div>
 
-            <!-- Right Controls: Language, Google Auth, Theme, Quick Export -->
             <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <!-- Language Switcher -->
                 <button type="button" @click="toggleLanguage()"
                         class="px-2.5 py-1.5 rounded-full border border-cream-200 dark:border-obsidian-700 bg-cream-50 dark:bg-obsidian-900 text-[11px] font-bold tracking-tight flex items-center gap-1">
                     <span :class="lang === 'ID' ? 'text-royal-600 dark:text-royal-400' : 'text-cream-400'">ID</span>
@@ -170,7 +163,6 @@
                     <span :class="lang === 'EN' ? 'text-royal-600 dark:text-royal-400' : 'text-cream-400'">EN</span>
                 </button>
 
-                <!-- Direct Google Auth Pill (Instant & Never Stuck) -->
                 <button type="button" @click="handleGoogleHeaderClick()"
                         class="px-3 py-1.5 rounded-full border border-cream-200 dark:border-obsidian-700 bg-cream-50 dark:bg-obsidian-900 hover:bg-cream-100 dark:hover:bg-obsidian-800 text-xs font-semibold text-cream-900 dark:text-white flex items-center gap-1.5 max-w-[145px] transition-colors">
                     <template x-if="googleUser && googleUser.picture">
@@ -187,14 +179,12 @@
                     <span class="truncate" x-text="googleUser ? displayUserName : t('sign_in_google')"></span>
                 </button>
 
-                <!-- Theme Toggle -->
                 <button type="button" @click="toggleTheme()"
                         class="w-8 h-8 rounded-full border border-cream-200 dark:border-obsidian-700 bg-cream-50 dark:bg-obsidian-900 flex items-center justify-center text-cream-700 dark:text-slate-300">
                     <i x-show="!isDarkMode" data-lucide="moon" class="w-4 h-4"></i>
                     <i x-show="isDarkMode" data-lucide="sun" class="w-4 h-4"></i>
                 </button>
 
-                <!-- Quick Export Excel -->
                 <button type="button" @click="exportToExcel()"
                         class="w-8 h-8 rounded-full bg-royal-600 hover:bg-royal-700 text-white flex items-center justify-center shadow-sm"
                         :title="t('export_excel')">
@@ -204,16 +194,13 @@
         </div>
     </header>
 
-    <!-- ========================================== -->
-    <!-- MAIN CONTENT CONTAINER                     -->
-    <!-- ========================================== -->
+    <!-- MAIN CONTENT CONTAINER -->
     <main class="max-w-3xl mx-auto px-4 pt-4 pb-28 space-y-5">
 
         <!-- ====================================== -->
         <!-- TAB 1: DASHBOARD (BERANDA)             -->
         <!-- ====================================== -->
         <section x-show="activeTab === 'dashboard'" class="space-y-5">
-            <!-- Greeting & Profile Header -->
             <div class="flex items-center justify-between gap-3">
                 <div>
                     <p class="text-xs font-medium text-cream-500 dark:text-slate-400" x-text="timeGreeting"></p>
@@ -249,7 +236,6 @@
                           x-text="transactions.length + ' ' + t('recorded_transactions')"></span>
                 </div>
 
-                <!-- Income / Expense / Net Strip -->
                 <div class="grid grid-cols-3 gap-2 pt-2 border-t border-white/10 text-xs">
                     <div class="bg-white/5 rounded-2xl p-2.5">
                         <span class="text-[10px] text-emerald-300 font-medium block" x-text="t('income')"></span>
@@ -265,7 +251,6 @@
                     </div>
                 </div>
 
-                <!-- Live Real-Time Economic Indicators Ticker -->
                 <div class="flex items-center justify-between gap-2 pt-2 border-t border-white/10 text-[11px] text-slate-200">
                     <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
                         <span class="whitespace-nowrap">Inflasi YoY: <strong class="text-amber-300" x-text="realtimePulse.inflation_id_pct + '%'"></strong></span>
@@ -362,7 +347,6 @@
                             class="text-[11px] font-semibold text-rose-500" x-text="t('reset_scan')"></button>
                 </div>
 
-                <!-- Camera & Gallery Upload Buttons -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <button type="button" @click="startSplitCamera()" :disabled="isScanningSplitBill"
                             class="py-2.5 px-3 rounded-2xl bg-royal-600 hover:bg-royal-700 text-white text-xs font-semibold flex items-center justify-center gap-2">
@@ -376,7 +360,6 @@
                     </label>
                 </div>
 
-                <!-- Detected Item Rows -->
                 <div x-show="splitItems.length > 0" class="space-y-2 pt-2 border-t border-cream-200 dark:border-obsidian-800">
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold text-cream-700 dark:text-slate-300" x-text="t('detected_items')"></span>
@@ -394,7 +377,6 @@
                     </template>
                 </div>
 
-                <!-- Mathematical Controls -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
                     <div>
                         <label class="text-[10px] text-cream-500 block mb-1" x-text="t('subtotal')"></label>
@@ -473,7 +455,7 @@
         <!-- TAB 2: ANALYTICS & DND AI AGENT        -->
         <!-- ====================================== -->
         <section x-show="activeTab === 'analytics'" x-cloak class="space-y-5">
-            <!-- DND AI AGENT HUB (Clean UI, Real-Time Official Data + Multi-Command Executor) -->
+            <!-- DND AI AGENT HUB -->
             <div id="aiAgentHubSection" class="p-4 rounded-3xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 shadow-card space-y-3.5">
                 <div class="flex items-start justify-between gap-3">
                     <div class="flex items-center gap-3">
@@ -576,6 +558,37 @@
                 </div>
             </div>
 
+            <!-- Multi-Horizon Inflation Purchasing Power & Emergency Fund Calibration Card -->
+            <div class="p-4 rounded-3xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 shadow-card space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-sm text-cream-900 dark:text-white"
+                            x-text="lang === 'ID' ? 'Kalibrasi Daya Beli Riil & Dana Darurat Ideal' : 'Real Purchasing Power & Ideal Emergency Buffer'"></h3>
+                        <p class="text-[11px] text-cream-500 dark:text-slate-400"
+                           x-text="lang === 'ID' ? 'Simulasi kuantitatif multi-horizon berbasis inflasi YoY ' + realtimePulse.inflation_id_pct + '%' : 'Multi-horizon quantitative calibration at ' + realtimePulse.inflation_id_pct + '% YoY inflation'"></p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full bg-royal-50 dark:bg-royal-500/15 text-[10px] font-bold text-royal-600 dark:text-royal-300">C++17 Quant</span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    <div class="p-2.5 rounded-2xl bg-cream-50 dark:bg-obsidian-950 border border-cream-200/70 dark:border-obsidian-800">
+                        <span class="text-[10px] text-cream-500 block" x-text="lang === 'ID' ? 'Nilai Riil 1 Thn' : 'Real Value 1Y'"></span>
+                        <span class="font-bold text-cream-900 dark:text-white truncate block mt-0.5" x-text="formatCurrency(quantIntel.real_balance_1y)"></span>
+                    </div>
+                    <div class="p-2.5 rounded-2xl bg-cream-50 dark:bg-obsidian-950 border border-cream-200/70 dark:border-obsidian-800">
+                        <span class="text-[10px] text-cream-500 block" x-text="lang === 'ID' ? 'Nilai Riil 3 Thn' : 'Real Value 3Y'"></span>
+                        <span class="font-bold text-cream-900 dark:text-white truncate block mt-0.5" x-text="formatCurrency(quantIntel.real_balance_3y)"></span>
+                    </div>
+                    <div class="p-2.5 rounded-2xl bg-cream-50 dark:bg-obsidian-950 border border-cream-200/70 dark:border-obsidian-800">
+                        <span class="text-[10px] text-cream-500 block" x-text="lang === 'ID' ? 'Nilai Riil 5 Thn' : 'Real Value 5Y'"></span>
+                        <span class="font-bold text-cream-900 dark:text-white truncate block mt-0.5" x-text="formatCurrency(quantIntel.real_balance_5y)"></span>
+                    </div>
+                    <div class="p-2.5 rounded-2xl bg-amber-50/70 dark:bg-amber-500/10 border border-amber-200/70 dark:border-amber-500/20">
+                        <span class="text-[10px] text-amber-700 dark:text-amber-300 block" x-text="lang === 'ID' ? 'Dana Darurat 6 Bln' : '6M Emergency Goal'"></span>
+                        <span class="font-bold text-amber-800 dark:text-amber-200 truncate block mt-0.5" x-text="formatCurrency(quantIntel.emergency_fund_ideal)"></span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Cashflow Trend Chart -->
             <div class="p-4 rounded-3xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 shadow-card space-y-3">
                 <div class="flex items-center justify-between gap-2">
@@ -650,7 +663,6 @@
         <!-- TAB 3: RECORDS (CATATAN & IMPOR/EKSPOR)-->
         <!-- ====================================== -->
         <section x-show="activeTab === 'transactions'" x-cloak class="space-y-4">
-            <!-- Search & Filter Bar -->
             <div class="space-y-2.5">
                 <input type="text" x-model="searchQuery" :placeholder="t('search_tx_placeholder')"
                        class="w-full px-4 py-2.5 rounded-2xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 text-xs sm:text-sm focus:outline-none focus:border-royal-500">
@@ -701,13 +713,47 @@
                     </div>
                 </template>
             </div>
+
+            <!-- Database Audit History Card (Report Files & Receipt Scans) -->
+            <div x-show="reportFileLogs.length > 0 || receiptScanLogs.length > 0" class="p-4 rounded-3xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 shadow-card space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="font-display font-bold text-sm text-cream-900 dark:text-white"
+                            x-text="lang === 'ID' ? 'Log Database Laporan & Scan Struk' : 'Report Files & Receipt Scan Database Log'"></h3>
+                        <p class="text-[11px] text-cream-500 dark:text-slate-400"
+                           x-text="lang === 'ID' ? 'Tersinkronisasi otomatis ke IndexedDB & Firebase Realtime Database' : 'Automatically synced to IndexedDB & Firebase Realtime Database'"></p>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-500/15 text-[10px] font-bold text-emerald-700 dark:text-emerald-300"
+                          x-text="(reportFileLogs.length + receiptScanLogs.length) + ' Log'"></span>
+                </div>
+
+                <div class="space-y-1.5 max-h-48 overflow-y-auto">
+                    <template x-for="rep in reportFileLogs.slice(0, 6)" :key="rep.id">
+                        <div class="p-2.5 rounded-xl bg-cream-50 dark:bg-obsidian-950 border border-cream-200/70 dark:border-obsidian-800 flex items-center justify-between gap-2 text-[11px]">
+                            <div class="min-w-0">
+                                <p class="font-bold text-cream-900 dark:text-white truncate" x-text="rep.filename"></p>
+                                <p class="text-cream-500 truncate" x-text="rep.direction + ' (' + rep.file_format + ') • ' + rep.tx_count + ' tx • SHA256: ' + (rep.checksum_sha256 || '-')"></p>
+                            </div>
+                            <span class="font-semibold text-royal-600 shrink-0" x-text="formatDateShort(rep.created_at)"></span>
+                        </div>
+                    </template>
+                    <template x-for="sc in receiptScanLogs.slice(0, 6)" :key="sc.id">
+                        <div class="p-2.5 rounded-xl bg-cream-50 dark:bg-obsidian-950 border border-cream-200/70 dark:border-obsidian-800 flex items-center justify-between gap-2 text-[11px]">
+                            <div class="min-w-0">
+                                <p class="font-bold text-cream-900 dark:text-white truncate" x-text="'Scan: ' + sc.merchant"></p>
+                                <p class="text-cream-500 truncate" x-text="(sc.scan_mode || 'scan').toUpperCase() + ' • ' + formatCurrency(sc.grand_total)"></p>
+                            </div>
+                            <span class="font-semibold text-emerald-600 shrink-0" x-text="formatDateShort(sc.created_at)"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
         </section>
 
         <!-- ====================================== -->
         <!-- TAB 4: GOALS & BUDGETS (TARGET)        -->
         <!-- ====================================== -->
         <section x-show="activeTab === 'planning'" x-cloak class="space-y-5">
-            <!-- Savings Goals -->
             <div class="space-y-3">
                 <div class="flex items-center justify-between">
                     <div>
@@ -742,7 +788,6 @@
                 </template>
             </div>
 
-            <!-- Category Budgets -->
             <div class="space-y-3">
                 <div class="flex items-center justify-between">
                     <div>
@@ -789,7 +834,6 @@
                 <button type="button" @click="openAutomationModal()" class="px-3.5 py-2 rounded-full bg-royal-600 text-white text-xs font-semibold shrink-0" x-text="'+ ' + t('add_rule')"></button>
             </div>
 
-            <!-- Preset Autopilot Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button type="button" @click="activatePresetRule('save20')" class="p-4 rounded-2xl bg-royal-50 dark:bg-royal-500/10 border border-royal-200 dark:border-royal-500/20 text-left space-y-1">
                     <p class="text-xs font-bold text-royal-700 dark:text-royal-300" x-text="t('preset_save20_title')"></p>
@@ -834,7 +878,6 @@
         <!-- TAB 6: MENU & AKUN GOOGLE              -->
         <!-- ====================================== -->
         <section x-show="activeTab === 'menu'" x-cloak class="space-y-4">
-            <!-- Google Account Card (Clean, Instant & Never Stuck) -->
             <div class="p-5 rounded-3xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 shadow-card space-y-3.5">
                 <div>
                     <h2 class="font-display font-bold text-base text-cream-900 dark:text-white" x-text="t('google_account_title')"></h2>
@@ -888,7 +931,6 @@
                 </div>
             </div>
 
-            <!-- Quick Hub Shortcuts -->
             <div class="grid grid-cols-2 gap-3">
                 <button type="button" @click="setTab('automation')"
                         class="p-4 rounded-3xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 shadow-card text-left space-y-2">
@@ -913,7 +955,6 @@
                 </button>
             </div>
 
-            <!-- App Preferences Card -->
             <div class="p-5 rounded-3xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 shadow-card space-y-4">
                 <h3 class="font-display font-bold text-base text-cream-900 dark:text-white" x-text="t('preferences_title')"></h3>
 
@@ -958,7 +999,6 @@
                 </div>
             </div>
 
-            <!-- About DND Finance with Custom Vector Monogram -->
             <div class="p-5 rounded-3xl bg-white dark:bg-obsidian-900 border border-cream-200 dark:border-obsidian-800 shadow-card space-y-3">
                 <div class="flex items-center gap-2.5">
                     <div class="dnd-brand-mark text-cream-900 dark:text-white shrink-0">
@@ -978,9 +1018,7 @@
         </section>
     </main>
 
-    <!-- ========================================== -->
-    <!-- BOTTOM NAVIGATION BAR                      -->
-    <!-- ========================================== -->
+    <!-- BOTTOM NAVIGATION BAR -->
     <nav class="fixed bottom-0 inset-x-0 z-30 bg-white/95 dark:bg-obsidian-950/95 backdrop-blur-md border-t border-cream-200/80 dark:border-obsidian-800 pb-safe">
         <div class="max-w-3xl mx-auto px-2 h-16 grid grid-cols-7 items-center text-[10px] font-semibold">
             <button type="button" @click="setTab('dashboard')" :class="activeTab === 'dashboard' ? 'text-royal-600' : 'text-cream-400'" class="flex flex-col items-center gap-1">
@@ -1017,9 +1055,7 @@
         </div>
     </nav>
 
-    <!-- ========================================== -->
-    <!-- MODAL 1: RECORD TRANSACTION & SCAN STRUK   -->
-    <!-- ========================================== -->
+    <!-- MODAL 1: RECORD TRANSACTION & SCAN STRUK -->
     <div x-show="showTxModal" x-cloak class="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-0 sm:p-4">
         <div @click.away="showTxModal = false" class="w-full max-w-lg max-h-[90vh] overflow-y-auto bg-white dark:bg-obsidian-900 rounded-t-3xl sm:rounded-3xl border border-cream-200 dark:border-obsidian-800 p-5 space-y-4">
             <div class="flex items-center justify-between">
@@ -1029,17 +1065,17 @@
                 </button>
             </div>
 
-            <!-- AI Smart Natural Language Quick Entry -->
             <div class="p-3 rounded-2xl bg-cream-100 dark:bg-obsidian-850 space-y-2">
                 <label class="text-[11px] font-bold text-royal-600 dark:text-royal-400 block" x-text="t('smart_nl_label')"></label>
                 <div class="flex gap-2">
                     <input type="text" x-model="smartTxInput" :placeholder="t('smart_nl_placeholder')"
                            class="flex-1 px-3 py-2 rounded-xl bg-white dark:bg-obsidian-950 border border-cream-200 dark:border-obsidian-800 text-xs">
-                    <button type="button" @click="parseNaturalLanguageTx()" class="px-3 py-2 rounded-xl bg-royal-600 text-white text-xs font-semibold shrink-0" x-text="t('auto_fill_btn')"></button>
+                    <button type="button" @click="parseNaturalLanguageTx()" :disabled="isParsingSmartTx"
+                            class="px-3 py-2 rounded-xl bg-royal-600 disabled:opacity-50 text-white text-xs font-semibold shrink-0"
+                            x-text="t('auto_fill_btn')"></button>
                 </div>
             </div>
 
-            <!-- Receipt Scanner inside Modal -->
             <div class="p-3 rounded-2xl bg-royal-50/70 dark:bg-royal-500/10 border border-royal-200/70 dark:border-royal-500/20 space-y-2.5">
                 <div class="flex items-center justify-between gap-2">
                     <div>
@@ -1073,7 +1109,6 @@
                 </div>
             </div>
 
-            <!-- Transaction Form -->
             <form @submit.prevent="saveTransaction()" class="space-y-3">
                 <div class="grid grid-cols-3 gap-1.5 p-1 rounded-2xl bg-cream-100 dark:bg-obsidian-850 text-xs font-semibold">
                     <button type="button" @click="txForm.type = 'expense'" :class="txForm.type === 'expense' ? 'bg-rose-500 text-white' : 'text-cream-600'" class="py-2 rounded-xl" x-text="t('expense')"></button>
@@ -1138,9 +1173,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL 2: LIVE CAMERA SCANNER               -->
-    <!-- ========================================== -->
+    <!-- MODAL 2: LIVE CAMERA SCANNER -->
     <div x-show="showSplitCameraModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
         <div class="w-full max-w-md bg-obsidian-900 rounded-3xl overflow-hidden border border-obsidian-700 space-y-3 p-4">
             <div class="flex items-center justify-between text-white">
@@ -1155,9 +1188,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL 3: MANAGE WALLETS                    -->
-    <!-- ========================================== -->
+    <!-- MODAL 3: MANAGE WALLETS -->
     <div x-show="showWalletModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
         <div @click.away="showWalletModal = false" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl p-5 space-y-4 border border-cream-200 dark:border-obsidian-800">
             <div class="flex items-center justify-between">
@@ -1179,9 +1210,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL 4: MANAGE CATEGORIES                 -->
-    <!-- ========================================== -->
+    <!-- MODAL 4: MANAGE CATEGORIES -->
     <div x-show="showCategoryModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
         <div @click.away="showCategoryModal = false" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl p-5 space-y-4 border border-cream-200 dark:border-obsidian-800">
             <div class="flex items-center justify-between">
@@ -1203,9 +1232,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL 5: SAVINGS GOAL                      -->
-    <!-- ========================================== -->
+    <!-- MODAL 5: SAVINGS GOAL -->
     <div x-show="showGoalModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
         <form @submit.prevent="saveGoal()" @click.away="showGoalModal = false" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl p-5 space-y-3.5 border border-cream-200 dark:border-obsidian-800">
             <h3 class="font-display font-bold text-base" x-text="t('add_goal')"></h3>
@@ -1228,9 +1255,7 @@
         </form>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL 6: CATEGORY BUDGET                   -->
-    <!-- ========================================== -->
+    <!-- MODAL 6: CATEGORY BUDGET -->
     <div x-show="showBudgetModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
         <form @submit.prevent="saveBudget()" @click.away="showBudgetModal = false" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl p-5 space-y-3.5 border border-cream-200 dark:border-obsidian-800">
             <h3 class="font-display font-bold text-base" x-text="t('set_budget')"></h3>
@@ -1253,9 +1278,7 @@
         </form>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL 7: AUTOPILOT RULE                    -->
-    <!-- ========================================== -->
+    <!-- MODAL 7: AUTOPILOT RULE (ALL FIELDS ACTIVE) -->
     <div x-show="showAutomationModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
         <form @submit.prevent="saveAutomationRule()" @click.away="showAutomationModal = false" class="w-full max-w-md max-h-[88vh] overflow-y-auto bg-white dark:bg-obsidian-900 rounded-3xl p-5 space-y-3 border border-cream-200 dark:border-obsidian-800">
             <h3 class="font-display font-bold text-base" x-text="editingRuleId ? t('edit_rule') : t('add_rule')"></h3>
@@ -1287,6 +1310,15 @@
                 <label class="text-xs font-semibold block mb-1" x-text="t('target_goal_name')"></label>
                 <input type="text" x-model="ruleForm.targetGoalName" class="w-full px-3 py-2 rounded-xl bg-cream-50 dark:bg-obsidian-950 border border-cream-200 dark:border-obsidian-800 text-xs">
             </div>
+            <div x-show="ruleForm.actionType === 'auto_transfer_wallet'">
+                <label class="text-xs font-semibold block mb-1" x-text="t('from_wallet') + ' (Opsional)'"></label>
+                <select x-model="ruleForm.sourceWallet" class="w-full px-3 py-2 rounded-xl bg-cream-50 dark:bg-obsidian-950 border border-cream-200 dark:border-obsidian-800 text-xs">
+                    <option value="" x-text="lang === 'ID' ? 'Semua Dompet Asal' : 'Any Source Wallet'"></option>
+                    <template x-for="b in banks" :key="b">
+                        <option :value="b" x-text="b"></option>
+                    </template>
+                </select>
+            </div>
             <div x-show="['auto_transfer_wallet','expense_transfer_wallet'].includes(ruleForm.actionType)">
                 <label class="text-xs font-semibold block mb-1" x-text="t('to_wallet')"></label>
                 <select x-model="ruleForm.destWallet" class="w-full px-3 py-2 rounded-xl bg-cream-50 dark:bg-obsidian-950 border border-cream-200 dark:border-obsidian-800 text-xs">
@@ -1295,9 +1327,21 @@
                     </template>
                 </select>
             </div>
+            <div x-show="ruleForm.actionType === 'category_spend_alert'">
+                <label class="text-xs font-semibold block mb-1" x-text="t('category_label')"></label>
+                <select x-model="ruleForm.targetCategory" class="w-full px-3 py-2 rounded-xl bg-cream-50 dark:bg-obsidian-950 border border-cream-200 dark:border-obsidian-800 text-xs">
+                    <template x-for="c in categories" :key="c">
+                        <option :value="c" x-text="c"></option>
+                    </template>
+                </select>
+            </div>
             <div x-show="['spend_alert','category_spend_alert'].includes(ruleForm.actionType)">
                 <label class="text-xs font-semibold block mb-1" x-text="t('alert_threshold')"></label>
                 <input type="number" min="1" x-model.number="ruleForm.thresholdAmount" class="w-full px-3 py-2 rounded-xl bg-cream-50 dark:bg-obsidian-950 border border-cream-200 dark:border-obsidian-800 text-xs">
+            </div>
+            <div x-show="['auto_save_goal','fixed_save_goal','auto_transfer_wallet','expense_save_goal','expense_transfer_wallet'].includes(ruleForm.actionType)">
+                <label class="text-xs font-semibold block mb-1" x-text="lang === 'ID' ? 'Minimal Nominal Pemicu (Opsional)' : 'Minimum Trigger Amount (Optional)'"></label>
+                <input type="number" min="0" x-model.number="ruleForm.minAmount" class="w-full px-3 py-2 rounded-xl bg-cream-50 dark:bg-obsidian-950 border border-cream-200 dark:border-obsidian-800 text-xs">
             </div>
             <div class="flex justify-end gap-2 pt-2">
                 <button type="button" @click="showAutomationModal = false" class="px-4 py-2 rounded-xl text-xs font-semibold" x-text="t('cancel')"></button>
@@ -1306,9 +1350,7 @@
         </form>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL 8: EDIT NICKNAME                     -->
-    <!-- ========================================== -->
+    <!-- MODAL 8: EDIT NICKNAME -->
     <div x-show="showNicknameModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
         <form @submit.prevent="saveNickname()" @click.away="showNicknameModal = false" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl p-5 space-y-3.5 border border-cream-200 dark:border-obsidian-800">
             <h3 class="font-display font-bold text-base" x-text="t('edit_nickname')"></h3>
@@ -1324,9 +1366,7 @@
         </form>
     </div>
 
-    <!-- ========================================== -->
-    <!-- MODAL 9: GOOGLE SIGN-IN MULTI-MODE MODAL   -->
-    <!-- ========================================== -->
+    <!-- MODAL 9: GOOGLE SIGN-IN MULTI-MODE MODAL -->
     <div x-show="showGoogleAuthModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center bg-black/55 backdrop-blur-sm p-4">
         <div @click.away="closeGoogleAuthModal()" class="w-full max-w-md bg-white dark:bg-obsidian-900 rounded-3xl border border-cream-200 dark:border-obsidian-800 p-6 shadow-2xl space-y-4">
             <div class="flex items-center justify-between">
@@ -1349,7 +1389,6 @@
                 </button>
             </div>
 
-            <!-- Saved 1-Tap Google Accounts on This Device -->
             <template x-if="savedGoogleAccounts.length > 0">
                 <div class="space-y-2">
                     <p class="text-[11px] font-semibold text-cream-500 dark:text-slate-400"
@@ -1379,7 +1418,6 @@
                 </div>
             </template>
 
-            <!-- Instant Direct Google Email Workspace Login (Always 100% Reliable) -->
             <div class="space-y-2">
                 <p class="text-[11px] font-semibold text-cream-700 dark:text-slate-300"
                    x-text="lang === 'ID' ? 'Masuk Langsung dengan Akun Email Google:' : 'Sign In Directly with Google Email:'"></p>
@@ -1391,7 +1429,6 @@
                 </form>
             </div>
 
-            <!-- Official Google OAuth2 Browser Sign-In -->
             <div class="pt-3 border-t border-cream-200/80 dark:border-obsidian-800 space-y-2.5">
                 <div id="dndGoogleBtnContainer" class="w-full flex justify-center"></div>
 
@@ -1407,7 +1444,6 @@
                 </button>
             </div>
 
-            <!-- Diagnostic Notice if Google OAuth Origin Not Registered Yet -->
             <div x-show="googleAuthError" x-cloak class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/25 text-[11px] text-amber-900 dark:text-amber-200 space-y-1">
                 <p class="font-semibold" x-text="googleAuthError"></p>
                 <div class="flex items-center justify-between gap-2">
@@ -1418,9 +1454,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- APPLICATION SCRIPT & STATE ENGINE          -->
-    <!-- ========================================== -->
+    <!-- APPLICATION SCRIPT & STATE ENGINE -->
     <script>
         async function fetchWithTimeout(url, options = {}, timeoutMs = 4500) {
             const controller = new AbortController();
@@ -1435,7 +1469,7 @@
 
         class DNDIndexedDatabase {
             constructor() {
-                this.dbName = 'DND_Finance_Relational_DB_v10';
+                this.dbName = 'DND_Finance_Relational_DB_v11';
                 this.version = 1;
                 this.db = null;
             }
@@ -1649,7 +1683,6 @@
                 },
                 realtimeTimer: null,
 
-                // Direct Google Browser Authentication (Zero-Stuck Architecture)
                 googleClientId: '753367715469-972f7qjb3t97qab938sc5lo69mgp78h0.apps.googleusercontent.com',
                 googleUser: null,
                 savedGoogleAccounts: [],
@@ -1688,7 +1721,6 @@
                 searchQuery: '',
                 filterType: 'all',
 
-                // Split Bill Mathematical State
                 splitSubtotal: 0,
                 splitDiscount: 0,
                 splitTax: 0,
@@ -1703,7 +1735,6 @@
                 cameraScanMode: 'split',
                 splitCameraStream: null,
 
-                // Expense Receipt Scanner Mathematical State
                 scannedReceiptMerchant: '',
                 scannedReceiptItems: [],
                 scannedReceiptSubtotal: 0,
@@ -1804,6 +1835,7 @@
                         theme_white: 'Tema Terang',
                         theme_black: 'Tema Gelap',
                         import_short: 'Impor File',
+                        importing_report: 'Mengimpor...',
                         export_excel: 'Unduh Excel (.xlsx)',
                         export_pdf: 'Unduh PDF (.pdf)',
                         net_total_balance: 'Total Saldo Bersih',
@@ -1975,6 +2007,7 @@
                         theme_white: 'White Theme',
                         theme_black: 'Dark Theme',
                         import_short: 'Import File',
+                        importing_report: 'Importing...',
                         export_excel: 'Download Excel (.xlsx)',
                         export_pdf: 'Download PDF (.pdf)',
                         net_total_balance: 'Net Total Balance',
@@ -2304,7 +2337,6 @@
                         this.updateAllCharts();
                     });
 
-                    // Run network sync & live economic data in parallel without blocking UI render
                     Promise.allSettled([
                         this.refreshRealtimeChipset(false),
                         this.fetchGoogleConfigAndSession()
@@ -2812,9 +2844,6 @@
                     };
                 },
 
-                // ==========================================
-                // DIRECT GOOGLE BROWSER AUTH (INSTANT, NON-BLOCKING, NEVER STUCK)
-                // ==========================================
                 async fetchGoogleConfigAndSession() {
                     try {
                         const infoRes = await fetchWithTimeout('/api/app/info', {}, 3500);
@@ -2970,7 +2999,6 @@
                     this.persistCachedGoogleUser();
                     this.showGoogleAuthModal = false;
 
-                    // Load workspace immediately from local cache & IndexedDB without blocking
                     this.loadLocalState();
                     await this.loadFromIndexedDB();
                     this.computeQuantitativeIntelligenceLocal();
@@ -2985,7 +3013,6 @@
                             : `Signed in as ${this.displayUserName}`
                     );
 
-                    // Sync with backend & Firebase Realtime Database in background
                     if (backendPayload) {
                         this.verifyGoogleSessionWithBackend(backendPayload).then(() => this.syncWithServer());
                     } else {
@@ -3174,9 +3201,6 @@
                     this.showToast(this.lang === 'ID' ? 'Nickname direset.' : 'Nickname reset.');
                 },
 
-                // ==========================================
-                // WALLETS & CATEGORIES MANAGEMENT
-                // ==========================================
                 openWalletModal() {
                     this.newWalletName = '';
                     this.showWalletModal = true;
@@ -3237,9 +3261,6 @@
                     this.$nextTick(() => this.refreshIcons());
                 },
 
-                // ==========================================
-                // TRANSACTIONS & AUTOPILOT EXECUTION
-                // ==========================================
                 openTxModal(defaultType = 'expense') {
                     this.smartTxInput = '';
                     this.txForm = {
@@ -3375,9 +3396,6 @@
                     }
                 },
 
-                // ==========================================
-                // SCAN NOTA & SPLIT BILL (AUTO-MATH + DB)
-                // ==========================================
                 sendScannedReceiptToSplitBill() {
                     this.splitMerchant = this.scannedReceiptMerchant;
                     this.splitItems = JSON.parse(JSON.stringify(this.scannedReceiptItems || []));
@@ -3899,9 +3917,6 @@
                     };
                 },
 
-                // ==========================================
-                // GOALS, BUDGETS & AUTOPILOT RULES
-                // ==========================================
                 openGoalModal() {
                     this.goalForm = { name: '', target: '', current: 0 };
                     this.showGoalModal = true;
@@ -4235,9 +4250,6 @@
                     }
                 },
 
-                // ==========================================
-                // DATABASE EXCEL & PDF IMPORT / EXPORT ENGINE
-                // ==========================================
                 async fetchReportHistory() {
                     this.reportFileLogs = await _dndLocalDb.listReportFiles(this.resolvedAccountKey);
                     this.receiptScanLogs = await _dndLocalDb.listReceiptScans(this.resolvedAccountKey);
@@ -4629,9 +4641,6 @@
                     }
                 },
 
-                // ==========================================
-                // DND AI AGENT (UPGRADED AUTONOMOUS & REAL-TIME ENGINE)
-                // ==========================================
                 askAiPreset(promptText) {
                     this.aiInput = promptText;
                     this.submitAiPrompt();
@@ -4649,7 +4658,6 @@
                     const raw = stripAllEmojis(userPrompt || '').trim();
                     const lower = raw.toLowerCase();
 
-                    // 1. Wallet-to-wallet transfer command
                     const transferMatch = raw.match(/(?:transfer|tf|pindah|kirim)\s+(\d+(?:[.,]\d+)?\s*(?:jt|juta|m|rb|ribu|k)?|\d{4,12})\s+(?:dari\s+)?([a-zA-Z0-9\s]+?)\s+(?:ke|to)\s+([a-zA-Z0-9\s]+)/i);
                     if (transferMatch) {
                         const tfAmt = this.parseAmountShorthand(transferMatch[1]);
@@ -4681,7 +4689,6 @@
                         }
                     }
 
-                    // 2. Record income or expense command (supports multi-clause split by "dan" / "and" / ",")
                     const isRecordCmd = /\b(catat|simpan|record|log|tambah transaksi|add expense|add income)\b/i.test(lower);
                     if (isRecordCmd) {
                         const clauses = raw.split(/\s+(?:dan|and)\s+|,\s*/i);
@@ -4730,7 +4737,6 @@
                         }
                     }
 
-                    // 3. Create Savings Goal
                     const goalMatch = raw.match(/(?:buat\s+target|create\s+goal|target\s+tabungan)\s+([a-zA-Z0-9\s]+?)\s+(\d+(?:[.,]\d+)?\s*(?:jt|juta|m|rb|ribu|k)?|\d{4,12})/i);
                     if (goalMatch) {
                         const goalName = stripAllEmojis(goalMatch[1]).trim();
@@ -4752,7 +4758,6 @@
                         }
                     }
 
-                    // 4. Top-up Savings Goal
                     const topupMatch = raw.match(/(?:tabung|isi\s+target|top\s*up)\s+(\d+(?:[.,]\d+)?\s*(?:jt|juta|m|rb|ribu|k)?|\d{4,12})\s+(?:ke|to)\s+([a-zA-Z0-9\s]+)/i);
                     if (topupMatch) {
                         const addAmt = this.parseAmountShorthand(topupMatch[1]);
@@ -4768,7 +4773,6 @@
                         }
                     }
 
-                    // 5. Set Category Budget
                     const budgetMatch = raw.match(/(?:atur\s+anggaran|set\s+budget)\s+([a-zA-Z\s]+?)\s+(\d+(?:[.,]\d+)?\s*(?:jt|juta|m|rb|ribu|k)?|\d{4,12})/i);
                     if (budgetMatch) {
                         const catRaw = stripAllEmojis(budgetMatch[1]).trim();
@@ -5155,9 +5159,6 @@ ${financialContext}`;
                     }
                 },
 
-                // ==========================================
-                // CHART.JS VISUALIZATION ENGINE
-                // ==========================================
                 updateAllCharts() {
                     if (!window.Chart) return;
                     this.renderTrendChart();
