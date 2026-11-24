@@ -1,44 +1,31 @@
-rules_version = '2';
-
-/**
- * DND Finance — Firebase Database Security Rules
- */
-service cloud.firestore {
-  match /databases/{database}/documents {
-    function isValidWorkspace(data) {
-      return data.keys().hasAll(['account_key', 'revision', 'state', 'updated_at'])
-        && data.account_key is string
-        && data.account_key.size() >= 3
-        && data.revision is int
-        && data.revision >= 1
-        && data.state is map;
-    }
-
-    function isValidReceiptScan(data) {
-      return data.keys().hasAll(['account_key', 'grand_total', 'created_at'])
-        && data.account_key is string
-        && data.grand_total is number
-        && data.grand_total >= 0;
-    }
-
-    match /workspaces/{accountKey} {
-      allow read: if false;
-      allow create, update: if false && isValidWorkspace(request.resource.data);
-      allow delete: if false;
-    }
-
-    match /receipt_scans/{scanId} {
-      allow read: if false;
-      allow create, update: if false && isValidReceiptScan(request.resource.data);
-      allow delete: if false;
-    }
-
-    match /report_files/{fileId} {
-      allow read, write: if false;
-    }
-
-    match /{document=**} {
-      allow read, write: if false;
-    }
-  }
+{
+"rules": {
+".read": false,
+".write": false,
+"_health_check": {
+".read": false,
+".write": false
+},
+"workspaces": {
+"$accountKey": {
+".read": false,
+".write": false,
+".validate": "newData.hasChildren(['account_key', 'revision', 'state', 'updated_at']) && newData.child('account_key').isString() && newData.child('revision').isNumber()"
+}
+},
+"receipt_scans": {
+"$scanId": {
+".read": false,
+".write": false,
+".validate": "newData.hasChildren(['account_key', 'grand_total', 'created_at']) && newData.child('account_key').isString() && newData.child('grand_total').isNumber()"
+}
+},
+"report_files": {
+"$fileId": {
+".read": false,
+".write": false,
+".validate": "newData.hasChildren(['account_key', 'filename', 'created_at'])"
+}
+}
+}
 }
