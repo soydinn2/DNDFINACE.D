@@ -1,11 +1,11 @@
 """
 DND Finance — Server Backend FastAPI (Vercel Serverless & Local Auto-Bootstrap Edition)
+- Normalisasi otomatis jalur Vercel (`/api/index.py` -> `/`) agar halaman utama `index.html` langsung tampil
 - Multi-Path File Resolver sehingga seluruh berkas proyek (`index.html`, `quant_ai_engine.cpp`,
   `database.rules.json`, `firestore.rules`, `.env`, `vercel.json`) selalu terbaca oleh sistem
 - Login Google Langsung di Browser (Google OAuth2 / ID Token / Email Workspace, Tanpa Firebase Auth)
 - Firebase Realtime Database (`dnd-finance-3590e-default-rtdb.asia-southeast1.firebasedatabase.app`)
 - Embedded DND AI AGENT + Multi-Source Real-Time Macroeconomic, Gold, FX & Knowledge Chipset
-  (World Bank Official Open Data, European Central Bank / Frankfurter, Open ER-API, Bank Indonesia, Wikipedia & DuckDuckGo)
 """
 
 import os
@@ -39,6 +39,15 @@ def resolve_project_file(filename: str) -> Optional[str]:
     for path in candidates:
         if path and os.path.isfile(path):
             return path
+
+    target_basename = os.path.basename(filename)
+    for root_dir in (BASE_DIR, os.getcwd(), "/var/task"):
+        if root_dir and os.path.isdir(root_dir):
+            for dirpath, _, filenames in os.walk(root_dir):
+                if target_basename in filenames:
+                    candidate = os.path.join(dirpath, target_basename)
+                    if filename in candidate.replace("\\", "/") or target_basename == filename:
+                        return candidate
     return None
 
 
@@ -628,7 +637,7 @@ async def lifespan(app_instance: FastAPI):
     yield
 
 
-app = FastAPI(title="DND Finance API Server", version="11.0.0", lifespan=lifespan)
+app = FastAPI(title="DND Finance API Server", version="11.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -637,6 +646,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def normalize_vercel_root_path(request: Request, call_next):
+    """Menormalisasi jalur `/api/index.py` dari Vercel rewrite menjadi `/` agar UI HTML langsung tampil."""
+    raw_path = request.scope.get("path", "")
+    if raw_path in ("/api/index.py", "/api/index", "/index.py"):
+        request.scope["path"] = "/"
+        request.scope["raw_path"] = b"/"
+    return await call_next(request)
 
 
 # ==============================================================================
@@ -854,10 +873,9 @@ class AiAnalyzeRequest(BaseModel):
 
 
 # ==============================================================================
-# API ROUTES
+# HTML FRONTEND LOADER & API ROUTES
 # ==============================================================================
-@app.get("/", response_class=HTMLResponse)
-async def serve_frontend():
+def render_index_html_response() -> HTMLResponse:
     html_path = resolve_project_file("index.html")
     if not html_path:
         return HTMLResponse(
@@ -868,13 +886,21 @@ async def serve_frontend():
         return HTMLResponse(f.read())
 
 
+@app.get("/", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
+@app.get("/api/index.py", response_class=HTMLResponse)
+@app.get("/api/index", response_class=HTMLResponse)
+async def serve_frontend():
+    return render_index_html_response()
+
+
 @app.get("/api/app/info")
 async def get_app_info():
     """Metadata aplikasi & konfigurasi Google Client ID untuk frontend."""
     return {
         "status": "ok",
         "platform": "DND Finance",
-        "version": "11.0.0",
+        "version": "11.1.0",
         "project_id": "dnd-finance-3590e",
         "google_client_id": GOOGLE_CLIENT_ID,
         "developer": "Dinda",
@@ -1368,13 +1394,12 @@ async def scan_receipt_endpoint(file: UploadFile = File(...)):
 @app.get("/{full_path:path}", response_class=HTMLResponse)
 async def spa_catch_all(full_path: str):
     """Menyajikan index.html untuk seluruh rute SPA non-API agar tidak pernah 404."""
-    if full_path.startswith("api/"):
+    clean_p = (full_path or "").strip("/")
+    if clean_p in ("", "index.html", "api/index.py", "api/index", "index.py"):
+        return render_index_html_response()
+    if clean_p.startswith("api/"):
         raise HTTPException(status_code=404, detail="API endpoint not found")
-    html_path = resolve_project_file("index.html")
-    if not html_path:
-        raise HTTPException(status_code=404, detail="index.html not found")
-    with open(html_path, "r", encoding="utf-8") as f:
-        return HTMLResponse(f.read())
+    return render_index_html_response()
 
 
 if __name__ == "__main__":
