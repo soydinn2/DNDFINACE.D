@@ -2,7 +2,7 @@
 "$schema": "https://openapi.vercel.sh/vercel.json",
 "functions": {
 "api/index.py": {
-"includeFiles": ""
+"includeFiles": "{index.html,quant_ai_engine.cpp,database.rules.json,firestore.rules,.env,env.example}"
 }
 },
 "env": {
