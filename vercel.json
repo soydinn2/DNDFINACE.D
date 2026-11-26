@@ -1,25 +1,21 @@
 {
 "$schema": "https://openapi.vercel.sh/vercel.json",
+"version": 2,
 "functions": {
 "api/index.py": {
-"includeFiles": "{index.html,quant_ai_engine.cpp,database.rules.json,firestore.rules,.env,env.example}"
+"runtime": "@vercel/python",
+"maxDuration": 30,
+"includeFiles": "{index.html,main.py,database.rules.json,firestore.rules,.env,env.example}"
 }
 },
-"env": {
-"FIREBASE_DATABASE_URL": "https://dnd-finance-3590e-default-rtdb.asia-southeast1.firebasedatabase.app",
-"FIREBASE_DATABASE_SECRET": "FYy3NzPGZbqW7IF4eMY055bTTh5Uan1q5iATKTMB",
-"GOOGLE_CLIENT_ID": "753367715469-972f7qjb3t97qab938sc5lo69mgp78h0.apps.googleusercontent.com",
-"DND_SESSION_SECRET": "dnd_finance_direct_google_oauth_secret_2026",
-"EMBEDDED_OSS_MODEL": "qwen2.5:7b"
-},
-"rewrites": [
+"routes": [
 {
-"source": "/api/(.)",
-"destination": "/api/index.py"
+"src": "/api/(.)",
+"dest": "/api/index.py"
 },
 {
-"source": "/(.)",
-"destination": "/api/index.py"
+"src": "/(.)",
+"dest": "/api/index.py"
 }
 ]
 }
