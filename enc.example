@@ -1,0 +1,5 @@
+DND Finance Environment Configuration (Vercel & Local)
+GOOGLE_CLIENT_ID=753367715469-972f7qjb3t97qab938sc5lo69mgp78h0.apps.googleusercontent.com
+DND_SESSION_SECRET=dnd_finance_direct_google_oauth_secret_2026
+FIREBASE_DATABASE_URL=https://dnd-finance-3590e-default-rtdb.asia-southeast1.firebasedatabase.app
+FIREBASE_DATABASE_SECRET=FYy3NzPGZbqW7IF4eMY055bTTh5Uan1q5iATKTMB
