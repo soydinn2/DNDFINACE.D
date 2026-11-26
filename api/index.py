@@ -20,10 +20,9 @@ class VercelEntrypointASGI:
 
     async def __call__(self, scope, receive, send):
         if scope.get("type") == "http":
-            raw_path = (scope.get("path") or "/").strip()
+            raw_path = (scope.get("path") or "/").rstrip("/") or "/"
             clean_path = raw_path.rstrip("/") or "/"
 
-            # Reset root_path agar Starlette/FastAPI tidak salah memotong prefix `/api/index.py`
             scope["root_path"] = ""
 
             if clean_path in ("/api/index.py", "/api/index", "/index.py", "/api"):
